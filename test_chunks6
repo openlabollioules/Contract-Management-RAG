@@ -1,0 +1,400 @@
+🍎 Détection d'un processeur Apple Silicon
+🎮 GPU MPS disponible
+⚙️ Utilisation du device: mps
+🍎 Détection d'un processeur Apple Silicon
+🎮 GPU MPS disponible
+⚙️ Utilisation du device: mps
+
+🔄 Début du traitement du document...
+📄 Extraction du texte du PDF...
+📄 Chargement des modèles...
+🔍 Configuration de Marker...
+🔄 Création des modèles...
+Loaded layout model s3://layout/2025_02_18 on device mps with dtype torch.float16
+Loaded texify model s3://texify/2025_02_18 on device mps with dtype torch.float16
+Loaded recognition model s3://text_recognition/2025_02_18 on device mps with dtype torch.float16
+Loaded table recognition model s3://table_recognition/2025_02_18 on device mps with dtype torch.float16
+Loaded detection model s3://text_detection/2025_02_28 on device mps with dtype torch.float16
+Loaded detection model s3://inline_math_detection/2025_02_24 on device mps with dtype torch.float16
+📝 Conversion du PDF...
+✅ PDF traité en 49.18 secondes
+📊 Métriques:
+  - Pages: Unknown
+  - Mots: 2981
+  - Device utilisé: mps
+  - Vitesse: 60.61 mots/seconde
+✅ Texte extrait (2993 mots)
+
+🔍 Découpage du texte en chunks intelligents...
+
+🔍 Analyse de la structure du document...
+📊 Document analysé: 202 lignes
+
+✅ Découpage terminé en 0.00 secondes
+
+📝 Affichage des chunks:
+================================================================================
+
+Chunk 1/22
+----------------------------------------
+
+Contenu:
+
+Document Metadata:
+- Title: page_007.pdf
+- Author: Unknown
+- Pages: Unknown
+
+Content:
+----------------------------------------
+
+Chunk 2/22
+----------------------------------------
+Section: 1
+
+Contenu:
+# 1. Formation and Content of Contract
+
+The Purchase Order together with its attachments and other documents incorporated into the Contract by reference in the Purchase Order constitutes an offer by Purchaser to have the Work specified therein performed by Supplier upon the terms and conditions, at the price(s), and within the period of time stated therein. Supplier shall indicate its acceptance of the offer by execution and return of the acknowledgment within seven (7) working days after receipt of the Purchase Order. If Supplier fails to notify Purchaser within this period of whether it accepts or objects to the Purchase Order, the Purchase Order is deemed accepted by Supplier, provided the Purchase Order, together with its attachments and other documents incorporated by reference into the Contract, substantially conforms to the agreements reached during the negotiations on the Supplier's proposal. Commencement of design, manufacture, delivery, supply of the Unit(s) or performance of the Services or start of invoicing constitutes Supplier's acceptance of the Purchase Order and the documents attached thereto or incorporated by reference into the Contract.
+
+Unless otherwise stated in the Purchase Order, the contract (the "Contract") shall consist of the following documents exhaustively listed and the order of precedence shall be:
+
+\* The Purchase Order together with Supplier's Purchase Order acknowledgment
+
+\* The PRPC
+
+\* These Alstom and ABB General Terms & Conditions including its Appendices
+
+\* The Client's Specification, if applicable
+
+\* The Master Technical Specification incorporated into the Contract by reference in the Purchase Order
+
+\* Quality Assurance plans including test and inspection requirements, incorporated into the Contract by reference in the Purchase Order
+
+\* Environmental, Health & Safety requirements, incorporated into the Contract by reference in the Purchase Order
+
+\* Shipping, packing and marking standards and instructions, incorporated into the Contract by reference in the Purchase Order
+
+\* Other documents incorporated into the Contract by reference in the Purchase Order
+
+\* Supplier's proposal
+
+Terms and conditions of contracts of the Parties shall not apply even if the Parties or one of the Parties have not expressly contradicted their application.
+
+The Contract may not be modified except by a written change order issued by Purchaser in accordance with Clause 3.2. No terms, conditions, exceptions or clarifications stated by Supplier in its proposal or in [UNREADABLE]
+
+[No visible text in the top-left corner]
+
+accepting or acknowledging the Purchase Order (including its attachments and other documents incorporated into the Contract by reference in the Purchase Order) shall be binding unless mutually agreed upon in writing and explicitly included in the Contract.
+
+The invalidity, in whole or in part, of any provision of this Contract will not affect the validity of the remaining provisions or any other provision of this Contract. To the extent permissible under applicable law, this Contract replaces any prior agreement between the Parties that is inconsistent with its terms, and such replaced agreement shall be deemed to have been superseded by this Contract.
+
+----------------------------------------
+
+Chunk 3/22
+----------------------------------------
+Section: 2
+
+Contenu:
+- 2. Definitions and Interpretations
+----------------------------------------
+
+Chunk 4/22
+----------------------------------------
+Section: 2.1
+
+Contenu:
+- 2.1 Definitions
+
+"ALSTOM Affiliate" means any company being a member of the group of companies of ALSTOM S.A., Paris.
+
+"ABB Affiliate" means any company being a member of the group of companies of ABB Ltd, Zurich.
+
+"Applicable Legislation" means, without prejudice to Clause 18.1, any relevant laws, regulations, codes and
+
+standards, as well as, if applicable, authorizations, permits and licenses, having an effect (i) on the Unit(s) or the design, manufacture or delivery thereof or (ii) on the Services or the performance thereof, and relating in particular to environmental, health and safety matters.
+
+"Client" means the Purchaser's customer to whom the Work will be ultimately delivered by the Purchaser for use and/or which becomes the owner of the Work.
+
+"Contract" shall have the meaning given to it in Clause 1, it being understood that the subject of the Contract may be either an EXW delivery or, alternatively, an EXW delivery and Services.
+
+"Defect" means (i) defect and deficiency of the Unit(s) in design, workmanship or material, or (ii) non-compliance of the Unit(s) or the Services with the Technical Specifications and other requirements of the Contract; "defective" shall be construed accordingly.
+
+"Parties" means the Purchaser and the Supplier; "Party" means either of them, as the context requires.
+
+"PRPC" means the project-related purchasing conditions issued by Purchaser which shall be limited to deviations from these General Conditions of Purchase or other documents incorporated into the Contract by reference in the Purchase Order.
+
+"Purchase Order" or "PO" means the purchase order issued by Purchaser and accepted by Supplier as set out in Clause 1.
+
+"Purchaser" means ALSTOM (Switzerland) Ltd. or any ALSTOM Affiliate named as Purchaser in the Purchase Order.
+
+[No visible text on the rest of the page]
+
+"Site Services" means such services related to the Unit(s) as will , if ordered by the Purchaser, be performed by the Supplier on the Site; the Site Services may consist of erection supervision, and/or commissioning support or commissioning supervision, as will be mutually agreed upon in the Contract.
+
+"FAT" means the tests as specified in the Technical Specification, including and limited to the delivery of all documents required therein and due up to this point of time.
+
+"SAT" means the tests as specified in the Technical Specification, including and limited to the delivery of all documents required therein and due up to this point of time.
+
+"Supplier" means ABB Switzerland Ltd or any ABB Affiliate named as Purchaser in the Purchase Order.
+
+"Master Technical Specification" means the document of the same name incorporated into the Contract by reference in the Purchase Order, which comprises all of the documentation, drawings, plans and manuals (including documentation, drawings, plans and manuals provided by the Supplier, if accepted expressly in writing by the Purchaser) relating to the Work, including such items as the material, equipment and performance specifications and details of how the Work will be executed.
+
+"Client Specification" means the portions of the Client's specification relevant for the Work, as amended by mutual agreement of the Parties.
+
+"Technical Specification" means the Master Technical Specification and Client Specification.
+
+"Unit" means the functional unit consisting of the equipment, materials, works, parts, manuals, drawings, documents, FAT and other supplies, specified in the Purchase Order, to be supplied by the Supplier; the Unit will be integrated by the Purchaser into the power plant to be delivered by the Supplier to the Client; the term "Unit" shall include any changes made thereto pursuant to Clause 3.2.
+
+"Equipment" means the scope of supply consisting of one or more Units.
+
+"Services" means the Site Services, the term "Services" shall include any changes made thereto pursuant to Clause 3.2.
+
+"Work" means the Equipment and, if ordered by the Purchaser, the Services, to be provided by the Supplier, all as set forth in or to be reasonably inferred from the Contract. The term "Work" shall include any changes made thereto pursuant to Clause 3.2.
+
+"Site" means the place where the Site Services, if any, will be performed by the Supplier.
+
+"Client Contract" means the contract entered into between the Purchaser and the Client for the delivery of the power plant. The Client Contract shall in no event be an integral part of this Contract.
+
+ALSTOM Plant Operations Business
+
+----------------------------------------
+
+Chunk 5/22
+----------------------------------------
+Section: 2.2
+
+Contenu:
+2.2 Interpretations
+
+Reference to Clauses shall mean clauses of the Contract unless otherwise specified or unless the context clearly requires otherwise.
+
+Clause headings used in the Contract are for ease of reference only and do not form part of the Contract or its interpretation.
+
+The term "including" shall be construed as "including, but not limited to", unless expressly stated to the contrary in the Contract.
+
+The interpretation of international trade terms shall be in accordance with Incoterms 2000, unless otherwise stated in the Contract.
+
+----------------------------------------
+
+Chunk 6/22
+----------------------------------------
+Section: 3
+
+Contenu:
+3. Work
+
+----------------------------------------
+
+Chunk 7/22
+----------------------------------------
+Section: 3.1
+
+Contenu:
+3.1 The Work
+
+The Supplier shall perform the Work in its entirety in the manner and at the times set forth in the Contract.
+
+Save where the Contract expressly provides otherwise, the cost of performing the Work shall be borne exclusively by the Supplier.
+
+The Work shall include any and all works, materials, equipment, parts, drawings, documents, and other supplies which, while not mentioned in the Contract, are necessary to satisfy the Technical Specification and/or any other relevant contract document or arise from any obligation of the Supplier set forth in the Contract (except for the procurement of authorisations, permits, and licences), other than:
+
+(i) working permits which may be required for the performance by its personnel of the Site Services; and
+
+(ii) the export license, if legally required relating to the Work (if required) or are to be reasonably inferred therefrom, including anything necessary for the completion and the safe and reliable operation of the Unit(s) in accordance with the Contract and the Applicable Legislation.
+
+The Supplier's proposal for the delivery of the Unit(s) shall include the performance of the SAT provided that the performance of the SAT is required according to the Master Technical Specification or as deemed necessary by the Supplier.
+
+The Supplier represents that it has acquainted itself with all facts, data, documents, circumstances, requirements,
+
+impediments (if any), and considerations relevant to the Equipment and the Services, and the performance of its obligations as set forth in the Contract, and has established its prices, agreed to the time schedule, and agreed to the terms of the Contract accordingly.
+
+The Supplier shall be responsible for its own interpretation of any documentation and information received and gathered by it. In particular, except as otherwise provided for in the Contract, no document or information obtained by the Supplier from the Purchaser
+
+[End of Page]
+
+# ALSTOM Plant Operations Business
+
+in connection with the Contract shall in any way release the Supplier from the obligation to review any such document and information and to verify the same with the Purchaser, to the extent it is reasonably able to do so, and furthermore to obtain any additional information and data from the Purchaser or from other sources, where appropriate, in order to ensure the prompt and proper execution of the Work.
+
+Notwithstanding anything to the contrary, the Supplier shall in no event have any responsibility for any Site conditions whatsoever, except as otherwise provided for in any document incorporated into the Contract by reference in the Purchase Order.
+
+----------------------------------------
+
+Chunk 8/22
+----------------------------------------
+Section: 3.2
+
+Contenu:
+# 3.2 Changes
+
+The Purchaser shall have the right to require the Supplier to make any changes in the Work.
+
+If in the Supplier's opinion such changes will cause an increase or decrease in the cost of or time required for performance of the Contract or will affect a Contract provision, the Supplier shall notify the Purchaser promptly but in no event later than fourteen (14) days after the receipt of the Purchaser's change notice, otherwise any claim by the Supplier in respect thereof is deemed waived. If the Supplier claims an increase or decrease in the cost of or time required for the performance of the Work as changed, or requests a modification to a Contract provision, and if and to the extent that the Purchaser considers such claim or request reasonably justified in the circumstances, an equitable adjustment will be made by the Purchaser to the price and/or delivery schedule of the Contract (considering the impact on the critical path activities) and/or to the relevant Contract provisions, by means of a change order. The Supplier shall not proceed without a written change order issued by the Purchaser authorizing the change.
+
+Notwithstanding that a change order may not have been finalized, if instructed to do so by the Purchaser, the Supplier shall, without prejudice to the second paragraph of Clause 18.1, commence work in relation to the change order and comply with the Purchaser's respective instructions.
+
+If after the date of the acknowledgement of the Purchase Order the Supplier becomes aware of the introduction of any new Applicable Legislation or of any change in Applicable Legislation, it shall inform the Purchaser without delay and has the right to request the Purchaser to issue a change order in accordance with the provisions of this Clause 3.2.
+
+----------------------------------------
+
+Chunk 9/22
+----------------------------------------
+Section: 3.3
+
+Contenu:
+# 3.3 Hazardous Goods
+
+Unless the Supplier otherwise agrees in writing, the Unit(s) to be supplied to the Purchaser will not contain arsenic, asbestos, lead or any other hazardous substances restricted by law or by good international power engineering practice. If any portion of the Unit(s) to be supplied under this Contract contains such substances or requires special precautions to be taken to ensure safe handling and use, the Supplier shall notify the Purchaser in writing prior to delivery of the affected Unit(s).
+
+### AAGT&C dated 14.02.07 Final Version.doc
+
+## Page 5 of 28
+
+# ALSTOM Plant Operations Business
+
+safety in handling, transport, storage or use, the Supplier shall prior to their delivery furnish to the Purchaser written details of the nature of those substances and the precautions to be taken and shall ensure that before dispatch appropriate instructions and warnings are clearly and prominently marked on the Unit(s) or securely attached to them and on any containers into which they are packed.
+
+In particular the Supplier shall provide to the Purchaser in writing all such data, instructions and warnings as are required to comply with Applicable Legislation relating to the environment, and to health and safety.
+
+The Supplier shall indemnify the Purchaser against any and all liabilities, claims and expenses which may arise as a result of the Supplier's failure to act in accordance with the provisions of this Clause 3.3.
+
+----------------------------------------
+
+Chunk 10/22
+----------------------------------------
+Section: 4
+
+Contenu:
+## 4. Free-Issue Materials and Tooling
+
+Where the Purchaser for the purpose of the Contract issues materials (including equipment, components, tooling, patterns, dies, molds, jigs and fixtures and the like) free of charge to the Supplier, such materials shall be and remain the property of the Purchaser. The Supplier shall maintain all such materials in good order and condition subject, in the case of tooling, patterns and the like, to fair wear and tear. The Supplier shall use such materials solely in connection with the Contract. Any surplus materials shall be disposed of at the Purchaser's discretion. The material, while in the Supplier's custody or control, shall be held at the Supplier's risk and damage to or waste of such materials arising from bad workmanship or negligence of the Supplier shall be made good at the Supplier's expense. Without prejudice to any other rights of the Purchaser, the Supplier shall deliver up such materials, whether further processed by the Supplier or not, to the Purchaser on demand.
+
+----------------------------------------
+
+Chunk 11/22
+----------------------------------------
+Section: 5
+
+Contenu:
+## 5. Execution of the Work
+
+----------------------------------------
+
+Chunk 12/22
+----------------------------------------
+Section: 5.1
+
+Contenu:
+### 5.1 Compliance
+
+----------------------------------------
+
+Chunk 13/22
+----------------------------------------
+Section: 5.1.1
+
+Contenu:
+5.1.1 The Supplier warrants that the Unit(s) delivered and Services rendered hereunder are in strict compliance with Applicable Legislation to which the Unit(s) and Services are subject including those dealing with environmental, health and safety matters, provided that for those authorisations, permits and licenses which are required by the Client Contract, the Purchaser has informed the Supplier accordingly. The Supplier shall indemnify the Purchaser against all loss, liability and fines incurred as a result of the Supplier's failure to so comply.
+
+----------------------------------------
+
+Chunk 14/22
+----------------------------------------
+Section: 5.1.2
+
+Contenu:
+5.1.2 The Work shall be performed in accordance with good international power engineering practice, shall conform to the applicable codes and standards and to all other requirements of the Contract and shall be fit for purpose specified in the Contract. The Unit(s) shall be delivered complete with all instructions, warnings and other data necessary for safe and proper use, installation, commissioning, operation and maintenance of the Unit(s).
+
+[No further text is visible on this page.]
+
+----------------------------------------
+
+Chunk 15/22
+----------------------------------------
+Section: 5.1.3
+
+Contenu:
+5.1.3 Supplier further agrees to provide at Purchaser's request certificates or other documentation relating to any applicable legal requirements in form and substance legally required.
+
+----------------------------------------
+
+Chunk 16/22
+----------------------------------------
+Section: 5.2
+
+Contenu:
+# 5.2 Inspection and Testing
+
+----------------------------------------
+
+Chunk 17/22
+----------------------------------------
+Section: 5.2.1
+
+Contenu:
+5.2.1 The Purchaser, the Client and any other properly interested third party (other than competitors of the Supplier) authorized by the Purchaser shall be entitled to inspect and test the Unit(s), at any reasonable time (including within a reasonable time after delivery of the Unit(s)) at the ultimate destination of the Unit(s)) within the business hours of the Supplier, to assess the quality of the Unit(s) and its (their) conformance with the Technical Specification and with other requirements of the Contract.
+
+----------------------------------------
+
+Chunk 18/22
+----------------------------------------
+Section: 5.2.2
+
+Contenu:
+5.2.2 The Supplier shall give to the Purchaser at least ten (10) working days' advance notice in writing of tests, and the Purchaser, the Client and any other properly interested third party (other than competitors of the Supplier) authorized by the Purchaser shall be entitled to attend the tests. The Supplier shall provide the Purchaser with such test certificates and other test documentation as specified in the Contract or as the Purchaser may reasonably require.
+
+----------------------------------------
+
+Chunk 19/22
+----------------------------------------
+Section: 5.2.3
+
+Contenu:
+5.2.3 The Unit(s) shall not be dispatched to the Purchaser without an inspection and release by the Purchaser, unless the Purchaser waives such inspection and release.
+
+If the Contract includes the carrying out of tests on the Unit(s) after its (their) receipt by the Purchaser, then the Unit(s) shall not be deemed completed until such tests have been passed as required by the Contract.
+
+----------------------------------------
+
+Chunk 20/22
+----------------------------------------
+Section: 5.2.4
+
+Contenu:
+5.2.4 Inspection and testing carried out in accordance with this Clause shall not relieve the Supplier of any liability nor imply the Purchaser's acceptance of the Work.
+
+----------------------------------------
+
+Chunk 21/22
+----------------------------------------
+Section: 5.2.5
+
+Contenu:
+5.2.5 The Supplier shall keep the test records available to the Purchaser and the Client as per the applicable legal requirements (but in no case for not less than two (2) years after expiry of the warranty period as defined in Clause 6.3).
+
+----------------------------------------
+
+Chunk 22/22
+----------------------------------------
+Section: 5.3
+
+Contenu:
+5.3 Drawings and Other Submittals
+
+The Supplier shall furnish all required documentation in accordance with the Contract and in the English language (unless another language is specified in the Contract).
+
+Purchaser's approval, if required according to the Contract, of Supplier's drawings, calculations and other documents shall be given within two (2) weeks after Purchaser's receipt. If Client's approval is required, Purchaser's approval shall be given within four (4) weeks after receipt of said documents. Purchaser's approval shall not relieve Supplier of any responsibility for the Work or for any requirements of the Contract.
+
+AAGT&C dated 14.02.07 Final Version.doc Page 7 of 28
+
+----------------------------------------
+
+📊 Nombre total de chunks: 22
+
+🔍 Regroupement hiérarchique des chunks...
+
+Document Metadata:
+- Title: page_007.pdf
+- Author: Unknown
+- Pages: Unknown

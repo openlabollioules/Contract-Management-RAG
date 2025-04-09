@@ -1,0 +1,746 @@
+Loaded layout model s3://layout/2025_02_18 on device mps with dtype torch.float16
+Loaded texify model s3://texify/2025_02_18 on device mps with dtype torch.float16
+Loaded recognition model s3://text_recognition/2025_02_18 on device mps with dtype torch.float16
+Loaded table recognition model s3://table_recognition/2025_02_18 on device mps with dtype torch.float16
+Loaded detection model s3://text_detection/2025_02_28 on device mps with dtype torch.float16
+Loaded detection model s3://inline_math_detection/2025_02_24 on device mps with dtype torch.float16
+Texte:  ## **CONTRACT No. 212-Блт-002/2/07/2012**
+
+#### Moscow
+
+February 2nd, 2012
+
+Open Joint Stock Company "Directorate of Unified Order of Equipment for NPP" ("DUO" OJSC) hereinafter referred to as the "Customer", represented by the General Director Viktor Ivanovich Kolesnikov acting on the basis of the Company Charter in its own right, yet on behalf and at the expense of the Open Joint Stock Company NIZHNY NOVGOROD ENGINEERING COMPANY "ATOMENERGOPROEKT" ("NIAEP" OJSC) on the basis of Agency Agreement No. 07/57-07/15 from 06.12.2007 (hereinafter referred to as the "Agency Agreement"), on the one side, and
+
+Limited Liability Company "NAVAL GROUP Atomenergomash" ("AAEM" OJSC), hereinafter referred to as the "Supplier", represented by the General Director Alexander Mikhailovich Tsvetkov, acting on the basis of the Charter, on the other hand, hereinafter collectively referred to as the "Parties", have concluded the present Contract (hereinafter referred to as the "Contract") on the following:
+
+## **1. Terminology and definitions**
+
+Terms in the Contract shall have the meanings as defined below:
+
+- 1.1 **"Acceptance Certificate for Start-up Facilities/Stage"** is a document prepared by the Prime Contractor and signed by the Construction Manager after rectification of Nonconformances and/or fulfilment of orders of the Construction Manager, stating that the Prime Contractor carried out all the Operations related to the construction of the Start-up Facilities/Stage.
+- 1.2 **"Incoming Inspection"** is an inspection of qualitative and quantitative characteristics of the equipment to be supplied to the facilities that has been carried out in accordance with the parameters (requirements) determined in technical rules and regulations in respect of the equipment and materials that are subject to inspection and that have been received by the Prime Contractor together with in-line documentation executed in due form.
+- 1.3 **"Warranty Period"** is the period of time throughout which the Supplier shall remedy, with or without subcontracting and at its own expense, the Defects and/or Non-conformances of the Equipment supplied by the Supplier, which are identified by the RF Governmental Regulatory and Supervisory Bodies, by the Construction Manager or by the Prime Contractor and which result from default or failure to perform under the obligations of the Contract by the Supplier.
+- 1.4 **"Prime Contractor"** is Open Joint Stock Company "NIZHNY NOVGOROD ENGINEERING COMPANY "ATOMENERGOPROEKT" ("NIAEP" OJSC).
+- 1.5 **"General Designer"** is Open Joint Stock Company "St. Petersburg Research and Design Institute "ATOMENERGOPROEKT" ("SPbAEP" OJSC).
+- 1.6 **"RF Governmental Regulatory and Supervisory Bodies"** are bodies exercising within the limits of their authorities governmental control over observance by the economic entities of the Russian Federation of legislation, construction rules and regulations, rules and regulations in the area of usage of nuclear energy.
+- 1.7 **"Consignee"** is an organization duly authorized by the Prime Contractor to accept the Equipment in shipping packages delivered by the Supplier to the Customer under the
+
+Contract to the delivery point agreed between the Parties. For the purpose of this Contract: Baltic Branch Office of the Open Joint Stock Company "NIZHNY NOVGOROD ENGINEERING COMPANY "ATOMENERGOPROEKT" – Directorate of the Prime Contractor at the Baltic Nuclear Power Plant ("NIAEP" OJSC, Baltic Branch). Branch Office location: 7 Krasnoarmeiskaya Ulitsa, Sovetsk 238752, Kaliningradskaya Oblast.
+
+- 1.8 **"Shipment Date"** is the date on which the Equipment is to be handed over by the Supplier to the carrier (shipping company) for transportation to the Consignee, as confirmed by carrier's mark on CMR note, railroad waybill or bill of lading.
+- 1.9 **"Defect"** is a defect in material or workmanship detected in the Equipment that has a negative impact on the specified intended use of the equipment.
+- 1.10 **"Documentation"** is the shipping and technical documentation for the Equipment which shall be handed over by the Supplier to the Customer together with the Equipment, in the scope set forth in Appendix 5 to the Contract.
+- 1.11 **"Incoming Inspection Committee"** is a committee comprising of representatives of the Prime Contractor and the Construction Manager established to carry out the Incoming Inspection of the Equipment. The activities of the Committee shall be based on and performed in line with the regulatory technical documents and the documents of the Construction Manager.
+- 1.12 **"Construction Manager"** is ""Rosenergoatom" Concern" OJSC.
+- 1.13 **"Quality"** is the degree of compliance of the Equipment, components, products, works, services and processes with the established requirements of the project, design and/or regulatory documents.
+- 1.14 **"Milestone"** is a particular technical state (degree of completion) of the Equipment, halffinished products, materials or components thereof, achieved in the course of the manufacturing process.
+- 1.15 **"Quality Control"** is the control of quantitative and/or qualitative characteristics attributable to the Equipment.
+- 1.16 **"Checkpoints"** are operations specified in the Quality Plan, pertaining to the process of manufacturing and testing the equipment, performing inspections, in the course of which Conformity Assessment takes place.
+- 1.17 **"License"** is a special permit to conduct a specific type of activity subject to obligatory observance of license requirements and conditions, issued by a licensing body to a legal entity or individual entrepreneur.
+- 1.18 **"Place of Delivery"** is the Baltic NPP construction site. For the purpose of the Contract: place of delivery (address) is 1a, Tsentralnaya Ulitsa, Posyolok Malomozhaiskoye, Nemanskiy Rayon, Kaliningradskaya Oblast.
+- 1.19 **"Non-conformances"** are deviations in works and services from the requirements of regulatory and technical documentation of the project, of working design documents including requirements to the quality of operations, materials, equipment, components, as well as faults, omissions, violations of requirements of technical documentation, standards and regulations.
+- 1.20 **"Quality Assurance"** is activity which is planned and carried out on a regular basis with the aim of achieving control over the Equipment supplied by the Supplier ensuring it meets the requirements applied thereto and being suitable for NPP construction and operation.
+- 1.21 **"Equipment"** is the equipment intended for power-generating Unit 1 and Unit 2 of Baltic NPP as per item list and breakdown, according to Appendix 1 (Equipment Specification) to the Contract.
+- 1.22 **"Conformity Assessment"** is direct or indirect evaluation of observance of the requirements specified for the equipment, components, materials and semi-finished products. Conformity Assessment shall be carried out by way of inspection (supervision), testing, acceptance, and acknowledgement of conformity.
+- 1.23 **"Quality Plan"** is a document reflecting the activities on Conformity Assessment of the products.
+- 1.24 **"NPP Site"** is a plot (-s) of land where works shall be executed and services shall be provided related to construction of power-generating Units 1 and 2 of Baltic NPP.
+- 1.25 **"Representative of the Construction Manager"** is a person authorized by the Construction Manager to act under the Contract on behalf thereof.
+- 1.26 **"Representative of the Customer"** is a person authorized by the Customer to act under the Contract on behalf thereof.
+- 1.27 **"Representative of Prime Contractor"** is a person authorized by the Prime Contractor to act under the Contract on behalf thereof.
+- 1.28 **"Acceptance Inspection"** is a complex of activities pertaining to finished equipment, components, materials, and semi-finished products supplied to the NPP, resulting in a decision on suitability thereof for supply and/or use.
+- 1.29 **"Design Works"** is development of project documentation, participation in the necessary project documentation approval and expert evaluation, designer supervision, review of technical solutions, development of specifications for equipment and materials, structures and components and approval of documentation.
+- 1.30 **"Start-up Complex/Stage"** is a set of main and auxiliary Facilities (or parts thereof) which, after being commissioned, ensure production output stipulated by the design documents in line with governing legislative regulations related to working conditions for personnel, environmental protection, normal sanitary and epidemiological operating conditions.
+- 1.31 **"Detailed Design (Workshop) Documentation"** is a set of design documents developed to ensure manufacturing, control, acceptance and supply of the Equipment.
+- 1.32 **"Reactor Plant (RU) Engineering Design Developer"** is OKB "Gidropress" OJSC (Podolsk, Moscow Region, Russia).
+- 1.33 **"Technical Documentation"** is the Detailed Design (Workshop) documentation including requirements specification and technical conditions, process documentation and operational documentation for the Equipment.
+- 1.34 **"Engineering Design (Technical project)"** is engineering design documentation for the Equipment of Units 1 and 2 of Baltic NPP complying with the effective regulatory documents and approved according to the established procedure as per GOST 2.103-68.
+- 1.35 **"Technological process Documentation"** is a set of process documentation defining the Equipment manufacturing processes.
+- 1.36 **"Technical Supervision"** is control exercised by the Construction Manager and representatives of the Russian Federation state regulatory and supervisory bodies over construction and installation works at the specified facility and/or start-up complex of the power-generating unit and compliance thereof with design solutions.
+- 1.37 **"Subcontractor"** is a company providing the Supplier with works and services, products, components, materials within the scope of its contract with the Customer.
+- 1.38 **"Authorized Organization"** is an organization entitled by the Construction Manager to carry out works on assessment of conformity by way of acceptance and testing of the Equipment, components, materials and semi-finished products.
+- 1.39 **"Installation Supervision"** is the technical operating control and designer supervision performed by the Supplier at all stages of installation works, control over observance of the Supplier's requirements as well as settlement of all technical issues arising in the course of the Equipment erection followed by execution of respective Technical Documentation.
+- 1.40 **"Commissioning Supervision"** is the technical operating control and designer supervision performed by the Supplier at all stages of commissioning, control over observance of the Supplier's requirements and settlement of all technical issues arising in the course of preparation and the Equipment start-up itself followed by execution of respective Technical Documentation.
+- 1.41 **"Freight Forwarder"** is an organization that is responsible, under a contract with the Supplier, for arranging transportation and insurance of large-sized and heavy-weight consignments from the sea port in the Kaliningrad Region to the place of delivery, as specified in 1.18 hereof.
+- 1.42 **"Operational Documentation"** is documentation intended to ensure the operation of the Equipment and allowing the study of its design as well as its operation and maintenance rules and containing the information on utilization thereof (general drawings, assembly drawings of the Equipment and drawings of its main assembly units specifying dimensions, installation and maintenance manuals, etc.).
+
+The terms and definitions above used in the singular shall include the plural, and vice versa, and the list thereof may be extended in the course of performance under the Contract.
+
+# **2. Subject matter of the Contract**
+
+- 2.1 Whereas, in line with terms and conditions of the procurement documents (notice No111207/1065/541), the Supplier has provided the Customer with the confirmation of access to the insurance coverage (guarantee) by a state agency for export insurance (Russian or European) to secure Construction Manager's bank financing for the Equipment purchasing, the Customer hereunder assigns, and the Supplier undertakes to manufacture and supply the Equipment for Baltic NPP Units 1 and 2 as per the item list and within the time limits set forth in the Equipment Specification attached as Appendix 1 hereto, and the Customer undertakes to ensure that the Prime Contractor accepts the Equipment and makes payment for the accepted Equipment.
+- 2.2. The Supplier shall render Installation Supervision services in respect of the Equipment for Baltic NPP Units 1 & 2, and these services shall be covered by the total Contract Price.
+
+The scope of the Equipment Installation Supervision for Baltic NPP Units 1 and 2 covered by the total Equipment price (as per 7.2 hereof) shall be equal to:
+
+- − For items No 1 (Steam Turbine Package) and 2 (Generator Package), as per the Specification (Appendix 1) – 37 employees/month,
+- − For other items of the Specification (Appendix 1) the Installation Supervision, the scope of works (number of employees/month) shall be determined by the Parties through a Supplementary Agreement to be concluded not later than September 30th 2012.
+
+The commencement dates for Installation Supervision services in respect of the Equipment for Baltic NPP units 1 & 2 shall be: ten (10) calendar days from the date of notice by the Prime Contractor to the Supplier on the readiness of the Equipment for Installation Supervision.
+
+The closing dates for Installation Supervision services shall be:
+
+- − for the Equipment of power-generating Unit 1: prior to the Equipment handover to start-up and commissioning (estimated 22nd August 2017);
+- − for the Equipment of power-generating Unit 2: prior to the Equipment handover to start-up and commissioning (estimated 22nd August 2019).
+
+Scope, revised dates, number of employees required for Installation Supervision of the Equipment and other conditions for the execution of Installation Supervision, if necessary, will be determined by the Parties through a Supplementary Agreement to be concluded not later than September 30th 2012.
+
+2.3. The Supplier undertakes to carry out, if necessary, the Equipment commissioning supervision; the scope, cost and time limits for the commissioning supervision will be agreed by the Parties in a separate supplementary agreement hereto.
+
+## **3. Dates of Delivery of the Equipment**
+
+- 3.1 The delivery of the Equipment shall be effected within the period of time specified in Appendix 1 to the Contract.
+- 3.2 In accordance with the time limits specified in Appendix 1 hereto, the Equipment shall be manufactured, tested, completed, quality released, preserved, packed, marked, insured, delivered to the place of delivery and unloaded as per 4.29 hereof.
+- 3.3 Descriptions of the Milestones pertaining to production and delivery of the Equipment, their cost and due dates, as well as supporting documents to be submitted are specified in Appendix 12 hereto. Appendix 12 shall be agreed by the Parties additionally, within 120 (one hundred and twenty) calendar days from the date of signing of the Contract, by way of the Parties signing a supplementary agreement hereto.
+- 3.4 The Supplier may effect early delivery of the Equipment upon written agreement with the Customer. The Equipment shall be accepted for safe custody, and all expenses related to storage of the Equipment until the delivery term specified in the Contract shall be borne by the Supplier.
+
+## **4. Obligations of the Supplier**
+
+In accordance with the terms and conditions of the Contract, the Supplier hereby undertakes to:
+
+- 4.1 Within 60 (sixty) calendar days following the Contract effective date, submit to the Customer a scheduled calculation of the Equipment price with the cost breakdown signed by the Supplier's enterprise (organization) manager, as per the template set forth in Appendix 3 to the Contract.
+- 4.2 Within 60 (sixty) calendar days following the Contract effective date, develop and submit for approval of the Customer the Equipment manufacturing schedule under the Contract (the "Schedule") attached as Appendix 13 to the Contract, in accordance with the template set forth in Appendix 11 to the Contract, using MS Project software and the template file of the Customer. The template file shall be in line with the one specified in Appendix 11 to the Contract and a soft copy of it shall be handed over by the Customer to the Supplier within 5 (five) business days following the Contract effective date. The schedule shall be developed on the basis of the Equipment Specification attached as Appendix 1 to the Contract. Equipment
+
+manufacturing stages (the "Stages") specified in the Schedule shall be structured according to the following basic provisions: entering into contract, obtaining the engineering design data, development and approval of Detailed Design (Workshop) documentation, development of quality plans, ordering materials and components and delivery thereof, entering into subcontracts, preparation of manufacturing of the Equipment, manufacturing, testing, packing and shipment of the Equipment. Witness points of the Quality Plan and the Equipment manufacturing stages as per Appendix 12 to the Contract shall be specified in the Schedule.
+
+Each Stage of the Schedule shall comprise the following data:
+
+- target dates of commencement and completion of the Stage,
+- links between preceding and subsequent Stages.
+
+Each Stage shall not exceed one month. Should the duration of the Stage exceed 30 (thirty) calendar days, the Stage shall be described in more detail.
+
+- 4.3. The technical documentation for the Equipment shall be fully developed by the Supplier and approved as follows:
+- 4.3.1. For the Equipment to be supplied to Baltic NPP Units 1 and 2 as per items 17 to 69 of the Equipment Specification:
+- 4.3.1.1 Not later than 60 (sixty) days following the provision of the Initial Technical Requirements (the "ITR") provided by the Customer, develop the Terms of Reference (the "ToR") for the manufacturing and supply of the Equipment and submit it for approval to the Customer, General Designer, Prime Contractor and Construction Manager (validation) including "Baltic NPP Construction Directorate", branch of ""Rosenergoatom" Concern" OJSC.
+- 4.3.1.2 In the event that it is set forth in Terms of Reference (ToR), and in the absence of approved Technical Conditions ("TC"), develop the Technical Conditions for Equipment supply and submit them for approval of the Customer, General Designer, Prime Contractor and Construction Manager including "Baltic NPP Construction Directorate", branch of ""Rosenergoatom" Concern" OJSC, within 60 (sixty) days upon approval of ToR.
+- 4.3.1.3 Basing on the approved and validated ToR and/or TC, develop Detailed Design (Workshop) Documentation, Process, Operating and Repair Documentation for the Equipment. Obtain approval of the Working Design and Repair Documentation with organizations which are to approve the Working Design Documentation as determined by regulatory documents, TOR or TC for the Equipment not later than 60 (sixty) days following the date of approval of TOR/TC.
+- 4.3.1.4. Develop design and engineering documents and submit to the Customer, the General Designer and the Prime Contractor initial (design basis) data for detail design of the NPP as per scope, structure and time limits set forth in Appendix 5 hereto. Appendix 5 (List of documentation with conditions and dates of submission).
+- 4.3.1.5. Not later than 90 (ninety) calendar days prior to the delivery of the Equipment, obtain approval of the program and methods for the testing of the Equipment (including the tests to be performed at the site of Baltic NPP), from the Customer, the Prime Contractor, the Construction Manager, and for the equipment of safety classes 1, 2 and 3 - with the Authorized Organization and, if necessary, the RF Governmental Regulatory and Supervisory Bodies.
+- 4.3.2 For the Equipment to be supplied to Baltic NPP Units 1 and 2 as per items 1 to 16 of the Equipment Specification:
+- 4.3.2.1 Not later than two hundred (200) calendar days following the effective date of the Contract, and subject to provision of the mandatory initial data by the Customer not later than 60 days upon signing hereof (as per Appendix 17 hereof), develop the Terms of Reference (the "ToR") for the manufacture and supply of the Equipment and obtain approval by the Customer,
+
+General Designer, Prime Contractor and Construction Manager (validation) including "Baltic NPP Construction Directorate", branch of ""Rosenergoatom" Concern" OJSC.
+
+- 4.3.2.2 If provided for in the TOR and in the absence of an approved TC, develop Technical Conditions (the "TC") for Equipment supply, and request approval to the Customer, General Designer, Prime Contractor and Construction Manager including "Baltic NPP Construction Directorate", branch of ""Rosenergoatom" Concern" OJSC, within 60 (sixty) days following the approval of the TOR.
+- 4.3.2.3 Based on the approved and validated TOR and/or TC, develop Detailed Design (Workshop) Documentation, Process, Operating and Repair Documentation for the Equipment.
+
+Obtain approval for Detailed Design (Workshop) documentation and Process Documentation as determined by TC/TOR and regulatory technical documentation.
+
+Obtain approval for Operating and Repair Documentation with organizations, as determined by regulatory documents, TOR and/or TC for the Equipment not later than 90 (ninety) days prior the date of the shipment of the Equipment.
+
+- 4.3.2.4 Develop design and engineering documents, including 3D-model of the turbine-generator set and submit to the Customer, the General Designer and the Prime Contractor initial (design basis) data for detail design of the NPP as per scope, structure and time limits set forth in Appendix 17 hereto, which shall be mutually agreed by the Parties additionally within 90 (ninety) calendar days after the Contract signature date and documented by a supplementary agreement hereto.
+- 4.3.2.5 Not later than 90 (ninety) calendar days prior to the delivery of the Equipment obtain approval of the testing program and methods for the Equipment (including the tests to be performed at the site of Baltic NPP), from the Customer, the General Designer the Prime Contractor, the Construction Manager, and for the equipment of safety classes 1, 2 and 3 - with the Authorized Organization and, if necessary, the RF Governmental Regulatory and Supervisory Bodies.
+- 4.4 Develop, using its own resources or with the assistance of subcontractors, repair documentation for the Equipment in line with GOST 2.602-95 "Interstate Standard. Unified system for Design Documentation (ESKD). Repair Documents" as per the scope specified in the approved TOR/TС, ensure approval thereof by the Construction Manager, and hand over the repair documentation to the Prime Contractor and Construction Manager together with the Equipment.
+- 4.5 Manufacture, fully equip, carry out preservation, packing, marking and deliver the Equipment within the time limits specified in Clause 3 of the Contract, as well as ensure that the Conformity Assessment of the Equipment is carried out including acceptance tests of the Equipment pursuant to approved Detailed Design (Workshop) documentation for the Equipment and Equipment Quality Plans, ensure transportation of the Equipment to the Place of Delivery in accordance with clauses 7.1 and 8.8.
+- 4.6 In the course of manufacturing, acceptance and supply of Equipment, fulfil all requirements of GOST R 15.201-2000, "Products of industrial and technical designation. Procedure for product development and manufacturing process launch", GOST 15.309-98 "Tests and acceptance of manufactured products".
+
+Carry out complex testing works of the Equipment. If needed, carry out testing of prototypes according to GOST R 15.201-2000.
+
+Provide the Prime Contractor with reporting documents based on results of the Equipment tests (certificates, reports).
+
+4.7 Upon the Customer's request insure the Equipment until it is delivered to the NPP Site (the Consignee's warehouse) including the transportation period as per provisions of clauses 7.1 and 8.8. The insurance agreement shall be entered into with a company approved by the Customer. Upon entering into the insurance agreement the Supplier shall provide a copy of an insurance policy to the Customer.
+
+- 4.8 To supply (if needed) in a set with the Equipment spare parts, materials, high-wearing parts and consumables for the period of installation, commissioning and guarantee maintenance period of the Equipment, necessary special instruments, devices, appliances, fixings (including Equipment foundation/ fabricated metals' mounting hardware) as well as other products required for erection, testing, operation, maintenance, preoperational and operational inspections in the scope as per the technical design and Technical Documentation for the Equipment (according to TOR/TС) as per Appendix 18.
+- 4.9 In the course of development, manufacturing, testing, handing-over and acceptance, transportation and transfer of the Equipment to the Customer under the Contract, apply all necessary procedures and obtain all required licenses, certificates, permits and approvals set forth in regulatory documents, rules and regulations including those applicable to use of imported equipment and materials as well as the equipment included into "The list of equipment, materials and technologies for nuclear plants, radiation sources and storage facilities subject to mandatory certification with the System of certification of the equipment, products and technologies for nuclear installations, radiation sources and storage facilities" (OIT-0013- 2000) and supplements thereto.
+
+The Supplier shall act in line with the requirements of RF Government Order No. 982 dd. 01/12/2009 "On the approval of the unified list of products subject to mandatory certification and the unified list of products which conformity compliance is confirmed by way of accepting a conformity statement" and provide the Customer/Prime Contractor certified copies of certificates, conformity statements for the equipment specified in the said RF Government Order.
+
+In the event of supplying the imported Equipment or the Customer using imported materials or components for manufacturing the Equipment the Supplier shall execute a Resolution to use imported equipment as per RD-03-36-2002 (the "Resolution") and obtain its approval from with all involved bodies.
+
+In the event that the Supplier does not finalize obtaining approval of the Resolution in 1 (one) month before the scheduled shipment date of the first piece of Equipment under the Contract, the Customer may hold any of next payments payable to the Supplier under the Contract, until final approval of the Resolution.
+
+Moreover, the shipment of the Equipment without the issued Resolution is prohibited, and in the event of the shipment delay due to no duly issued approval available the sanctions may be imposed on the Supplier according to Clause 10.2. of the Contract.
+
+- 4.10 For the Customer to determine the Authorized Organization within 10 (ten) days upon entering into the Contract, forward to the Customer the appropriate request specifying, *inter alia*, the following information:
+	- name of the manufacturing factory;
+	- names of the manufacturers of components and/or materials;
+
+- name of the Equipment, components and/or materials subject to conformity assessment specifying the amount, measurement units, safety classes, group, and manufacturing time.
+
+4.11 Submit to the Customer and the Prime Contractor, and submit to the Prime Contractor in a set with the Equipment, shipping and Technical Documentation for the Equipment according to Appendices 5 and 8 to the Contract. The list and number of counterparts of the transferred Documentation in Appendix 5 to the Contract may be revised upon the Customer's and/or the Prime Contractor's request.
+
+- 4.12 Submit to the Customer the Technical Documentation required by the Prime Contractor as initial data for elaboration of programs of the Equipment installation and starting-up and commissioning not later than 90 (ninety) calendar days prior to the scheduled Equipment shipment date as per each item of the Equipment under Appendix 1 to the Contract (Equipment Specification), including, but not limited to, the following documents: assembly drawings, installation drawings (if any), technical conditions, operation manuals, the Quality Plan, quality control tables for main metal and welded joints, draft of Technical passport. The Customer will inform the Supplier on the updated list of necessary documents in 120 (one hundred and twenty) calendar days prior to scheduled shipment date for each item of the Equipment as per Appendix 1 to the Contract (Equipment Specification).
+- 4.13 During the Warranty Period set forth in the Contract, provide warranty repair or, at Supplier's discretion, replacement of the delivered Equipment at its own expense in case of detected Defects and/or Non-conformances of the Equipment which occurred due to the fault of the Supplier.
+
+The cost of post-warranty services and repair of the delivered Equipment shall not be included in the price of the Equipment under the Contract. The Supplier shall provide the said services under a separate agreement.
+
+- 4.14 Fulfil requirements in respect of the Equipment Quality Assurance in accordance with Appendix 6 to the Contract. At the same time, the Supplier shall ensure that contracts with Subsuppliers obligatorily comprise requirements in respect of the Quality Assurance in the scope corresponding to the safety category of the Equipment, its parts and services developed on the basis of requirements for the Quality Assurance and safety included into the Contract.
+- 4.15 Be solely responsible to the Customer and the Prime Contractor for the quality of the Equipment.
+- 4.16 Manufacture and deliver, in a set with the Equipment, a set of lifting appliances for loading, handling and unloading the Equipment as well as special appliances for fastening, transportation and storage (bearings, keel-blocks etc.) of the Equipment, as per Appendix 18.
+- 4.17 Taking into account requirements of the Appendix 6 to the Contract, within 60 (sixty) calendar days following the date of receipt of POKAS (O) from the Customer, develop its own quality assurance program (-s) (POKAS (R), POKAS (I) etc.) for execution of works under the Contract, and forward it/them to the Customer for obtaining approval of the Prime Contractor.
+- 4.18 Develop the Quality Plans not later than 60 (sixty) calendar days following the effective date of the Contract and submit them for approval according to the procedure established in Appendix 6 to the Contract. The quality plans of the Sub-suppliers shall be submitted as soon as subcontracts are entered into with the said Sub-suppliers.
+- 4.19 Not later than 20 (twenty) calendar days prior to the target date for the Milestones to be achieved under Appendix 12 to the Contract, notify the Customer in writing thereof as well as of inspections to be carried out involving arrival and participation of representatives of the Customer (if necessary), Prime Contractor, Construction Manager and/or Authorized Organization and meet the said representatives according to the conditions set forth in Appendix 7 to the Contract.
+- 4.20 No later than on the 25th (twenty fifth) day of each reporting month, forward to the Customer a report according to the template specified in Appendix 10 to the Contract, to ensure control over manufacturing of the Equipment.
+
+Part 1 of the report template "On keeping to the Schedule approved in accordance with Clause 4.2. of the Contract":
+
+The Supplier shall indicate the actual date of the commencement and completion of each particular work and the completed percentage thereof as of the reporting date in a schedule worked out in MS Project according to Clause 4.2. of the Contract and shall forward it to the Customer by facsimile transmission with a signature of the responsible Supplier and by e-mail to the following address: (otchet@atomenergoprom.ru) in \*.mpp file format. The template file of the report shall correspond to the template specified in Appendix 10 (Part 1) to the Contract and a soft copy of it shall be handed over to the Supplier by the Customer within 5 business days following the day of the Schedule approval.
+
+Part 2 of the report template "On procurement of primary materials and components, and entering into Subcontracts" shall be filled pursuant to the bill of materials and components for the product.
+
+The Supplier shall designate by order a person responsible to submit, in due course and in full, the Schedule and monthly reports, not later than in 30 (thirty) calendar days after the effective date of the Contract.
+
+Should the Customer make a decision to use specialized software to control the Equipment manufacturing process, the Customer shall forward to the Supplier a respective notification containing necessary information on the specialized software to be implemented. The Supplier, upon receipt of the notification, shall examine the possibility of implementing such specialized software within 30 (thirty) calendar days. If the Supplier makes a decision to use the said specialized software the Parties shall agree upon the title of the specialized software to be used, commencement date of use thereof and increase in the Contract price by the amount required for implementation thereof upon entering into a respective supplementary agreement. If necessary, the Parties shall alter the reporting template with regard to time limits for manufacturing the Equipment.
+
+- 4.21 Within 3 (three) business days following the day of receipt of the Customer's respective request, submit to the Customer certified copies of available licenses, certificates of conformity, permits and other documents of the Supplier and its Sub-suppliers authorizing the Supplier and the Sub-suppliers to design, manufacture and supply equipment for nuclear power plants including the Equipment delivered under the Contract.
+- 4.22 Be liable for providing Sub-suppliers, which perform works and render services, effect deliveries of the Equipment, its parts and components important in terms of safety, with respective licenses, certificates, permits for provision of works and services on designing and manufacturing the said Equipment, parts and components thereof, which shall be valid during the overall period of fulfilling obligations in the scope of the Contract.
+- 4.23 Notify the Customer in writing of the target Shipment Date at least 20 (twenty) calendar days prior to shipment of the Equipment.
+- 4.24 Within 60 (sixty) calendar days following the delivery date of the last available unit of the Equipment under the Contract formally submit to the Customer the final calculation of the Equipment price based on actual costs with the breakdown of cost items according to the template specified in Appendix 3 to the Contract and signed by the Managing Director of Supplier's enterprise.
+- 4.25 Perform encoding of the Technical Documentation in accordance with STO SMK-PKF-014.3.1-06, part 4.1 ("Technical Documentation Encoding"). The Supplier shall submit for approval of the Customer, General Designer and Prime Contractor new KKS codes to be applied and their denominations. The Supplier shall also submit for approval of the Customer
+
+and Prime Contractor the digital part of codes to be used by the Supplier and the contracted Sub-suppliers.
+
+- 4.26 Develop, if necessary, a project for transportation of oversized and heavy-weight shipping packages of the Equipment to the Place of Delivery (address) of the Consignee, in accordance with Clauses 7.1 and 8.8.
+- 4.27 Prior to shipment of the Equipment get approval of the Customer and the Prime Contractor for the procedure for insurance and transportation of the Equipment, including the list of oversized and heavy-weight Equipment packages, as well as value of initial expenses related to transportation and insurance of the Equipment. The Supplier will attach to the request for approval of initial transportation and insurance expenses of the Equipment a detailed description of a total price structure and copies of at least three formal technical and commercial proposals of subcontractors for each cost item in the price structure, or an executive summary in a set with a detailed work price calculation for cost items developed directly by the Supplier or in the event that it is impossible to obtain the required number of technical and commercial proposals, as well as a technical and commercial proposal for transport and insurance of oversized and heavy-weight Equipment shipping packages from a sea port of Kaliningrad region to the Place of Delivery. The Parties agreed that the duration of transportation of the Equipment from sea port of Kaliningrad region to NPP site shall not exceed 1 (one) month.
+- 4.28 In accordance with the agreed in Sub-clause 4.27 procedure for transportation and insurance of the Equipment, ensure transportation of the Equipment from the Supplier's company to the address of the Consignee specified by the Customer at the Place of Delivery as well as insurance of the Equipment during transportation, in particular, ensure ordering and provision of the carriers' means of transport and, if necessary, reloading from carriers' transport facilities to another ones during transportation to the delivery point, storage of the Equipment at reloading points, fastening the Equipment at the carriers' means of transport, development of the shipping documents.
+- 4.29 Ensure unloading of the Equipment at the Place of Delivery using its own resources or with the assistance of subcontractors. Upon mutual agreement of the Parties, the Customer/Prime Contractor, using resources specified in Clause 7.2 hereof, shall render the Equipment unloading services at the NPP Site or enters into the agreement on the Equipment unloading services with third parties. 14 (fourteen) days prior to the delivery of the Equipment to the Place of Delivery set forth herein, the Supplier shall submit to the Customer/Prime Contractor a request describing the services related to the Equipment unloading with an itemized breakdown. The Customer/Prime Contractor, based on the request received, in 10 (ten) calendar days shall provide to the Supplier for approval a validated calculation of the cost of services and the Equipment unloading process. Following the signature of the calculation, the Customer/Prime Contractor shall render the Equipment unloading services. Upon completion of the services, a Service Completion Certificate and an invoice shall be issued. The Supplier shall make a payment by way of transmitting funds to the Customer's settlement account within 5 (five) days after signing the Service Completion Certificate. The cost of the Equipment unloading services may be deducted by the Customer from the amount of payment for the Equipment supplied under the Contract.
+- 4.30 Carry out the Equipment Installation Supervision to the full extent defined for this type of services. The Equipment Installation Supervision procedure is stipulated in Appendix 4 hereto.
+
+The Equipment Installation Supervision shall be deemed completed at the moment of signing the act of the Equipment transfer to start-up and commissioning.
+
+The scope, time limits and procedure for Installation Supervision of the Equipment shall be agreed by the Parties in a supplementary agreement hereto.
+
+- 4.31 While executing the Contract observe and fulfil requirements of NP-071-06, RD-EO 1.1.2.01.0714-2007 "Regulations on quality control over manufacturing of the equipment for NPPs", Methodical guidelines of the Construction Manager "Management of discrepancies in manufacturing the equipment for NPPs", as well as requirements of "Terms and conditions of delivery of the imported equipment, products, materials and components for nuclear plants, radiation sources and storage facilities of the Russian Federation" RD-03-36-2002 in case of use and supply of imported equipment and materials.
+- 4.32 Not later than 20 (twenty) calendar days after the effective date of the Contract, provide the Customer with original unconditional and irrevocable down payment bank guarantees and proper performance of the terms and conditions of this Contract for Equipment for power generating units 1 and 2.
+
+The amount of the down payment bank guarantees for the Equipment for Units 1 and 2 shall be equal to the amount of down payments inclusive of VAT payable by the Customer to the Supplier as per Subclause 8.1.1 of this Contract for the Equipment for Unit 1 and Equipment for Unit 2, respectively.
+
+The down payment bank guarantees for the Equipment for Unit 1 and Unit 2 shall be valid until the date of delivery of the last component of Equipment to Unit 1 and Unit 2, respectively, plus 30 (thirty) calendar days.
+
+The bank guarantees for proper performance of the Contract obligations related to the Equipment for Unit 1 and Unit 2 shall be valid until the date of delivery of the last component of Equipment for Unit 1 and Unit 2 under the Contract, plus 60 (sixty) calendar days.
+
+The amount of the performance guarantees shall be issued for:
+
+- the Equipment for Unit 1 amounting to five per cent (5% ) of the Price of Equipment for Unit 1 plus VAT, as specified in Subclause 7.2 of the Contract;
+
+- the Equipment for Unit 2 amounting to five per cent (5% ) of the Price of Equipment for Unit 2 plus VAT, as specified in Subclause 7.2 of the Contract.
+
+4.33 Not later than in 30 (thirty) calendar days from the date of supply of the last component of Equipment for Unit 1 and Unit 2 according to Appendix 1 hereto, provide the Customer with the original unconditional and irrevocable bank warranty guarantees as per Clause 9 of the Contract for Unit 1 and Unit 2 respectively.
+
+The bank guarantees ensuring proper performance of warranty obligations in respect of Equipment for Unit 1 and Unit 2 shall be valid until the date of full completion of warranty obligations by the Supplier as stipulated in Clause 9 hereof plus 90 (ninety) calendar days.
+
+The amount of the warranty guarantees shall be issued for:
+
+- the Equipment for Unit 1 amounting to five per cent (5% ) of the Price of Equipment for Unit 1 plus VAT, as specified in Subclause 7.2 of the Contract;
+
+- the Equipment for Unit 2 amounting to five per cent (5% ) of the Price of Equipment for Unit 2 plus VAT, as specified in Subclause 7.2 of the Contract.
+
+4.34 The guarantor bank, the form and conditions of bank guarantees for return of the advance payment, proper performance under the Contract and proper performance of guarantee obligations shall be in advance agreed in writing by the Supplier with the Customer and the Prime Contractor.
+
+The Customer shall be designated as the Beneficiary in bank guarantees for return of the advance payment, guarantees for proper performance under the Contract and for proper performance of guarantee obligations.
+
+The bank guarantees for return of the advance payment, proper performance under the Contract and proper performance of guarantee obligations shall contain a provision that the Customer's claim right against the guarantor bank under the bank guarantees in the event of default by the Supplier of its obligations under the Contract may be transferred or assigned to the Prime Contractor without prior written consent of the guarantor bank, provided that the Customer has ensured performance by the Prime Contractor of all further acts the Customer is obliged to perform under the guarantee, including provision of necessary documents to be provided by the Customer in case of applying to the guarantor bank with the claim for payment of funds under the bank guarantee.
+
+Payments under the bank guarantees for return of the advance payment, proper performance under the Contract and proper performance of guarantee obligations shall be made by the guarantor bank within five bank days upon receipt of a written request of the Beneficiary (the Customer).
+
+The bank guarantees for return of the advance payment, proper performance under the Contract and proper performance of guarantee obligations shall contain a provision that any disputes thereunder shall be settled by the Court of Arbitration for Resolution of Economic Disputes of the Private Establishment – Arbitration Regulation and Legal Appraisal Centre according to its rules and shall contain a reference to the parties of the contract, the subject matter of the contract, number and date of the Contract.
+
+The bank guarantees for return of the advance payment, proper performance under the Contract and proper performance of guarantee obligations shall contain no provisions or claims to the contrary of the above or resulting in the impossibility of the above.
+
+- 4.35 Apply the monetary funds transferred by the Customer according to the purposes determined by the Contract.
+- 4.36 Notify the Customer and the Prime Contractor of any unscheduled events and accidents affecting performance hereof within 3 (three) business days upon occurrence of such events and accidents.
+- 4.37 Using its own resources and at its own expense, obtain permits and approvals necessary for delivery of the Equipment to the NPP Site.
+- 4.38 In case Defects attributable to Supplier's fault are revealed on Equipment during Warranty period, reimburse the Customer/Prime Contractor for the justified expenses related to dismantling, re-installation, start-up and commissioning works.
+- 4.39 Include into the agreement with the carrier a requirement on access of a transport facility which is ready for unloading to the storage facility area of the Prime Contractor/Consignee.
+- 4.40 Upon the request of the Customer within 5 (five) business days provide accounting and tax reporting data at any time during the effective period of the Contract.
+- 4.41 Upon the request of the Customer within 5 (five) business days following receipt of the request provide the list of sub-suppliers engaged in performance under the Contract.
+- 4.42 Within 15 (fifteen) calendar days following approval of TC (TOR) include the information on the supplied Equipment into the Unified Industry Nomenclature Catalogue of Equipment and Materials (the "Catalogue") according to the procedure, terms and conditions determined in the Instruction on entering the information on equipment and materials into the Catalogue, set forth in Appendix 15 to the Contract.
+
+After including the information on the supplied Equipment into the Catalogue the Supplier shall issue the Act on entering the information into the Catalogue (the template of the Act on entering the information into the Catalogue is set forth in Appendix 16 to the Contract) in two counterparts and forward it to the Customer.
+
+Within 30 (thirty) calendar days upon receipt of the Act on entering the information into the Catalogue from the Supplier, the Customer together with the Prime Contractor shall check the fact of entering the information on the supplied equipment into the Catalogue, the completeness of information entered in terms of conformity to the Instruction on entering the information on equipment and materials into the Catalogue (Appendix 15 to the Contract), carry out the inspection of accuracy and completeness of entered information in terms of conformity to the Specification (Appendix 1 to the Contract). Based on the results of the inspection, the Customer and the Prime Contractor shall sign the Act on entering the information into the Catalogue and forward one counterpart of the said Act to the Supplier or forward to the Supplier a substantiated refusal to sign the Act on entering the information into the Catalogue.
+
+- 4.43. Should Commissioning Supervision be required, notify the Prime Contractor, Customer and Construction Manager within 30 days following the completion of Detailed Design (Workshop) Documentation development.
+- 4.44 For the purposes of performing the obligations under Subclause 4.28 hereof, make an agreement with the Freight Forwarder to render services for transportation and insurance of oversized and heavyweight Equipment shipping packages from a sea port of Kaliningrad region to the Place of Delivery, as per provisions of clauses 7.1 and 8.8.
+
+## **5. Obligations of the Customer**
+
+In accordance with the terms and conditions of the Contract, the Customer hereby undertakes to:
+
+- 5.1 Within 20 (twenty) calendar days upon effective date of the Contract transfer to the Supplier by letter and/or e-mail the name, bank details and contact information of the Consignee, a copy of POKAS (O).
+- 5.2 Within 20 (twenty) calendar days following the date of receiving the documents according to Subclause 4.10. of the Contract, define an Authorized organization and send a written notice thereof to the Supplier.
+- 5.3 Ensure acceptance of the Equipment by the Consignee according to the procedure and within the time limits stipulated by the Contract.
+- 5.4 Pay the price of the Equipment and also other expenses agreed between the Parties according to the procedure, in the scope and within the time limits stipulated by the Contract.
+- 5.5 Provide conditions for and ensure participation of the representatives of the Prime Contractor and the Construction Manager in the Incoming Inspection of the Equipment supplied to the NPP Site performed by the Construction Manager.
+- 5.6 The Customer may independently perform or engage outside organizations to perform examination of the manufactured Equipment quality, as well as carry out operational inspections of the production activity of the Supplier on a regular basis (including a field visit to the manufacturing plant) at all stages of supply and/or manufacturing with regard to observance of time limits pursuant to Appendix 1 (Equipment Specification) to the Contract.
+- 5.7 Upon the Supplier's request, forward to the Supplier copies of the documents specified in Subclause 4.31. of the Contract.
+
+## **6. Procedure for Equipment Design, Manufacturing, Supply and Acceptance**
+
+- 6.1 Taking into account requirements of regulatory documents, rules and standards regulating development, manufacturing, testing and acceptance of the Equipment, the Supplier basing on the documentation set forth in Subclause 4.3. of the Contract shall develop and approve the Technical Documentation, manufacture and effect delivery of the Equipment in accordance with the Engineering Design (Technical project) for Equipment, the Technical Documentation, quality assurance requirements specified in Appendix 6 to the Contract.
+- 6.2 The Equipment shall be brand new and comply with the scope of delivery in accordance with the developed and approved Technical and shipping documentation pursuant to Appendix 5 to the Contract.
+- 6.3 During the Contract effective period, representatives of the Customer, Prime Contractor, Construction Manager and/or persons and organizations authorized by them shall be entitled to perform the Conformity Assessment in the course of the Equipment manufacturing according to the Quality Plans approved by the Parties, as well as conduct audits of the quality management system of the Supplier and Sub-suppliers. The procedure for conducting the Conformity Assessment and audits is set forth in Appendix 6 to the Contract. The conditions for visit of the said representatives are specified in Appendix 7 to the Contract.
+- 6.4 The Supplier shall ensure transportation of the Equipment from the Supplier's company to the address (delivery point) of the Consignee at the NPP Site and insurance of the Equipment during the said transportation.
+- 6.4.1. The Supplier shall ensure transportation of the Equipment to the Place of Delivery by railway, road or water means of transport according to the following details: The Consignee: Baltic Branch of Open Joint Stock Company NIZHNY NOVGOROD ENGINEERING COMPANY "ATOMENERGOPROEKT" - "The Prime Contractor Directorate at Baltic Nuclear Power Plant". Branch Office location: 7 Krasnoarmeiskaya street, Sovetsk -238752, Kaliningradskaya Oblast. Place (address) of delivery: Baltic NPP construction site (1a, Tsentralnaya street, Posyolok Malomozhaiskoye, Nemanskiy Rayon, Kaliningradskaya Oblast).
+
+Large-sized and heavy-weight consignments shall be shipped to the Place of Delivery through a sea port in Kaliningrad region and then transported by the Forwarding Agent (Expeditor) to the Place of delivery.
+
+The details of Consignee and Forwarding Agent (Expeditor) are subject to a mandatory further update by the Parties not later than 60 (sixty) calendar days prior to the scheduled date for shipment of the Equipment and/or parts thereof.
+
+- 6.4.2. The unloading of the Equipment from the transport facility at the point of delivery shall be performed by the Supplier in accordance with Sub-clause 4.29 of the Contract using its own resources or with the assistance of subcontractors, using available standard or (if necessary) special appliances developed and delivered by the Supplier in accordance with Clause 4.16. of the Contract.
+- 6.4.3. Upon completion of the Equipment manufacturing within the time limits specified in the Contact, not later than 20 (twenty) business days prior to completion of manufacturing of respective Equipment units according to the Equipment Specification (Appendix 1 to the Contract), the Supplier shall advise the Customer by facsimile transmission and/or by e-mail the information as follows:
+	- Expected Date of the Equipment shipment;
+	- Total number of shipping packages;
+	- Total gross/net weights (kg) and volume (m3) of shipment;
+- Name of the Equipment, reference number as per Appendix 1 to the Contract;
+- Gross weight (kg), volume (m3) and overall dimensions (cm) of each shipping package;
+- Description of the Equipment for which special packaging, precautions and protection measures etc., are required.
+- Description of special precautionary measures which shall be taken in respect of such Equipment including temperature, rough-service requirements etc., during loading to a transport facility, fastening, transportation, unloading and storage at the NPP Site (if necessary).
+- Place of Equipment shipment; possibility to stockpile the Equipment specifying the load limit (kg) of the upper case lid in case of sea transportation of the Equipment.
+- 6.4.4. The Customer within 7 (seven) calendar after receipt of the Supplier's notice as per Subclause 6.4.3. of the Contract shall confirm or define the exact Equipment Shipment date in writing. The delay in shipment of the Equipment which is manufactured and prepared for shipment within time limits stipulated by the Contract upon the formal notification of the Customer shall not exceed 90 (ninety) calendar days against the date specified in the Supplier's notice of the Equipment availability for shipment.
+
+In any case the Equipment cannot be shipped prior to signing of the respective Act of acceptance inspection concerning the Equipment without any remarks therein, final acceptance of all the Witness points of the Quality Plan in line with the provisions of Exhibit 6 to the Contract, as well as without written confirmation of shipment by the Customer pursuant to Subclause 6.4.4. of the Contract.
+
+6.4.5. Should the period of delay in shipment of the Equipment which is manufactured and available for shipment within the time limits stipulated by the Contract upon the Customer's request (written notice of the Customer of suspending shipment under Subclause 6.4.4. of the Contract) exceed 90 (ninety) calendar days, the Parties shall perform transfer and acceptance of the Equipment at the Supplier's premises, whereupon the Supplier shall accept the Equipment for safe custody.
+
+The procedure for the Equipment acceptance shall conform to the provisions of Subclause 6.8. of the Contract except for provisions on the necessity of prior delivery of the Equipment to the NPP Site.
+
+In this case the title to the Equipment shall be transferred from the Supplier to the Customer from the moment of signing the Equipment transfer and acceptance act.
+
+The Customer shall pay for the Equipment so supplied within the time limits and according to the procedure set forth in Clause 8 of the Contract based on the Supplier's bill, invoice, waybill (TORG-12 template), certified copy of the signed Equipment transfer and acceptance act, and deposit receipt.
+
+After expiration of safe custody term, the Supplier shall be obliged to deliver the Equipment to the NPP Site under the terms and conditions of the Contract.
+
+- 6.4.6. While transferring the Equipment for safe custody the responsible representative of the Supplier shall execute a document (a deposit receipt) confirming acceptance of the said Equipment for safe custody, unified template No. MX-1, and hand the said documents over to the representative of the Customer or a person authorized by the Customer. The Parties shall enter into the Contract for safe custody.
+- 6.4.7. The Supplier shall agree with the Customer in writing scope of liabilities and expenses related to storage of the unshipped Equipment, as well as expenses related to revision and preservation thereof in the course of long-term storage. In this case the Supplier's expenses shall be
+
+compensated by the Customer upon the fact of completion of the Equipment safe custody basing on the respective act signed by the Supplier, the Customer and the Prime Contractor within 30 (thirty) calendar days following the date of the Supplier issuing respective invoice with a deposit receipt copy and calculation of the cost of storage, revision and preservation of the Equipment attached thereto as well as other documents to confirm actual expenditures of the Supplier.
+
+- 6.4.8. The Equipment passed into safe custody shall be sealed in presence of the representative of the Customer or of the Authorized Organization.
+- 6.4.9. In case of forwarding the Customer's written notice to the Supplier on the suspension of the Equipment shipment after handing over of the Equipment by the Supplier to the carrier, the Customer shall bear all expenses related to return of the Equipment to the Supplier.
+- 6.5. Date of delivery of the Equipment, transfer of risks and title.
+- 6.5.1. Risk of accidental loss of or accidental damage to each unit of the Equipment according to Appendix 1 to the Contract (Equipment Specification) shall pass from the Supplier to the Prime Contractor from the date of the authorized representative of the Prime Contractor signing the waybill for each Equipment unit.
+- 6.5.2. Title to each unit of the Equipment according to Appendix 1 to the Contract (Equipment Specification) shall pass from the Supplier to the Prime Contractor as of the date of the authorized representative of the Prime Contractor signing the TORG-12 waybill according to the procedure set forth in the Contract.
+- 6.5.3. The Date of the Equipment unit delivery as per Appendix 1 to the Contract shall be the date of the Consignee signing a railroad waybill on acceptance of the Equipment from the carrier at the Place of Delivery in the event of Equipment's shipment by railroad transport, or the date of the Consignee signing a bill of lading on acceptance of the Equipment from the carrier at the Place of Delivery in the event of shipment by road or water transport.
+- 6.6. Acceptance of the Documentation in accordance with Appendix 5 to the Contract by the Customer and/or the Prime Contractor shall not release the Supplier from liability for quality of transferred Documentation.
+- 6.7. While obtaining approvals in respect of the Technical documentation, Detailed Design (Workshop) design documentation or other documentation by the Customer, General Designer, Prime Contractor and Supplier during the Contract period, the Customer, General Designer, Prime Contractor and Supplier shall follow the following approval procedure:
+- 6.7.1. The Party which has received a document for approval shall within 10 (ten) business days approve it as is and in full or submit its written objections and comments to the party which has transmitted the document. Consideration of objections and comments shall be made by the other party not later than in 10 (ten) business days following receipt thereof. The procedure for approval of the final document wording is similar to the procedure for approval of the initial document wording.
+- 6.7.2. Exchange of information, documents and remarks in the course of documentation approval may be performed upon agreement between the Customer, General Designer, Prime Contractor and the Supplier by way of documents sharing, by facsimile transmission, over the Internet or by e-mail. In this case, received documents shall have been transferred in such a way that it shall be possible to clearly determine the address and name of the sender as well as the date of transmission and receipt thereof by the other party.
+- 6.7.3. The date of registration of an incoming document by the administrative office of the recipient shall be the date of the receipt of the documents.
+- 6.7.4. Should the Supplier prove that failure to meet deadlines for approval of documents occurred otherwise than due to the Supplier's fault, the time limits for supply may be shifted by a period proportional to duration of delay in obtaining approval, by way of entering into a supplementary agreement hereto and Customer shall not be entitled to apply Liquidated damages to the Supplier in accordance with Subclause 10.2 of the Contract. Otherwise the Customer may claim the Supplier to pay Liquidated Damages according to Clause 10.2. of the Contract.
+- 6.8. The procedure for acceptance of the supplied Equipment by the Customer:
+- 6.8.1. Within 3 (three) business days upon the Date of Shipment of the Equipment the Supplier shall advise the Customer by a letter in any form the number of railroad waybill/CMR consignment note (Template 1-T)/bill of lading, transport facility number (railroad/automobile/boat), the Date of Shipment, description and list of the shipped Equipment, item number under the Contract, number of packages, gross/net weights (kg), overall dimensions (in centimetres) and volume (m3 ), and forward to the Customer shipping specifications.
+- 6.8.2. The Supplier shall be obliged to hand over to the Customer and the Prime Contractor in accordance with Appendix 5 to the Contract the shipping (component and packing lists) and Technical Documentation (Technical passport, operation manual, instruction on transporting, preservation, packing, storage, etc.) together with the Equipment. The Supplier shall also be obliged to hand over to the Prime Contractor and the Customer a copy of a consignment note (railroad) within 2 (two) business days following the Equipment Delivery Date.
+- 6.8.3. On the date of the Equipment delivery to the NPP Site:
+- Unloading of the Equipment from the transport facility takes place according to the terms and conditions hereof,
+- The Consignee shall sign the consignment note, CMR note (Template 1-Т).
+- The Equipment delivered by the carrier shall be accepted for safe custody by the Prime Contractor/Consignee upon signing the consignment note. Safe custody is formalized by way of entering into an agreement and signing of the unified MX-1 template.
+- The Equipment shall undergo the acceptance procedure in terms of packing and the number of delivered packages carried out by the person in charge on behalf of the Prime Contractor/Consignee, who shall check:
+
+ a) conformity of the accompanying documents to requirements, number and marking of packages,
+
+b) integrity of packaging (wrapping).
+
+In case of receipt of the Equipment from the carrier and a detected damage or fault of cargo or a discrepancy between actual weight and number of cargo packages to the data specified in a shipping document, the Consignee is obliged to request the carrier to issue the carrier's statement, and in case of delivery of cargo by road - to make a mark on the consignment note or issue the act on damage or fault of cargo.
+
+6.8.4. The Incoming Inspection shall be carried out not later than 30 days after unloading of the Equipment on NPP Site by the Construction Manager in accordance with the approved Construction Manager's regulation on incoming quality inspection.
+
+ The results of Incoming Inspection by quantity and quality shall be documented and signed in the Equipment Incoming Inspection Report VK-1. VK-2 inspection shall be carried out after the reasons for all observations in VK-1 are resolved. The Construction Manager shall perform incoming inspection with the participation of representative of the Prime Contractor (if necessary, together with the authorized representative of the Supplier).
+
+The incoming inspection and acceptance of the Equipment shall be performed provided that the Supplier has fulfilled the requirements for the scope of delivery of the Equipment and other requirements set forth in this Contract, project documentation and technical documentation agreed by the Parties in the frame of execution of this Contract.
+
+- 6.8.5. In case of absence of a permanent representative of the Supplier at the NPP Site the Customer/Prime Contractor, to carry out joint acceptance of the Equipment, may call the Supplier's representative by forwarding thereto a notice on the date of acceptance in a reasonable term necessary for arrival of the Supplier's representative to the NPP Site.
+- 6.8.6. The Supplier's representative shall arrive at the NPP Site within the period specified in the notice of the Customer/Prime Contractor, unless another period has been agreed between the Parties upon receipt of the notice of the Customer/Prime Contractor. In case of failure of the Supplier's representative to appear within the specified period issuing the act and acceptance of the Equipment shall be carried out unilaterally. In this case a unilateral act documenting a shortage, improper quality or completeness of the Equipment shall have the effect of an adequate evidence of the Equipment supply in breach of the terms and conditions of the Contract and/or technical conditions or other technical documents for the Equipment.
+- 6.8.7. The package and wrapping of the Equipment shall be opened in presence of authorized representatives of the Prime Contractor, the Construction Manager (the Supplier, in case of timely arrival of the Supplier's representative at the NPP Site).
+- 6.8.8. The package and wrapping of the Equipment which de-preservation is not allowed under storage conditions shall be opened immediately prior to installation thereof.
+- 6.8.9. If there are no observations with respect to the Equipment upon completion of the Equipment quality and quantity acceptance, the participants shall prepare and sign the Equipment Incoming Inspection Report.
+
+The Equipment incoming inspection report shall be executed within the period set forth in a provision on incoming inspection of the Construction Manager after the Equipment quality and quantity acceptance procedure.
+
+In case of successful results of the incoming inspection the Prime Contractor or a person authorized thereby within one day shall sign (with a date of signing specified) a waybill (TORG-12) and shall simultaneously remove the Equipment from safe custody.
+
+6.8.10. Should the Incoming Inspection reveal any Equipment shortage, deficiency or nonconformity of quality, the identified shortage, deficiency and/or nonconformity shall be documented in the Incoming Inspection Report in accordance with the terms and conditions of the Construction Manager's Incoming Inspection regulation.
+
+The Customer/Prime Contractor shall notify the Supplier of the observations resulting from the incoming inspection in writing, by registered mail with delivery notification and by e-mail or fax, within 3 (three) days upon signing the incoming inspection Act.
+
+The Incoming Inspection Report (VK-1, VK-2) identifying shortage, improper quality or incomplete delivery of the Equipment shall constitute a sufficient evidence of the fact that the Equipment is being supplied with violation of the terms and conditions of the Contract and/or technical requirements or other technical documentation for the Equipment.
+
+6.8.11. The incoming inspection report shall constitute a ground for a claim against the Supplier with respect to a shortage, incompleteness, non-conformance of the Equipment with the terms and conditions of the Contract.
+
+6.8.12. In the event of controversy between the Construction Manager, the Prime Contractor, the Customer, the Supplier with respect to the reasons for the Non-conformance of the Equipment with the Contract terms and conditions, the Customer/Prime Contractor may involve an independent competent organization to determine the reasons for the Non-conformance and a party at fault.
+
+Should it be found that the Equipment non-conformance is caused by reasons under liability of the Supplier; the expenses related to involving an independent competent organization shall be borne by the Supplier.
+
+- 6.8.13. Should it be found that shortage, incompleteness, non-conformance of the Equipment are caused by reasons under liability of the Supplier, the Supplier, within the period agreed with the Customer/Prime Contractor and the Construction Manager, shall be obliged, at its own expense, to remedy shortage of the Equipment, complete the Equipment in full, and remedy the non-conformance of the Equipment. The said period shall commence on the date of signing of the incoming inspection report.
+- 6.8.14. The Equipment that does not correspond to the terms and conditions hereof in terms of quality shall be subject to repair or replacement by the Supplier at its option and its own expense, and within the period agreed with the Customer/Prime Contractor and the Construction Manager. The said period shall commence on the date of signing of the incoming inspection report.
+- 6.8.15. In the event that the quality and/or completeness Non-conformances are identified with respect to the Technical Documentation and/or shipping documentation supplied hereunder, the Supplier shall provide a reasonable clarification on the said Non-conformances within 5 (five) business days upon receipt of the notice, or shall, at its expense, remedy the incompleteness or replace respective Technical Documentation and/or shipping documentation, or shall remedy the Non-conformances in the Technical Documentation and/or shipping documentation within 10 (ten) business days upon receipt of the respective notice by the Supplier, unless another period is agreed between the Parties.
+- 6.8.16. Should the Supplier fail to rectify Defects and/or Non-conformances identified as per 6.8.13 within the timeframe agreed with the Customer/Prime Contractor and Construction Manager, the Customer shall have the right to rectify the identified Defects and/or Non-conformances through its own effort and expense subject to prior written consent of the Supplier that shall be given to the Customer within 20 days following the receipt of the Customer's notice, and the Supplier shall be obliged to indemnify the Customer for incurred actual, direct and documented expenses related to said remedy within 20 (twenty) calendar days following the presentation of a respective invoice with copies of documents to confirm the Customer's actual expenses attached thereto.
+
+ Warranty obligations under this Contract shall be ensured by the Supplier only if rectification of Non-conformances and/or Defects is performed by the Customer subject to obtaining prior written consent of the Supplier.
+
+- 6.8.17 Returning of the defective Equipment shall be carried out at the request of the Supplier and at its own expense within the period agreed by the Supplier with the Customer and the Prime Contractor.
+- 6.9. Packing and Marking of the Equipment:
+- 6.9.1. Packing and marking of the Equipment shall be made according to rules, regulations, standards, samples and requirements for packing and marking of the Equipment set forth in Appendices 2 and 8 to the Contract.
+- 6.9.2. The Supplier shall be liable for damage to or loss of the Equipment due to improper or incorrect packing or marking of the Equipment, including the shipping documentation improperly issued.
+- 6.9.3 The Customer shall be liable for damage to or loss of the Equipment due to violation of requirements for conditions of the Equipment storage at the NPP Site specified in the Technical Documentation delivered in a set with the Equipment.
+- 6.10. The procedure for registration of the Milestones not related to delivery of the Equipment (Equipment manufacturing).
+- 6.10.1. The Customer and the Prime Contractor, or the organization authorized thereby, shall carry out acceptance of the Milestones pertaining to manufacturing of the Equipment at the Supplier's premises followed by signing respective reports on achieving the Milestones in three counterparts, one for each party, by the Customer, the Prime Contractor and the Supplier.
+- 6.10.2. The Supplier shall notify the Customer of the availability for presenting the achieved Milestones pertaining to manufacturing of the Equipment specified in the List of Milestones (Appendix 12 to the Contract) in 20 (twenty) calendar days in writing (by way of facsimile transmission and e-mail) indicating the time of arrival at the Supplier's enterprise.
+- 6.10.3. The Customer and the Prime Contractor, within 7 (seven) calendar days upon receipt of the Supplier's notice, shall confirm in writing **(**by way of facsimile transmission and e-mail) the time of arrival for acceptance.
+- 6.10.4. The Customer and the Prime Contractor shall effect acceptance of the achieved Milestone pertaining to manufacturing the Equipment and sign a respective report on achieving the Milestone, or, in case of detecting the Defects and/or Non-conformances in the course of acceptance of separate units of the Equipment, the representatives of the Customer, the Prime Contractor and the Supplier shall issue a report of non-conformance of the Equipment with the terms and conditions of the Contract. The Supplier undertakes to eliminate the Defects and/or Non-conformances on the basis of the nonconformity report using its own resources and at its own expense within the period agreed by the Parties, and to repeatedly present the Milestone for acceptance.
+- 6.10.5. In case of controversies between the Parties on the reasons for non-conformance of the Equipment with the terms and conditions of the Contract, the Supplier shall issue the report of non-conformance of the Equipment with the participation of the independent competent organization. However, all expenses related to involving the independent competent organization shall be borne by the Party at fault.
+- 6.10.6. In the event that the Defects and/or Non-conformances of the Equipment and/or the Technical Documentation identified as a result of inspection of the Milestone achieved or during the Acceptance Inspection of the Equipment are not cured by the Supplier by the date of repeated presenting the Equipment and/or the Documentation for inspection or acceptance, all expenses related to repeated visits of representatives of the Customer, the Prime Contractor, the Construction Manager and the Authorized Organization to take part in inspection and acceptance of a specific Equipment unit (travelling, board and lodging, business expenses) shall be borne by the Supplier.
+
+## **7. Contract Price**
+
+7.1. This Contract price includes:
+
+- the price for Equipment set forth in Subclause 7.2 of the Contract covering all Supplier's expenses under the Contract including the Equipment freight from the manufacturing plant to a sea port in Kaliningrad region and insurance expenses for the transportation period, as well as Installation Supervision expenses.
+
+- Expenses related to transportation of the Equipment from a sea port in Kaliningrad region to the Place of Delivery and insurance of the Equipment during transportation to the Place of Delivery shall be reimbursed to the Supplier for actual costs incurred on the basis of documents, as described in 8.8. of the Contract.
+
+The cost of Commissioning Supervision of the Equipment shall be agreed by the Parties in a supplementary agreement hereto.
+
+The Contract Price excludes the cost of the services of the Authorized Organization relating to assessment of the Equipment conformity.
+
+7.2. Price of the Equipment for Unit 1 and Unit 2 of the Baltic NPP amounts to **30,413,559,322.04** roubles (thirty billion four hundred and thirteen million five hundred and fifty-nine thousand three hundred and twenty-two roubles 04 kopecks), plus VAT 18% in the amount of **5,474,440,677.96** roubles (five billion four hundred and seventy-four million four hundred and forty thousand six hundred and seventy-seven roubles 96 kopecks), in total **35,888,000,000.00** roubles (thirty-five billion eight hundred and eighty-eight million roubles 00 kopecks) and includes:
+
+- Price of the Equipment for Unit 1 of the Baltic NPP amounts to **16,763,951,461.02** roubles (sixteen billion seven hundred and sixty-three million nine hundred and fifty-one thousand four hundred and sixty-one roubles 02 kopecks, plus VAT 18% in the amount of **3,017,511,262.98** roubles (three billion seventeen million five hundred and eleven thousand two hundred and sixtytwo roubles 98 kopecks), in total **19,781,462,724.00** roubles (nineteen billion seven hundred and eighty-one million four hundred and sixty-two thousand seven hundred and twenty-four roubles 00 kopecks) ;
+
+- Price of Equipment for Unit 2 of the Baltic NPP amounts to **13,649,607,861.02** roubles (thirteen billion six hundred and forty-nine million six hundred and seven thousand eight hundred and sixty-one roubles 02 kopecks, plus VAT 18% in the amount of **2,456,929,414.98** roubles (two billion four hundred and fifty-six million nine hundred and twenty-nine thousand four hundred and fourteen roubles 98 kopecks), in total **16,106,537,276.00** roubles (sixteen billion one hundred and six million five hundred and thirty-seven thousand two hundred and seventy-six roubles 00 kopecks):
+
+ In case of change in the regulatory framework of VAT calculation, the Parties shall introduce respective amendments to the Contract issuing these amendments in the form of a respective supplementary agreement to the Contract to be signed within 30 (thirty) calendar days following the effective date of the respective regulatory legal act.
+
+ When entering into this Contract, the Parties take into account that the Construction Manager, whether directly or via its subsidiary company "Baltic NPP" OJSC, intends to raise finance in Euros to pay for the Equipment manufactured and supplied by NAVAL GROUP SA acting as an appointed Sub-supplier. The finance will be raised subject to insurance of credit risk by the COFACE insurance company.
+
+To obtain the COFACE guarantee (insurance coverage), the Parties have agreed that the Contract Price shall be split as follows:
+
+- EUR **380,386,922.00** (excluding VAT) shall be the price of the Equipment listed as Items 1 to 16 in the Specification (Appendix 1 to the Contract) and pertaining to the scope of manufacturing and supply of NAVAL GROUP SA,
+
+- RUB **14,817,695,535.00** plus VAT of RUB **5,474,440,678.00** shall be the price of the Equipment listed as Items 1 to 69 in the Specification (Appendix 1 to the Contract), except for the scope of the supply of NAVAL GROUP SA.
+
+In such an event, NAVAL GROUP SA will invoice the Construction Manager directly in Euros and receive direct payments in Euro made upon the instruction of the Construction Manager.
+
+Upon receipt by the Prime Contractor of the notice from the Construction Manager stating that finance in Euros subject to credit risk insurance provided by the COFACE insurance company has been raised, the Parties shall take steps to modify the Contract accordingly.
+
+## **8. Terms of Payment**
+
+- 8.1. The payment under the Contract will be effected by the Customer separately for the Equipment of Unit 1 and Unit 2 according to the following procedure:
+- 8.1.1. Within 30 (thirty) calendar days following the effective date of the Contract but not earlier than 20 (twenty) calendar days following the day of receipt from the Supplier of the respective invoice with the originals of the bank guarantee for the irrevocable advance payment attached thereto and proper performance of the obligations under the Contract, the Customer shall pay to the Supplier an advance by bank remittance according to the following procedure:
+
+- for the Equipment of Unit 1 at a rate of 40% (forty per cent) of the Total Price for the Equipment of Unit 1 as per Appendix 1 to the Contract making **6,705,580,584.41** RUB (six billion seven hundred and five million five hundred and eighty thousand five hundred and eighty-four roubles 41 kopecks), plus VAT of 18% amounting to **1,207,004,505.19** RUB (one billion two hundred and seven million four thousand five hundred and five roubles 19 kopecks), the total amount being **7,912,585,089.60** RUB (seven billion nine hundred and twelve million five hundred and eighty-five thousand eighty-nine roubles 60 kopecks).
+
+- for the Equipment of Unit 2 at a rate of 15% (fifteen per cent) of the Total Price for the Equipment of Unit 2 as per Appendix 1 to the Contract making **2,047,441,179.15** RUB (two billion forty-seven million four hundred and forty-one thousand one hundred and seventy-nine roubles 15 kopecks), plus VAT of 18% amounting to **368,539,412.25** RUB (three hundred and sixty-eight million five hundred and thirty nine thousand four hundred and twelve roubles 25 kopecks), the total amount being **2,415,980,591.40** RUB (two billion four hundred and fifteen million nine hundred and eighty thousand five hundred and ninety one roubles 40 kopecks).
+
+8.1.2. The Customer shall remit to the Supplier intermediate advance payments separately for the Equipment of Unit 1 and Unit 2 according to the following procedure:
+
+- for the Equipment of Unit 1 to a total amount of **3,352,790,292.20** RUB (three billion three hundred and fifty-two million seven hundred and ninety thousand two hundred and ninety-two roubles 20 kopecks), plus VAT of 18% amounting to **603,502,252.60** RUB (six hundred and three million five hundred and two thousand two hundred and fifty-two roubles 60 kopecks), the total amount making **3,956,292,544.80** RUB (three billion nine hundred and fifty-six million two hundred and ninety-two thousand five hundred and forty-four roubles 80 kopecks), which is 20% (twenty per cent) of the Total Price for the Equipment of Unit 1 as per Appendix 1 to the Contract
+
+- for the Equipment of Unit 2 to a total amount of **6,142,323,537.46** RUB (six billion one hundred and forty-two million three hundred and twenty-three thousand five hundred and thirty-seven roubles 46 kopecks), plus VAT of 18% amounting to **1,105,618,236.74** RUB (one billion one hundred and five million six hundred and eighteen thousand two hundred and thirtysix roubles 74 kopecks), the total amount being **7,247,941,774.20** RUB (seven billion two hundred and forty-seven million nine hundred and forty-one thousand seven hundred and seventy-four roubles 20 kopecks), which is 45% (forty five per cent) of the Total Price for the Equipment of Unit 1 as per Appendix 1 to the Contract.
+
+The intermediate payments will be effected step-by-step according to the List of Milestones (Appendix 12 to the Contract) by bank remittances in RUB within 30 (thirty) calendar days following the receipt by the Customer of the Supplier's respective invoice original with the attached copy of the report certified by the Supplier about the Milestone achieved issued as per Clause 6 of the Contract.
+
+8.1.3. The payments at a rate of 37.5 % (thirty seven point five per cent) of the Price per Equipment Unit for power generating Unit 1 as per Appendix 1 to the Contract amounting to **6,286,481,797.88 RUB** (six billion two hundred and eighty-six million four hundred and eighty-one thousand seven hundred and ninety-seven roubles 88 kopecks), plus VAT of 18% amounting to **1,131,566,723.62** RUB (one billion one hundred and thirty-one million five hundred and sixty-six thousand seven hundred and twenty-three roubles 62 kopecks), the total amount being **7,418,048,521.50** RUB (seven billion four hundred and eighteen million fortyeight thousand five hundred and twenty-one roubles 50 kopecks),
+
+ and the payments at a rate of 37.5 % (thirty seven point five per cent) of the Price per Equipment Unit for power generating Unit 2 as per Appendix 1 to the Contract amounting to **5,118,602,947.88** RUB (five billion one hundred and eighteen million six hundred and two thousand nine hundred and forty-seven roubles 88 kopecks), plus VAT of 18% amounting to **921,348,530.62** RUB (nine hundred and twenty-one million three hundred and forty-eight thousand five hundred and thirty roubles 62 kopecks), the total amount being **6,039,951,478.50** RUB (six billion thirty nine million nine hundred and fifty-one four hundred and seventy-eight roubles 50 kopecks)
+
+ shall be effected by the Customer to the Supplier for each Equipment Unit supplied, by bank remittances within 30 (thirty) working days from the date following the receipt by the Customer of the Supplier's respective invoice original with the attached copy of the incoming inspection report for the supplied Equipment Unit certified by the Supplier and signed without observations, as well as the originals of the following documents:
+
+- Commercial invoice – 1 original;
+
+- CMR note and/or railroad waybill (template 1-T) – 1 original;
+
+- Waybill according to the template TORG-12 – 2 originals;
+
+- Advance payment offset report – 2 originals according to the template in Appendix 14 to the Contract.
+
+- 8.1.4. Deferred payments at a rate of 2.5% of the Price of the Equipment for power generating Unit 1 as per Appendix 1 to the Contract amounting to **419,098,786.53** RUB (four hundred and nineteen million ninety-eight thousand seven hundred and eighty six roubles 53 kopecks), plus VAT of 18% amounting to **75,437,781.57** RUB (seventy five million four hundred and thirtyseven thousand seven hundred and eighty-one roubles 57 kopecks), the total amount being **494,536,568.10** RUB (four hundred and ninety four million five hundred and thirty-six thousand five hundred and sixty-eight roubles 10 kopecks), shall be effected by the Customer proportionally to the Price for the Equipment according to Appendix 1 to the Contract within 30 (thirty) calendar days from the date following the receipt by the Customer of the Supplier's respective invoice with the attached technical report on Installation Supervision for an Equipment Unit issued in accordance with the terms and conditions of the Contract.
+- 8.1.5 Deferred payments at a rate of 2.5% of the Price of the Equipment for power generating Unit 2 as per Appendix 1 to the Contract amounting to **341,240,196.53** RUB (three hundred and fortyone million two hundred and forty thousand one hundred and ninety-six roubles 53 kopecks), plus VAT of 18% amounting to **61,423,235.37** RUB (sixty-one million four hundred and twenty-three thousand two hundred and thirty-five roubles 37 kopecks), the total amount being **402,663,431.90** RUB (four hundred and two million six hundred and sixty-three thousand four hundred and thirty-one roubles 90 kopecks), shall be effected by the Customer proportionally
+
+to the Price for the Equipment according to Appendix 1 to the Contract within 30 (thirty) calendar days from the date following the receipt by the Customer of the Supplier's respective invoice with the attached technical report on Installation Supervision for a Unit of Equipment issued in accordance with the terms and conditions of the Contract.
+
+- 8.1.6 Offset of the advance payment of 40% of the Price for each Unit of Equipment of power generating Unit 1 supplied and of 15% of the Price for each Unit of Equipment of power generating Unit 2 supplied as per Appendix 1 to the Contract effected according to Subclause 8.1.1. of the Contract and the intermediate payments of 20% of the Price for each Unit of Equipment of power generating Unit 1 supplied and of 45% of the Price for each Unit of Equipment of power generating Unit 2 supplied effected according to Subclause 8.1.2. of the Contract will be provided on delivery of each Unit of Equipment proportionally to the cost of each Unit of Equipment supplied as specified in Appendix 1 to the Contract.
+- 8.2. The Supplier, within 2 (two) working days from the date the advance payment having entered into the Supplier's account as per Subclause 8.1.1. of the Contract and the payments for achieved Milestones in Equipment manufacturing having been effected as per Subclause 8.1.2 of the Contract, shall make out and remit a respective invoice to the Customer formalized according to Subclause 5.1, article 169 of the Tax Code of the Russian Federation.
+- 8.3. The Supplier, within 1 (one) working day from the date the Equipment has been delivered as per Subclause 6.5. of the Contract, shall submit to the Customer the copies of the following documents:
+	- CMR note (template 1-T) or railroad waybill with a note of the Consignee confirming acceptance of cargo;
+	- Invoice of the Supplier.
+- 8.4. The date of payment is understood to be the date of withdrawal of funds from the Customer's settlement account in favour of the Supplier.
+- 8.5. All types of banking charges connected with payments effected under the Contract and collected by the Customer's bank shall be paid by the Customer. The Supplier shall pay the above-mentioned banking charges collected by the Supplier's bank.
+- 8.6. The Supplier shall bear all the expenses for obtaining, formalization and prolongation (if necessary) of all banking guarantees under the Contract.
+- 8.7. Description of the Equipment, units of measurement and quantity specified in commercial invoices issued by the Supplier and executed according to the established procedure, as well as in consignment notes and CMR notes (railroad waybills, bills of lading) shall strictly correspond to the data specified in Appendix 1 (Equipment Specification) and Appendix 12 (List of Milestones) to the Contract.
+- 8.8. The Customer will reimburse the Supplier for all actually confirmed costs for Equipment transportation to Place of Delivery, as well as for actually confirmed costs for Equipment insurance for the period of such transportation within 30 (thirty) calendar days from the date the invoice original has been remitted by the Supplier supplemented with a set of the following documents confirming the expenses the Supplier defrayed:
+
+Equipment Transportation Costs:
+
+- acceptance report for services rendered regarding Equipment delivery;
+- commercial invoice;
+- payment order for transportation costs;
+- copy of the Services Agreement (with a list of Equipment and its weights);
+- CMR note with a mark of cargo delivery (identifying cargo name, weight, packing lists);
+- consignment note approved by government order of 15.04.11 No 272;
+- Cargo Customs Declaration (in case the Equipment crosses state customs border);
+- railroad waybill (in case of railroad transportation);
+- bill of lading identifying weight of the Equipment being transported (in case of waterway transportation);
+
+Equipment Insurance Costs:
+
+- copy of insurance agreement;
+- cargo insurance application;
+- insurance police;
+- payment order for transportation costs.
+
+The Supplier shall submit the originals of primary documents as a basis of reimbursement for expenses or certified copies of these documents.
+
+Upon request of the Construction manager, the above-mentioned list of documents may be extended upon a separate agreement between the Parties.
+
+## **9. Guarantees**
+
+- 9.1 The Supplier shall guarantee that the Equipment supplied meets the requirements of the Contract, as well as ensures reliable and safe functioning within the warranty period (Subclause 9.8 of the Contract) subject to observance of transportation, storage, installation, commissioning and operation conditions according to the Supplier's Technical documentation.
+- 9.2 The Supplier shall guarantee that the documentation it submits under the Contract meets the requirements of the Contract and is sufficient to organise the operation of the Equipment by the Construction Manager.
+- 9.3 The Supplier shall eliminate at its own expense all Non-conformances with the Equipment and Technical documentation thereto revealed in the course of manufacturing, tests, assessment of conformity, acceptance inspections, in the course of transportation of the Equipment from the Supplier's production site to the NPP Site and occurred due to the Supplier's fault.
+- 9.4 The Supplier guarantees that fulfilment of its obligations and its Subcontractors' obligations under the Contract will not entail violations of rights to intellectual property and individualization means, which might be an obstacle to the use of the Equipment and Technical documentation within the territory of the Russian Federation.
+- 9.5 In case of claims or suits brought against the Customer or Prime Contractor by third parties and caused by violation of their registered rights to intellectual property and individualization means in the territory of the Russian Federation in connection with fulfilment of the Supplier's obligations under the Contract, the Customer shall
+	- immediately inform the Supplier thereof;
+	- not later than 5 working days, inform the Customer about preliminary negotiations with a third party by post or electronic means. A letter sent by post will serve as evidence that the notification has been sent;
+	- allow the Supplier to make, at its own expense, any arrangements for settlement of claims, suits and trials.
+- 9.6 The Supplier undertakes to settle such claims on its own and at its own expense, as well as to compensate the Customer or Prime Contractor for proved losses incurred by the Customer or Prime Contractor and caused by violation on Supplier's part of rights to intellectual property and individualization means of third parties in the territory of the Russian Federation.
+- 9.7 On Supplier's request the settlement of such claims may be made by the Customer; in this case the Supplier shall pay to the Customer expenses due to the settlement of the above-mentioned violations and indemnify the Customer for proved losses incurred by the Customer and caused by violation on Supplier's part of rights to intellectual property and individualization means of third parties in the territory of the Russian Federation.
+- 9.8 The Warranty period for the Equipment supplied for Unit 1 and Unit 2, including that supplied to replace the defective one, shall be construed as the period starting from the date the TORG-12 has been signed and ending 24 (twenty-four) months after the moment of signing the Acceptance Certificate on Unit 1 and Unit 2 Start-up Complex/Stage, respectively or in March 2020 for Unit 1 and in March 2022 for Unit 2 whichever occurs first.
+
+Date of signing the Acceptance Certificate for the Start-up Complex/Stage for Unit 1 of the Baltic NPP: 29th of March, 2018;
+
+Date of signing the Acceptance Certificate for the Start-up Complex/Stage for Unit 2 of the Baltic NPP: 29th of March, 2020.
+
+If during the Warranty period Defects of the Equipment are revealed as caused by improper fulfilment by the Supplier of its obligations under the Contract, the Supplier shall, at its own expense, remedy the revealed Defect by repair or replacement, at its discretion, of the Defective Equipment.
+
+The Supplier's Warranty obligations shall not cover Defects and or damage attributable to the failure of the Customer, Prime Contractor or its other subcontractors to comply with requirements specified in the procedures/instructions for storage, installation start-up and commissioning, operation and maintenance or caused by introduction of design modification in the Equipment and/or repair and/or replacement of the Equipment without prior written consent of the Supplier.
+
+Should the notification of Defect be received following 5 (five) days after the end of the Warranty period, the Supplier shall not be liable for Warranty obligations to the Customer in respect of any Defect identified during the Warranty period.
+
+- 9.9 Should a Defect or Non-conformance be caused by imperfection of the Technical documentation elaborated by the Supplier or by manufacturing of the Equipment, the Supplier shall, at its own expense, eliminate the Non-conformance with the Technical documentation or Equipment design so as to exclude a reappearance of similar Defects or Non-conformances with this or other similar Equipment.
+- 9.10 In order to eliminate Defects or Non-conformances of the Equipment within the Warranty period and for other activities attributable to the supplier in accordance with Sub-clause 4.38, the Customer will arrange for the Prime Contractor and/or Construction Manager to have procured to the Supplier, at its own expense and on its request, an equipment, lifting transportation facilities, workshops, deactivation means, energy supply and consumables, which are required and available at the NPP Site. The Supplier undertakes to compensate the Customer for consumables and used spare parts within an agreed period but not later than 90 (ninety) calendar days from the date of complete elimination of Defects or Non-conformances.
+- 9.11 In case of breakdown of the Equipment or its part requiring its replacement or repair within a Warranty period the warranty period for such Equipment or its part shall be prolonged for the period used to eliminate the Defect and/or Non-conformance in the Equipment.
+
+9.12 If the Supplier fails to eliminate a Defect or Non-conformance on the expiration of the period mutually agreed with the Customer and Prime Contractor, the Prime Contractor shall have the right to eliminate the Defect through its own effort or with the help of a third party, recruited at Supplier's expense and the Supplier shall reimburse the Prime Contractor for justified costs incurred to remedy the Defects or Non-conformances.
+
+Should the Supplier refuse to remedy Defects or Non-conformances through its own efforts and should the Defects be rectified by the Prime Contractor itself or with the assistance of a third party, the liquidated damages for failure to rectify, within the established timeframe, the deficiencies identified during the period of warranty obligations (10.2) shall be charged upon the receipt of the Supplier's refusal to rectify Defects or Non-conformances, or if the Supplier fails to respond to the Customer's notification of the need to rectify them within 5 working days following its receipt to the end of the said works, taking into consideration that a third party (contractor) will be appointed to perform the works in the shortest time possible in accordance with the Unified Industry Procurement Standard and that works will commence immediately after the contractor selection process has been completed.
+
+9.13 If within the Warranty period the Supplier replaces faulty Equipment of its own supply, the Supplier shall, at its own expense, remove the replaced Equipment out of the NPP Site or agree with the Customer and/or Prime Contractor and/or Construction Manager on the procedure to dispose of this Equipment for utilization in the location indicated by the Customer and/or Prime Contractor and/or Construction Manager. Notably, if due to Defects or Non-conformances occurred through the Supplier's fault the Equipment becomes radioactive then the Supplier shall also indemnify the Customer for expenses connected with decontamination of this Equipment at the NPP Site.
+
+## **10. Liabilities of the Parties and Settlement of Disputes**
+
+- 10.1 The Parties shall bear mutual civil liability for non- or improper fulfilment of the obligations under the Contract in accordance with the Contract and Russian Federation legislation.
+- 10.2 If the Supplier fails to achieve a Milestone within the time limit stipulated by Appendix 12 to the Contract, or to deliver the Equipment within the time limit as per Appendix 1 to the Contract, or delivers incomplete Equipment and/or Documentation and fails to eliminate the incompleteness within the time limits agreed by the Parties, the Supplier shall pay to the Customer, on its request, liquidated damages for each day of delay (per cent of the price for the overdue Milestone or of the Price for the Equipment delayed or incomplete):
+	- *during the 1st month of delay 0,03% for each day of delay;*
+	- *during the 2nd month of delay 0,04% for each day of delay;*
+	- *during the 3rd and further months of delay 0,05% for each day of delay.*
+
+If the Supplier fails to render Equipment Installation Supervision services on time (Clause 2.2) or to rectify, within the specified timeframe (Clause 9.12), the defects identified during the period of warranty obligations, the Supplier shall pay to the Customer at the latter's demand liquidated damages of Price of Equipment in respect of which Installation Supervision services have not been rendered on time or deficiencies identified during the period of warranty obligations as per Clause 9.12 have not been rectified in due time:
+
+- *during the 1st month of delay 0,03% for each day of delay;*
+- *during the 2nd month of delay 0,04% for each day of delay;*
+- *during the 3rd and further months of delay 0,05% for each day of delay.*
+
+In case the delivery of the Equipment is delayed for a period exceeding 90 (ninety) days, the Customer has the right to unilaterally suspend the fulfilment of its obligations under the Contract with regard to the Equipment not supplied within the agreed timeframe. In this case the Supplier shall pay to the Customer Liquidated Damages as per Subclause 10.2 of the Contract.
+
+Liquidated Damages for a delayed Milestone shall be accrued from the date of its delay but can be claimed by the Customer exclusively in case of delay in delivery after delivery of each piece of Equipment for each power unit respectively.
+
+In case of delayed Milestones that resulted in delay in the delivery of an Equipment Unit, the Customer shall have the right, at its own discretion, to claim liquidated damages for the delayed Milestone or for the delay in the Equipment Unit delivery.
+
+- 10.3 In case of violation of the terms of payment for the delivered Equipment in accordance with Clause 8 the Customer bears liability according to article 395 of the Civil Code of the Russian Federation; the penalties to be paid are defined basing on Russian Central Bank re-financing rate of the amount outstanding, but not exceeding two per cent (2%) of the amount duly unpaid.
+- 10.4 In case the Supplier violates through its own fault the contractual time limits of submission and approval of the Technical documentation, the time limits for issuing the initial (design basis) data under Appendix 17 hereto, the Milestones for Equipment manufacture or Equipment delivery times under the Contract, the Customer has the right to delay current payments for the Milestones achieved and/or for the Equipment delivered, which are due to the Supplier, until the moment the above documentation is submitted and approved, the delayed Milestones are achieved.
+- 10.5 The Supplier is liable for duly submission to the Customer of the following documentation:
+- 10.5.1. In case the Supplier violates through its own fault the time limits for submission to the Customer of original commercial invoices as per Subclause 8.2. of the Contract, the Supplier shall pay to the Customer all effective and paid administrative penalties and recoveries imposed on the Customer and/or Prime Contractor as a result of default by the Supplier on the time limits for remittance of commercial invoices under the Contract within 30 (thirty) days from the date of receiving the Customer's claim to the Supplier on loss indemnification.
+- 10.5.2. In case the Supplier violates through its own fault the time limits for submission to the Customer of original documents as per Subclause 8.3. of the Contract the Supplier shall pay to the Customer, on its request, liquidated damages as 0,05% of price for the respective Equipment Units as per Appendix 1 (Equipment Specification) for each day of delay.
+- 10.5.3. In case the Supplier violates the time limits for submission to the Customer of the price estimates on the Equipment as per Subclauses 4.1 and 4.24. of the Contract, the Supplier shall pay to the Customer, on its request, liquidated damages as 0.01% of price for the Equipment under the Contract as stated in Subclause 7.2. of the Contract for each full calendar week of delay.
+- 10.5.4. In case the Supplier fails to submit the documents required for check of Contract execution, for control of Supplier's goal-oriented fund use and financial condition the Supplier shall pay liquidated damages (penalty) of 500 RUB per each document not submitted.
+- 10.5.5. In case the Supplier fails to provide (delays to provide) the coverage as per Clause 4.33 of the Contract within the contractual time limits, the Customer shall have the right to claim from the Supplier Liquidated Damages of 0.01% (one hundredth of a per cent) of the Contract Price for Unit 1 and Unit 2 respectively per each day of delay.
+- 10.6. In case the Supplier fails to eliminate within time limits agreed between the Parties the Defects and/or Non-conformances and/or incompleteness of the Equipment revealed during acceptance procedure (acceptance control, incoming inspection) or fails to replace the unsound Equipment and/or its parts by sound ones, the Supplier shall pay liquidated damages of 0.1% of price for
+
+defective or incomplete Equipment per each day of delay in elimination of the Defects and/or Non-conformances and/or incompleteness or in replacement of the Equipment.
+
+- 10.7. Supplier shall compensate the Customer for Customer's damages/harm duly documented and experienced as a result of claims for death or personal injury and loss of or damage to third party tangible property occurred before expiration of Warranty period, to the extent Customer's damage/harm are caused by the defective design, material or workmanship of Supplier or by its negligence or breach of statutory duty.
+- 10.8. The Supplier shall be liable for damage to or loss of the Equipment during its transportation and storage caused by improper or incorrect package or marking of the Equipment, as well as by shipping documentation improperly issued.
+- 10.9. The Supplier undertakes to indemnify the Customer/Prime Contractor against all losses in case the Equipment delivered is not compliant with GOST Р 15.201-2000 and/or fails to pass acceptance tests according to GOST Р 15.201-2000.
+- 10.10. The payment of Liquidated Damages shall not excuse the Parties from the full performance of their obligations pursuant to the Contract.
+
+Meanwhile, the Supplier cannot be held liable for the same offence twice:
+
+- for delayed accomplishment of the same Milestone,
+- for delayed or incomplete delivery of the same piece of Equipment or documentation;
+- for delayed supply of Installation Supervision services for the same Equipment;
+- for delayed rectification of the same deficiencies during the warranty period;
+- for failure to meet the same guaranteed performance.
+- 10.11. Disputes and differences arising in the course of performance of the Contract will be settled by way of negotiations. If the Parties fail to settle disputable issues by way of negotiations, all disputes, differences or claims arising out of the Contract or in connection thereof including disputes, differences or claims relating to its execution, violation, termination or invalidity shall be settled in the Court of Arbitration for Resolution of Economic Disputes under the auspices of Private Establishment – Arbitration Regulation and Legal Appraisal Centre according to its order. Decision of the Court of Arbitration is final.
+- 10.12. In case the Supplier improperly executes its obligations under the Contract (delay, defective or incomplete delivery) the Customer has the right to deduct the due Liquidated Damages from any payment due to the Supplier.
+- 10.13. In case the delivered Equipment and/or Technical documentation and/or shipping documentation do not comply in quality and completeness with the Contract through Supplier's fault, the Supplier shall at its own expense eliminate Non-conformances with the Equipment and/or Technical documentation and/or shipping documentation.
+- 10.14. If the Supplier does not submit the documents properly formalized and in due time (see Subclause 4.3 of the Contract) the Customer has the right to require the Supplier to pay the liquidated damages in the amount of:
+	- *during the 1st month of delay*  RUB 42,000 for each day of delay;
+
+- *during the 2nd month of delay* – 0,04% of the Price of Equipment for Unit 1 or Unit 2 respectively for each day of delay;
+
+- *during the 3rd and further months of delay* – 0,05% of the Price of Equipment for Unit 1 or Unit 2 respectively for each day of delay.
+
+10.15. The aggregate amount of all Liquidated Damages the Supplier shall pay for violation of its commitments under the Contract shall not exceed 10% (ten per cent) of the total Price for the Equipment under the Contract as stipulated in Subclause 7.2. of the Contract.
+
+Limitation of an aggregate amount of the Supplier's liability hereunder, including paid Liquidated Damages and Losses, shall be equal to 15% of the Contract price, except as set forth in Subclause 10.16 hereof.
+
+Limitation of an aggregate amount of the Customer's liability hereunder, including all liquidated damages and losses, shall not exceed 2% of the Contract price.
+
+10.16. Limitation of an aggregate amount of liability for the violation of the Supplier's obligations under the Contract does not cover the case when the Supplier fails to execute all obligations for the delivery of the Equipment under the Contract.
+
+In case the Supplier fails to execute obligations for the delivery of all the Equipment under the Contract, the Customer has the right to claim against the Supplier with the penalty to the value of the total cost of the Equipment under the Contract (Clause 7.2) as the limit of aggregated amount of the Supplier's liability under the Contract.
+
+- 10.17. Should the Supplier (on its fault) delay the dates for the Equipment delivery or acceptance including failure to go through Incoming Inspection (No 1 and No 2) more than 3 months that will cause the delay of Unit 1 and 2 commissioning more than 2 months respectively, the Supplier is committed to pay to the Customer liquidated damages in the amount of 3% (three per cent) of the cost of the Equipment for each Unit (Clause 7.2 of the Contract) in addition to the penalty, provided by Clause 10.15 of the Contract.
+- 10.18. In case it is demonstrated, during performance tests, that Equipment fails to deliver electrical gross output at generator terminals as per guaranteed gross electrical output of 1197 MW (Heat Balance diagram #75V2043-007d) and after the Supplier has been provided the opportunity to remedy the problem within a reasonable period of time to be agreed with Customer, the Supplier shall pay to the Customer, on his request, Liquidated Damages for the failure to meet guaranteed performance.
+
+However, in order to calculate such Liquidated Damages, any guaranteed performance shortfall on one Unit shall be compensated by performances higher than the guaranteed minimum value on the other Unit. Liquidated damages, if any, shall only be due based on the average guaranteed performance of both Units. The rate of Liquidated Damages for guaranteed performance shortfall shall be of 0.13% of the Contract Price per MW of shortage of average output, as compared to guaranteed gross electrical output.
+
+- 10.19. Recovery of penalty for the delay in supplying Equipment and documents and achieving the Milestones, as well as for failure to achieve guaranteed performances, is the sole and exclusive remedy of the Customer.
+- 10.20. All disputes arising out in the course of the Contract execution preliminarily are subject to examination using the complaint procedure.
+- 10.21. Claims of the Parties connected with non- or improper execution of the Contract shall be examined by the Parties within 30 (thirty) working days after the date of their receipt.
+- 10.22. The letter containing claims shall be signed by the manager or other person of the respective Party duly authorized to sign such letters by the manager and shall be forwarded by special delivery or registered mail.
+- 10.23. The letter containing claims shall come with documents attached thereto and substantiating requirements of the Party forwarding the claim.
+
+# **11. Force Majeure**
+
+- 11.1 The Parties shall be released from their liability for complete or partial non-execution of their obligations under the Contract should this non-execution be caused by circumstances beyond their control, which disable, wholly or in part, performance of obligations by one of the Parties.
+- 11.2 The following events, including but not limited to, shall be attributable to force majeure circumstances: flood, earthquake and other natural disasters, wars, military operations, riots.
+- 11.3 The Party wishing thereby to claim relief shall immediately notify the other Party in writing on the intervention (cessation) of such circumstances having described their nature within 7 (seven) calendar days at the latest provided that force majeure circumstances do not hinder from doing it. Failure to duly notify of force majeure circumstances intervention shall deprive the respective Party of the right to refer to them as the ground for exemption from liability for non- or improper execution of its obligations under the Contract.
+
+Intervention of force majeure circumstances shall be proved in accordance with the procedure stipulated by the RF legislation.
+
+- 11.4 The validity of the Contract shall be prolonged for the period of duration of force majeure circumstances and elimination of their consequences.
+- 11.5 Should the duration of any force majeure circumstances exceed 3 (three) months in succession , the Parties shall be obliged to conduct negotiations in order to either respectively change the time limits for performance of obligations under the Contract or terminate the Contract. In case of the Contract termination for the above mentioned reason the Customer shall indemnify the Supplier for the actual expenses born and all costs committed by the Supplier and agreed with the Customer in the course of the Contract execution up to the moment of effective termination of the Contract while the Supplier shall hand over to the Customer Equipment, semi-products and materials intended for the Contract execution.
+- 11.6 The Parties shall not be released from liability for non-performance of obligations occurred prior to the commencement of the force majeure circumstances.
+
+Releasing the liable Party from its liability for non-performance, late and/or improper performance of any obligation under the Contract due to force majeure circumstances shall not be construed as releasing that party from liability to perform its other obligations unless those are acknowledged by both Parties as unachievable under the Contract.
+
+11.7 The Parties shall perform the obligations not affected by force majeure circumstances.
+
+# **12. Confidentiality Conditions**
+
+- 12.1. The terms and conditions of the Contract are confidential and the Parties undertake not to disclose them for the period of the Contract validity as well as within 3 (three) subsequent years following the moment of the Contract termination unless those are disclosed upon wellgrounded and legal requests from the persons specified in Subclause 12.3. of the Contract.
+- 12.2. Unless otherwise agreed between the Parties, all information the Supplier, Customer and General Contractor receive from each other in the course of Contract execution is deemed to be confidential except the data that were or will be published or spread in other form without Parties' participation in official (authorized) editions or became/will become known for third parties without Parties' participation.
+- 12.3. The Parties has the right to disclose the terms and conditions of the Contract in only cases when such a disclosure is unambiguously and directly required according the RF legislation
+
+and to only those authorized regulatory and supervisory state bodies of the Russian Federation which are directly and lawfully referred to, as well as to a scope (but by no means beyond the scope) directly stipulated in the relevant law.
+
+Disclosure of information relating to a part of the contractual terms and conditions for the purpose of Contract execution to Subcontractors, designer's and independent technical supervision bodies, insurance companies and lending agencies shall not be considered as disclosure of the contractual terms and conditions.
+
+The Customer/General Contractor has the right to disclose the contractual terms and conditions to ""Rosenergoatom" Concern" OJSC, "Atomenergoprom" OJSC, "Rosenergoatom" State Corporation. Such a disclosure shall not be deemed as a confidentiality violation.
+
+12.4. The confidentiality conditions and related rights and obligations of the Parties are stipulated in Appendix 9 to the Contract.
+
+The supplier has no right to use Confidential information without preliminarily written authorization received from the Customer unless for the purpose of execution of this Contract.
+
+- 12.5. Neither provisions of this Contract may be construed as granting any rights to the Supplier via licensing or by other way for Customer/General Contractor's patents or copyright, as well as neither provisions of this Contract may be construed as granting any rights to the Customer/General Contractor via licensing or by other way for Supplier (Subcontractor)'s patents or copyright.
+- 12.6. Neither provisions of this Contract may be construed as granting any rights to the Parties via licensing or by other way for trade marks, trade names, service mark.
+- 12.7. For all the period of Contract validity, as well as after Contract termination, the Party that damnified the other Party through violation of its patent right, copyright, know-how right, trade mark, trade name shall indemnify this Party for damage, as well as for expenses for legal services and trials.
+- 12.8. Should the Customer/General Contractor be claimed by third parties regarding the nonexecution of this article by the Supplier, the Supplier undertakes to indemnify the Customer/General Contractor for all the losses caused by the claim.
+
+## **13. Special Provisions**
+
+- 13.1 The Supplier has the right to recruit, at its own expense and subject to preliminary agreement with the Customer, Subcontractors for execution of the Contract. The Supplier is liable to the Customer for consequences of non- or improper execution of Subcontractors' obligations.
+- 13.2 The Supplier holds all rights to intellectual property and individualization means, whether in written, graphic, electronic or any other form, the Supplier owned, held, created or acquired prior to and/or in the course of performance of this Contract.
+
+#### **14. Contract Termination**
+
+- 14.1. The Contract may be terminated at an earlier date upon mutual agreement of the Parties.
+- 14.2. The Party claiming to terminate the Contract in accordance with Subclause 14.1 of the Contract shall send a written notice of termination to the other Party with the Contract termination agreement signed and enclosed thereto. The other Party in case of its consent shall sign the Contract termination agreement and send it to the other Party within 20 (twenty) days following the date of notice receipt.
+- 14.3. The Customer shall have the right to unilaterally withdraw from performance under the Contract in case of:
+- 14.3.1 repeated violations (two and more times) by the Supplier of the Equipment delivery dates under the Contract for the period of 30 (thirty) and more calendar days;
+- 14.3.2 delivery by the Supplier of the Equipment unsound and with Non-conformances that cannot be eliminated by the Supplier within the period agreed between the Parties;
+- 14.3.3 implementation of one of the bankruptcy procedures in respect of the Supplier, which are stipulated by legislation.
+- 14.3.4 failure to provide advance payment bank guarantees and guarantees for proper performance under the Contract, as per provisions of Clause 4.32 hereof.
+
+The Customer shall have the right to unilaterally withdraw from performance under the Contract under Clause 14.3.4 after expiration of 60 days upon signing the Contract.
+
+- 14.4. If an authorized body has taken a decision to stop, suspend, change time limits or other conditions with regard to construction of Unit 1 and 2 of the Baltic NPP, the Parties are entitled to modify the Contract or refuse its execution on agreed terms.
+- 14.5 The Supplier is entitled to unilaterally refuse Contract execution on the grounds provided for in the Civil Code of the Russian Federation.
+- 14.6 The Customer is entitled to appoint a time limit for the Supplier to eliminate revealed violations in terms and conditions of the Contract or correct the situations that forced the Customer to use the right to unilaterally refuse contract execution as per Subclauses 14.3.1 and 14.3.2. The notification of the limit time appointed shall be supplemented with documents confirming the circumstances justifying the Contract termination.
+- 14.7 Should a Party use its right to unilaterally refuse Contract execution, it shall notify the other Party in writing of the fact. The notice shall contain:
+- 14.7.1 grounds for unilateral refusal to execute the Contract with obligatorily enclosed documents confirming the circumstances being grounds for refusal except for cases when the confirming documents were submitted together with the notice setting time limits for correcting violations of the contractual terms and conditions in case of unilateral refusal to execute the Contract under the grounds stipulated in Subclauses 14.3, 14.4, 14.5 of the Contract;
+- 14.7.2 the date starting from which the Contract shall be considered terminated. The said date shall not be earlier than within 30 (thirty) days from the moment the Supplier has received such a notice.
+- 14.8 Starting from the moment the Supplier has received the Customer's unilateral refusal to execute the Contract, the Supplier shall stop Contract execution including shipment of the Equipment and shall, within time limits agreed between the Parties, deliver to the Customer the Equipment paid off and all the documentation received under the Contract.
+- 14.9 In case of the unilateral withdrawal of performance under the Contract in line with Clauses 6.4.3 and 6.4.4, the Customer shall pay for the Equipment ready for shipment, and make payment against all invoice for the accepted Equipment and rendered and accepted services presented before the date of the receipt by the Supplier of notification from the Customer regarding such withdrawal. Payment for the Equipment ready for shipment will not include expenses related to transportation of the said Equipment to the sea port in the Kaliningrad Region and the cost of the Installation Supervision services for the said Equipment.
+- 14.10 The unilateral withdrawal from performance under Contract means the Parties are free from the obligations thereto, but does not exempt them from liability for Contract violations if those took place before the date of Contract termination, guaranteed obligations for the executed deliveries and settlement of the mutual payments.
+- 14.11. In all cases of early termination of the Contract, the Parties, prior to the termination date, shall draw up and sign the Mutual Settlement Check Report. If the Mutual Settlement Check Report proves that the Customer shall remit a certain amount of money to the Supplier, such an obligation shall be performed by the Customer within the time limits agreed between the Parties.
+- 14.12. The Customer unilaterally refusing to execute the Contract on the grounds stated in the Contract is entitled, from the unilateral refusal moment, to recruit a new Supplier for Contract execution.
+
+## **15. Miscellaneous**
+
+- 15.1. The Contract shall come into force on the date of its signing by authorized representatives of the Parties and shall be valid up to the moment of performance by the Parties of their obligations under the Contract in full, including performance of obligations within the Warranty Period.
+- 15.2. All amendments and addenda to the Contract shall be valid if they are made in written form and signed by authorized representatives of both Parties as additional agreements to the Contract.
+
+Should the details as per Chapter 17 of the Contract change, the associated Party shall notify the other Party of the fact in writing with identification of such changes. The notice shall be signed by a properly authorized representative of the Party. This notice shall be sent in a form enabling clear identification of the sender's address and name, date of sending and date of receipt by the other Party.
+
+- 15.3. The Parties are not entitled to transfer its rights and obligations under the Contract to third parties without written consent of the other Party except for transfer of rights and obligations to assignees and in cases provided for by the Contract and the Russian Federation legislation.
+- 15.4. The Parties shall have the right to modification of the time periods for performance of obligations under the Contract and/or compensation of extra costs associated with change in governing law, regulatory legal acts and regulatory and technical requirements for the Equipment, which are effected after the effective date hereof.
+
+In the event not mentioned above and negatively affecting one of the Parties hereunder, provided that the event has occurred through no fault of such Party, the Parties agree to hold a meeting to assess the impact of such event on performance under the Contract (modification of the time periods for performance of obligations under the Contract and/or compensation of extra costs) and decide on a mutually accepted arrangement.
+
+- 15.5. In all other cases which are not provided for by terms and conditions of the Contract, the Parties shall be governed by the Russian Federation legislation.
+- 15.6. The Appendices to the Contract shall form its integral part.
+
+The Contract is set up in 2 (Two) legally equal copies, one copy for each Party.
+
+## **16. List of Appendices to the Contract**
+
+Appendix 1. Equipment Specification.
+
+- Appendix 2. Marking Pattern (Example).
+- Appendix 3. Cost Calculation Form.
+- Appendix 4. Procedure of Installation Supervision.
+- Appendix 5. List of documentation with conditions and dates of its submission.
+- Appendix 6. Quality Assurance Requirements.
+
+Appendix 7. Conditions of stay of the Customer, Prime Contractor, Construction Manager and Authorized Organization's representatives at Supplier's/Subcontractor's facilities.
+
+Appendix 8. Requirements for Equipment Packaging, Marking and Storage.
+
+Appendix 9. Confidentiality Conditions.
+
+Appendix 10. Template for Monthly Report.
+
+Appendix 11. Template for the Schedule of Equipment's Manufacture and Delivery.
+
+Appendix 12. List of Milestones.
+
+Appendix 13. Schedule of the Equipment Manufacturing.
+
+Appendix 14. Template for Advance Payment Offset Report.
+
+Appendix 15. Instruction on entering the information about equipment and materials into the Catalogue.
+
+Appendix 16. Template for Report on entering information into the Catalogue.
+
+Appendix 17. Schedule for the release of Initial Technical Requirements and Initial data for workshop design; and of mandatory initial data.
+
+Appendix 18-1. List of spare parts.
+
+Appendix 18-2. List of special instruments.
+
+The Contract shall be signed without Appendices 12, 13 and 17 which shall be agreed and signed by the Parties as set forth in the Contract.
+
+| CUSTOMER:                                    | SUPPLIER:                                 |
+|----------------------------------------------|-------------------------------------------|
+| "DEZ" OJSC                                   | "NAVAL GROUP Atomenergomash" Limited      |
+| Address: Bldg 1-25, Ulitsa B. Polyanka       | Liability Company                         |
+| 119189 Moscow                                | 2, Ulitsa Zheleznodorozhnaya, Podolsk,    |
+| KPP 770601001,                               | Moscow Region, 142103, Russia             |
+| INN 7706730001,                              | Email: info@navalgroup-aem.com            |
+| r/s (settlement account)                     | INN 5036083578, KPP 503601001             |
+| 40702810638040024703 at subsidiary office of | OGRN 1075074009977                        |
+| Moscow Bank of Sberbank of Russia OJSC,      | r/s (Settl. Acc.) 40702810940330003889    |
+| Moscow                                       | at Sberbank of Russia OJSC, Moscow, (POSB |
+| k/s (correspondent account)                  | No 2573)                                  |
+| 30101810400000000225,                        | k/s (correspondent account)               |
+| BIC 044525225                                | 30101810400000000225                      |
+|                                              | BIC 044525225                             |
+|                                              |                                           |
+
+# **17. Addresses and Bank Details of the Parties**
+
+## **CUSTOMER: SUPPLIER:**
+
+"DEZ" OJSC General Director
+
+\_\_\_\_\_\_\_\_\_\_\_\_\_ V.I. Kolesnikov (on the basis of the Company Charter)
+
+I don't see an image to convert to markdown. Please provide the image.
+
+"AAEM" LLC General Director
+
+\_\_\_\_\_\_\_\_\_\_\_\_\_ /A. M. Tsvetkov/ (on the basis of the Company Charter)

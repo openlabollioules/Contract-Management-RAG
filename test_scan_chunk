@@ -1,0 +1,2155 @@
+🍎 Détection d'un processeur Apple Silicon
+🎮 GPU MPS disponible
+⚙️ Utilisation du device: mps
+🍎 Détection d'un processeur Apple Silicon
+🎮 GPU MPS disponible
+⚙️ Utilisation du device: mps
+
+🔄 Début du traitement du document...
+📄 Extraction du texte du PDF...
+📄 Chargement des modèles...
+🔍 Configuration de Marker...
+🔄 Création des modèles...
+Loaded layout model s3://layout/2025_02_18 on device mps with dtype torch.float16
+Loaded texify model s3://texify/2025_02_18 on device mps with dtype torch.float16
+Loaded recognition model s3://text_recognition/2025_02_18 on device mps with dtype torch.float16
+Loaded table recognition model s3://table_recognition/2025_02_18 on device mps with dtype torch.float16
+Loaded detection model s3://text_detection/2025_02_28 on device mps with dtype torch.float16
+Loaded detection model s3://inline_math_detection/2025_02_24 on device mps with dtype torch.float16
+📝 Conversion du PDF...
+🍎 Détection d'un processeur Apple Silicon
+🎮 GPU MPS disponible
+⚙️ Utilisation du device: mps
+🍎 Détection d'un processeur Apple Silicon
+🎮 GPU MPS disponible
+⚙️ Utilisation du device: mps
+🍎 Détection d'un processeur Apple Silicon
+🎮 GPU MPS disponible
+⚙️ Utilisation du device: mps
+🍎 Détection d'un processeur Apple Silicon
+🎮 GPU MPS disponible
+⚙️ Utilisation du device: mps
+✅ PDF traité en 83.17 secondes
+📊 Métriques:
+  - Pages: Unknown
+  - Mots: 4399
+  - Device utilisé: mps
+  - Vitesse: 52.89 mots/seconde
+✅ Texte extrait (4411 mots)
+Texte: 
+
+Document Metadata:
+- Title: Referentiel_B_llama3.2-vision_90b.pdf
+- Author: Unknown
+- Pages: Unknown
+
+Content:
+Annex A: Alstom / ABB General Terms & Conditions
+
+### Formation and Content of Contract
+
+The Purchase Order together with its attachments and other documents incorporated into the Contract by referen
+
+Unless otherwise stated in the Purchase Order, the contract (the "Contract") shall consist of the following do
+
+- \* The Purchase Order together with Supplier's Purchase Order acknowledgement
+- \* The PRPC
+- \* These Alstom and ABB General Terms & Conditions including its Appendices
+- \* The Client's Specification, if applicable
+- \* The Master Technical Specification incorporated into the Contract by reference in the Purchase Order
+- \* Quality Assurance plans including test and inspection requirements, incorporated into the Contract by refe
+- \* Environmental, Health & Safety requirements, incorporated into the Contract by reference in the Purchase O
+- \* Shipping, packing and marking standards and instructions, incorporated into the Contract by reference in t
+- \* Other documents incorporated into the Contract by reference in the Purchase Order
+- \* Supplier's proposal
+
+Terms and conditions of contracts of the Parties shall not apply even if the Parties or one of the Parties hav
+
+The Contract may not be modified except by a written change order issued by Purchaser in accordance with Claus
+
+accepting or acknowledging the Purchase Order (including its attachments and other documents incorporated into
+
+The invalidity, in whole or in part, of any provision of the Contract shall not affect the remainder of such p
+
+\*\*2. Definitions and Interpretations\*\*
+
+- \* \*\*2.1 Definitions\*\*
+- \* "ALSTOM Affiliate" means any company being a member of the group of companies of ALSTOM S.A., Paris.
+- \* "ABB Affiliate" means any company being a member of the group of companies of ABB Ltd, Zurich.
+- \* "Applicable Legislation" means, without prejudice to Clause 18.1, any relevant laws, regulations, code
+- \* "Client" means the Purchaser's customer to whom the Work will be ultimately delivered by the Purchaser
+- \* "Contract" shall have the meaning given to it in Clause 1, it being understood that the subject of the
+- \* "Defect" means (i) defect and deficiency of the Unit(s) in design, workmanship or material, or (ii) no
+- \* "Parties" means the Purchaser and the Supplier; "Party" means either of them, as the context requires.
+- \* "PRPC" means the project-related purchasing conditions issued by the Purchaser which shall be limited
+- \* "Purchase Order" or "PO" means the purchase order issued by the Purchaser and accepted by Supplier as
+- \* "Purchaser" means ALSTOM (Switzerland) Ltd or any ALSTOM Affiliate named as Purchaser in the Purchase
+
+"Site Services" means such services related to the Unit(s) as will, if ordered by the Purchaser, be performed "FAT" means the tests as specified in the Technical Specification, including and limited to the delivery of al "SAT" means the tests as specified in the Technical Specification, including and limited to the delivery of al "Supplier" means ABB Switzerland Ltd or any ABB Affiliate named as Purchaser in the Purchase Order. "Master Technical Specification" means the document of the same name incorporated into the Contract by referen "Client Specification" means the portions of the Client's specification relevant for the Work, as amended by m "Technical Specification" means the Master Technical Specification and Client Specification.
+
+"Unit" means the functional unit consisting of the equipment, materials, works, parts, manuals, drawings, docu "Equipment" means the scope of supply consisting of one or more Units.
+
+"Services" means the Site Services, the term "Services" shall include any changes made thereto pursuant to Cla "Work" means the Equipment and, if ordered by the Purchaser, the Services, to be provided by the Supplier, all "Site" means the place where the Site Services, if any, will be performed by the Supplier.
+
+"Client Contract" means the contract entered into between the Purchaser and the Client for the delivery of the
+
+#### 2.2 Interpretations
+
+Reference to Clauses shall mean clauses of the Contract unless otherwise specified or unless the context clear Clause headings used in the Contract are for ease of reference only and do not form part of the Contract or it The term "including" shall be construed as "including, but not limited to", unless expressly stated to the con The interpretation of international trade terms shall be in accordance with Incoterms 2000, unless otherwise s
+
+#### 3. Work
+
+#### 3.1 The Work
+
+The Supplier shall perform the Work in its entirety in the manner and at the times set forth in the Contract. Save where the Contract expressly provides otherwise, the cost of performing the Work shall be borne exclusive The Work shall include any and all works, materials, equipment, parts, drawings, documents, and other supplies The Supplier's proposal for the delivery of the Unit(s) shall include the performance of the SAT provided the The Supplier represents that it has acquainted itself with all facts, data, documents, circumstances, requirem The Supplier shall be responsible for its own interpretation of any documentation and information received and
+
+in connection with the Contract shall in any way release the Supplier from the obligation to review any such d
+
+Notwithstanding anything to the contrary, the Supplier shall in no event have any responsibility for any Site
+
+\*\*3.2 Changes\*\*
+
+The Purchaser shall have the right to require the Supplier to make any changes in the Work.
+
+If in the Supplier's opinion such changes will cause an increase or decrease in the cost of or time required f Notwithstanding that a change order may not have been finalized, if instructed to do so by the Purchaser, the If after the date of the acknowledgement of the Purchase Order the Supplier becomes aware of the introduction \*\*3.3 Hazardous Goods\*\*
+
+Unless otherwise agreed in writing, the Supplier is to be supplied to the Purchaser will not contain arsenic,
+
+safety in handling, transport, storage or use, the Supplier shall prior to their delivery furnish to the Purch In particular the Supplier shall provide to the Purchaser in writing all such data, instructions and warnings The Supplier shall indemnify the Purchaser against any and all liabilities, claims and expenses which may aris ### Free-Issue Materials and Tooling
+
+Where the Purchaser for the purpose of the Contract issues materials (including equipment, components, tooling
+
+### Execution of the Work
+
+#### Compliance
+
+The Supplier warrants that the Unit(s) delivered and Services rendered hereunder are in strict compliance with The Work shall be performed in accordance with good international power engineering practice, shall conform to
+
+\*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+Page 6 of 28
+
+#### proper operation. Any Unit or any Service which do not comply with all of the above shall be considered t 5.1.3 Supplier further agrees to provide at Purchaser's request certificates or other documentation relating t 5.2 \*\*Inspection and Testing\*\*
+
+5.2.1 The Purchaser, the Client and any other properly interested third party (other than competitors of the S 5.2.2 The Supplier shall give to the Purchaser at least ten (10) working days' advance notice in writing of te 5.2.3 The Unit(s) shall not be dispatched to the Purchaser without an inspection and release by the Purchaser, If the Contract includes the carrying out of tests on the Unit(s) after its (their) receipt by the Purchaser, 5.2.4 Inspection and testing carried out in accordance with this Clause shall not relieve the Supplier of any 5.2.5 The Supplier shall keep the test records available to the Purchaser and the Client as per the applicable 5.3 \*\*Drawings and Other Submittals\*\*
+
+The Supplier shall furnish all required documentation in accordance with the Contract and in the English langu The Purchaser's approval, if required according to the Contract, of Supplier's drawings, calculations and othe
+
+Purchaser shall furnish the documents set out in the Master Technical Specification to Supplier on the dates s
+
+\*\*6. Rejection, Warranties and Remedy of Defects\*\*
+
+\*\*6.1 Rejection\*\*
+
+If at any time prior to the expiration of the applicable warranty period (as defined in Clause 6.3) any Unit o
+
+\*\*6.2 Warranties and Representation\*\*
+
+Supplier warrants that the Work will be free from all Defects and will be fit for the purpose as specified in
+
+Supplier warrants that the Unit(s) provided pursuant to this Contract will be free of title claims, and Suppli
+
+Supplier represents that it has not paid any commission, fees or grant any rebates to any employees or officer
+
+\*\*6.3 Warranty Period\*\*
+
+The warranties given under Clause 6.2 for the Unit(s) shall apply for a period of twenty-four (24) months from The warranties given under Clause 6.2 for the Services shall apply for the period set forth in the preceding P \*\*6.4 Defects\*\*
+
+If Purchaser notifies Supplier in writing that any part of a Unit or Service is found at any time prior to exp \*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+\*\*Page 8 of 28\*\*
+
+of the Unit and/or to reperform the defective Service, at its expense, within such reasonable time as will be For any repairs or replacements of the defective Unit Supplier shall perform at its cost such tests as reasona Any repaired or replaced part of the Unit shall carry warranties on the same terms as set forth herein for a p Any reperformed Service shall carry warranties on the same terms as set forth herein for a period set forth in If the Supplier fails to remedy any Defect in the manner and at the time or times herein provided the Purchase (a) itself or by a third party to take such action as may be required to cure the Defect expeditiously at Supp (b) to terminate, with respect to the defective Unit, the Contract pursuant to Clause 17.2 and to require Supp 6.5 Warranty Exclusions
+
+The Supplier shall not be responsible for any Defect to the extent that the Defect is caused by any act or omi AAGT&C dated 14.02.07 Final Version.doc Page 9 of 28
+
+# 6.6 Exclusivity of Remedies
+
+Notwithstanding anything to the contrary contained or implied in the Contract, the Purchaser's rights and reme
+
+# 7. Price Basis
+
+# 7.1 Contract Price
+
+Purchaser undertakes to pay to Supplier for the Work the price set forth in the Purchase Order. Where the Purc
+
+Unless otherwise agreed elsewhere in the Purchase Order, the Contract price is based on an EXW delivery with t
+
+# 7.2 Taxes
+
+The Contract price includes all taxes, fees or duties levied in connection with the delivery of the Equipment If any taxes, customs duties, fees and duties are levied after the EXW delivery of the Unit(s) in accordance w
+
+# 8. Terms of Payment and Security
+
+# 8.1 Terms of Payment
+
+The terms of payment applicable to the price of the Equipment and the Services shall, be based on the Appendix Should the issuance of the PAC be delayed by more than three (3) months after the scheduled date of issuance o
+
+All payments shall be made to Supplier within sixty (60) days after receipt of the Supplier's invoice accompan Notwithstanding anything to the contrary contained or implied in the Contract, the Purchaser shall be under no The Purchaser shall not be entitled to set-off any amounts of money owing to Supplier pursuant to the Contract
+
+# 8.2 Performance Bond
+
+Upon signing of the Contract the Supplier shall provide a guarantee as set forth in Appendix A attached hereto
+
+- 9. Delivery and Transfer of Risk and Title
+- 9.1 Delivery
+
+Unless otherwise stated in the Contract, the Unit(s) shall be delivered EXW, agreed place of manufacture (as p The delivery date(s), the date of completion of the Work or, in the case of a service being performed at regul
+
+# 9.2 Transport Documents
+
+The Supplier shall, subject to and in accordance with the Purchaser's Shipping, packing and marking standards
+
+provide an invoice and such other documentation as has been agreed by the Parties.
+
+The Supplier shall immediately notify Purchaser of any known documentation errors and shall reimburse to Purch
+
+9.3 Transportation
+
+The Purchaser shall be responsible for transporting the Unit(s). If the specified accompanying documents are n
+
+9.4 Packing and Marking
+
+Packing and marking will be in accordance with the Purchaser's Shipping, packing and marking standards and ins
+
+9.5 Importation
+
+If the Unit(s) will be delivered to a destination country that has a trade agreement or a special import/custo
+
+9.6 Origin
+
+The Supplier shall manufacture, procure and deliver the Unit(s) from the agreed places of origin.
+
+The Supplier shall avoid any export or import constraint violation and shall declare the origin of the Unit(s)
+
+9.7 Transfer of Title
+
+Save as expressly otherwise provided in the Contract, title to the Unit(s) to be supplied by the Supplier shal
+
+AAGT&C dated 14.02.07 Final Version.doc
+
+Page 12 of 28
+
+### 9.8 Transfer of Risk
+
+Risk of loss of and damage to the Unit(s) delivered in accordance with the Contract shall pass to the Purchase
+
+### 9.9 Core and Custody
+
+Goods belonging to or provided by the Purchaser, which are in the Supplier's custody for any purpose, shall be
+
+9.10 Acceptance
+
+Prior to shipment, the Supplier shall perform the Factory Acceptance Test (FAT) to demonstrate readiness and f
+
+Subject to and in accordance with the Contract, the Supplier undertakes to perform the Site Acceptance Test (S
+
+The Supplier shall invite the Purchaser to the FAT and/or SAT (collectively the "Acceptance Tests") three week
+
+If the Purchaser declines to take part in the FAT and/or SAT or fails to attend the test after due notificatio
+
+If the FAT and/or SAT fail for reasons attributable to the Supplier, the Supplier shall be liable to perform r
+
+#### TO:
+
+[UNREADABLE]
+
+#### FROM:
+
+[UNREADABLE]
+
+#### DATE:
+
+[UNREADABLE]
+
+#### SUBJECT:
+
+[UNREADABLE]
+
+Insignificant Defects"), terminate the Contract pursuant to Clause 17.2 for Supplier's material breach by noti
+
+The Supplier shall bear all costs incurred in repeating the FAT.
+
+In case the SAT has to be repeated for reasons attributable to the Supplier, the Supplier shall bear its own m In case the SAT has to be repeated for reasons attributable to both, the Supplier and the Purchaser, each Part Upon successful completion of the Acceptance Tests the Work shall be deemed accepted by the Purchaser, and the If any of the aforesaid Acceptance Tests shows that the Unit(s) is/are substantially in conformance with the r \*\*10. Delayed Delivery\*\*
+
+The Supplier shall notify the Purchaser immediately in writing if the delivery of a Unit or the performance of Unless the delay is the fault of the Purchaser, the cost of the acceleration measures including transportation If the Supplier fails to deliver any Unit as scheduled due to reasons attributable to the Supplier, the Purcha If the delivery of all or any portion of documents as listed in Appendix B is delayed beyond the respective de
+
+damages at the rates and up to the maximum amount as set forth in Appendix B hereof.
+
+The Parties agree that such rates and maximum amounts are reasonable pre-estimates of the damages the Purchase
+
+Notwithstanding anything to the contrary contained or implied in the Contract, the liquidated damages set fort
+
+### 11. Liabilities and Indemnities
+
+#### 11.1 Indemnification
+
+Supplier shall indemnify and save harmless the Purchaser, its officers, employees, servants or agents at all t
+
+#### 11.2 Economic Loss
+
+Notwithstanding anything to the contrary contained or implied in the Contract, but except (i) for the payment The Supplier shall have no obligation to indemnify the Purchaser against any claims by the Client relating to
+
+\*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+Page 15 of 28
+
+11.3 Product Liability
+
+The Supplier agrees to indemnify the Purchaser and the Client, subject to and in accordance with the applicabl
+
+11.4 Limitations of Liability Notwithstanding anything to the contrary contained or implied in the Contract, the Supplier's aggregate liabil
+
+The Supplier's aggregate liability for all claims of any kind, whether by way of indemnity, breach of statutor
+
+11.5 Precedence This Clause 11 shall govern and take precedence over any other provision elsewhere in the Contract. Subject to
+
+12 Insurance and Loss or Damage in Transit
+
+12.1 Transport insurance Transport insurance will be taken out or arranged by the Purchaser, it being agreed that in the insurance poli
+
+\*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+Page 16 of 28
+
+The Supplier shall in no event be liable for any damage to the Unit(s) which may occur during transport except The Purchaser shall claim all damages due to inadequate loading and lashing by the Supplier with its transport Insurance Claims
+
+The Purchaser shall be responsible for the transportation of the Unit(s) (Clause 9.3). It shall advise the Sup
+
+Supplier Insurance
+
+The Supplier shall maintain:
+
+(a) Comprehensive General Liability insurance in the amount of Euro 3,000,000 (three million Euros) combined s
+
+(b) Workers Compensation Insurance in accordance with statutory limits; and
+
+(c) Property Insurance covering the full replacement value of all property and services owned, rented or lease
+
+Upon request, the Supplier shall furnish to the Purchaser a Certificate of Insurance completed by its insuranc
+
+Force Majeure
+
+If performance of the Contract is delayed by any act of God, strike (other than a strike which is specific to If the delay continues for more than [UNREADABLE] days after written notice of the delay has been given to the In the event of termination under this Article 13, all obligations hereunder shall cease and each Party shall
+
+Upon the occurrence of an event of Force Majeure the Parties shall take all reasonable steps to reduce the del
+
+### 14. Assignment and Subcontracts
+
+The Contract shall not be assigned or subcontracted by the Supplier as a whole. The Supplier shall not assign
+
+The Purchaser may assign the Contract to any ALSTOM Affiliate subject to prior written notice to the Supplier.
+
+The Purchaser may not assign the Contract to the Client, except as otherwise mutually agreed upon in the PRPC.
+
+### 15. Intellectual Property Rights
+
+# #### 15.1 Proprietary Rights
+
+All information and know-how including drawings, specifications and other data provided by the Purchaser in co Unless specifically requested by the Purchaser in the Contract any inventions, patents, copyrights, design rig However and independently of the existence of the aforementioned intellectual property rights, the Purchaser s
+
+Work and any modification thereof exclusively for the particular plant forming the basis for the Technical Spe
+
+15.2 \*\*Patent Infringement\*\*
+
+Supplier represents and warrants that the Unit(s) performed pursuant to this Contract and the sale or use ther
+
+15.3 \*\*Advertising\*\*
+
+Supplier shall not issue any publicity or advertising relating to this Contract without Purchaser's prior writ
+
+16. \*\*Suspension\*\*
+
+The Supplier shall have no right to suspend the performance of the Work, unless the Purchaser, for any reason The Supplier shall discontinue performance under the Contract to the extent specified in the notice of suspens Save where the Purchaser has suspended the Supplier's breach and/or by reason of Force Majeure, the Purchaser In the event of a suspension by the Purchaser, a change order shall be issued in accordance with Clause 3.2, u
+
+#### 17. Termination for Convenience or Breach
+
+#### 17.1 Termination for Convenience
+
+Purchaser may terminate all or any part of this Contract at any time by written notice to Supplier. Upon termi
+
+Supplier shall take all reasonable steps to minimize its costs and losses and the Purchaser's liability under
+
+# #### 17.2 Termination for Breach
+
+Purchaser may terminate the whole or part of the Contract by written notice without prejudice to any other rig
+
+- \* the Supplier is in material breach of its obligations (including non-compliance with Applicable Legislatio
+- \* the Supplier fails to deliver the Units due to reasons attributable to the Supplier by the date that the m
+- \* if the Supplier fails to make sufficient progress and such failure endangers the timely completion of the
+- \* the Supplier becomes bankrupt or insolvent or makes an arrangement with its creditors or has a receiver or
+
+In the event of termination under this clause, the Supplier will be liable to the Purchaser for all liabilitie
+
+- \* the Purchaser shall have the right to terminate this Contract immediately by giving written notice to the
+- \* the Supplier shall cease all work under this Contract immediately upon receipt of such notice.
+
+\*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+\*\*Page 20 of 28\*\*
+
+value the Work performed as of the date of termination and certify the amount (the "Certified Work").
+
+The Purchaser shall not be liable to make any further payment to Supplier until the Completion Cost have been
+
+\*\*17.3 Termination for Significant Breach\*\*
+
+If the Supplier's breach is so significant that the Work or part thereof cannot be used for its purpose specif
+
+\*\*17.4 Supplier's Continuing Obligations\*\*
+
+The Supplier shall continue performance of those portions of the Contract not terminated.
+
+Upon termination and at Purchaser's request, Supplier shall:
+
+(i) promptly turn over to Purchaser any or all portions of the Equipment whether or not completed, as well as
+
+(ii) assign to Purchaser all subcontracts and vendor contracts relating to the performance of the Contract to
+
+(iii) do and procure all things necessary to vest and secure good title in the goods comprising the Work in th
+
+\*\*17.5 Prolonged Force Majeure\*\*
+
+If an event of Force Majeure exceeds a continuous period of six (6) months either Party shall be entitled, upo
+
+\*\*17.6 Termination by Supplier\*\*
+
+The Supplier may terminate the whole or part of the Contract by written notice without prejudice to any other
+
+[No text visible]
+
+AAGT&C dated 14.02.07 Final Version.doc Page 21 of 28
+
+17.6.1 the Purchaser fails to make any payment when due which failure continues for more than one hundred eigh 17.6.2 the Purchaser becomes bankrupt or insolvent or makes an arrangement with its creditors or has a receive
+
+In case of termination of the Contract due to Purchaser's default as set forth above the Supplier shall be com
+
+\*\*18. Law and Disputes\*\*
+
+\*\*18.1 Governing Law and Dispute Settlement\*\*
+
+This Contract is governed exclusively by the substantive Swiss law. The application of the "United Nations' Co
+
+Disputes which cannot be resolved in good faith negotiations within sixty (60) days following a written disput
+
+During the pendency of the dispute resolution the Parties shall continue to perform the Contract.
+
+\*\*18.2 Joinder\*\*
+
+If any third party (including the Client) makes any claim against the Purchaser arising from the performance o
+
+\*\*18.3 Decisions\*\*
+
+The decision of any court or arbitration tribunal deciding upon any claim in respect of the Work shall, so far
+
+\*\*18.4 Mediation\*\*
+
+The Parties shall make reasonable efforts to resolve a dispute through mediation and shall in good faith agree
+
+AAGT&C dated 14.02.07 Final Version.doc
+
+Page 22 of 28
+
+19. \*\*Entire Agreement\*\*
+
+The Contract constitutes the entire agreement and understanding between the Parties on the subject matter
+
+20. \*\*Waiver\*\*
+
+A Party's exercise or failure to exercise or enforce any right or remedy provided by the Contract shall no
+
+21. \*\*Notices\*\*
+
+All notices, demands or communications related to this Contract shall be in writing and sent by fax or mai
+
+- 22. \*\*Miscellaneous\*\*
+- 22.1 \*\*Electronic Commerce\*\*
+
+Upon Purchaser's request Supplier agrees to participate in all of Purchaser's current and future electroni
+
+# 22.2 \*\*Execution Copies\*\*
+
+This Contract may be executed in one or more counterparts, each of which shall have the same force and eff
+
+22.3 Surviving Provisions
+
+The following Clauses shall survive termination or expiration of the Contract and will remain binding upon and
+
+\*\*Late Payments\*\* If either Party fails to make payment of any amount which it is due to pay to the other Party on the date stat
+
+\*\*Confidentiality\*\* Each Party may during the term of the Contract disclose certain confidential information to the other Party as
+
+The provisions set forth in this clause will not apply to any information, which now or hereafter (i) is in th
+
+\*\*Spore Parts\*\* The Supplier undertakes to supply spore parts for the Units, which correspond to the original parts (or where
+
+AAGT&C dated 14.02.07 Final Version.doc Page 24 of 28
+
+### Appendix A
+
+## Performance Bond (Specimen)
+
+### ALSTOM
+
+Performance Guarantee No.
+
+We have been informed that you have concluded on a Contract No. with Messrs. (hereinafter called "Supplier") f This being stated, we, (name and address of bank), irrespective of the validity and the legal effects of the a upon receipt of your written request for payment and your written confirmation stating that in your belief Sup For the purpose of identification, your request for payment and your confirmation have to be presented through Our guarantee is valid until and expires in full and automatically, should your written request for payment no With each payment under this guarantee our obligation will be reduced pro rata.
+
+### Appendix B
+
+Liquidated Damages
+
+1. Delayed Unit Delivery
+
+If a Unit is delayed beyond its scheduled delivery date due to reasons attributable to Supplier liquidated dam
+
+2. Late Submission of Documents
+
+If the submission of any of the documents listed below is delayed against the scheduled delivery date due to a (i) If the Contract price is equal to or less than one million Euros (1'000'000 Euros), the liquidated damages (ii) If the Contract price is greater than one million Euros (1'000'000 Euros), the liquidated damages shall a The total number of documents with respect to which liquidated damages may become applicable in case of late s (a) layout drawings / civil guide drawings (b) site support document for field assembly/erection supervision and for engineering/commissioning handover b
+
+(c) each monthly progress report to be submitted on the 25th calendar day of the Month, except as otherwise sp (d) each pre-notice of shipment to be submitted not later than 28 days prior to the scheduled shipment date (e) shipping documents including the packing list to be submitted not later than 7 days prior to shipment date Notwithstanding anything to the contrary contained or implied in the Contract, the liquidated damages set fort
+
+the Purchaser for any delay in the submission of any or all of the documents.
+
+If the submission of any document(s) other than those listed above is (are) delayed as against the scheduled d
+
+3. Maximum Amount
+
+The total amount of liquidated damages for delayed delivery of the Unit(s) and late submission of documents is
+
+#### General Conditions
+
+(a) Delivery of an incomplete Unit or submission of incomplete documents specified above shall be deemed a lat
+
+(b) Delivery of defective Units or Services or submission of defective documents specified above shall be deem
+
+(c) Unless otherwise agreed in the Contract, liquidated damages are payable to the Purchaser within sixty (60)
+
+Appendix C
+
+Terms of Payment
+
+AAGT&C dated 14.02.07 Final Version.doc
+
+Page 28 of 28
+
+
+🔍 Découpage du texte en chunks intelligents...
+
+🔍 Analyse de la structure du document...
+📊 Document analysé: 496 lignes
+
+✅ Découpage terminé en 0.00 secondes
+📊 Résultats:
+  - Nombre total de chunks: 64
+  - Chunks par type:
+    - title: 37
+    - section: 10
+    - subsection: 15
+    - subsubsection: 2
+
+🔍 Regroupement hiérarchique des chunks...
+
+🔍 Optimisation des chunks...
+🎮 Using MPS (Metal Performance Shaders) for embeddings
+
+🔄 Optimisation des chunks...
+✅ Optimisation terminée: 64 chunks -> 64 chunks
+
+📊 Métadonnées du document
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Fichier source**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Nombre total de chunks**: 64
+- **Temps de traitement**: 85.85 secondes
+---
+
+📊 Statistiques de profondeur
+---
+Répartition des sections par niveau de profondeur:
+- Niveau 1: 10 section(s)
+- Niveau 2: 15 section(s)
+- Niveau 3: 2 section(s)
+---
+
+📊 Groupes par préfixe
+---
+Préfixe 1: 1 chunks
+  Premier chunk: Section 1
+
+Préfixe 11.3: 1 chunks
+  Premier chunk: Section 11.3
+
+Préfixe 11.4: 1 chunks
+  Premier chunk: Section 11.4
+
+Préfixe 11.5: 1 chunks
+  Premier chunk: Section 11.5
+
+Préfixe 12: 1 chunks
+  Premier chunk: Section 12
+
+Préfixe 12.1: 1 chunks
+  Premier chunk: Section 12.1
+
+Préfixe 15.2: 1 chunks
+  Premier chunk: Section 15.2
+
+Préfixe 15.3: 1 chunks
+  Premier chunk: Section 15.3
+
+Préfixe 16: 1 chunks
+  Premier chunk: Section 16
+
+Préfixe 17.6: 1 chunks
+  Premier chunk: Section 17.6.1
+
+Préfixe 19: 1 chunks
+  Premier chunk: Section 19
+
+Préfixe 2: 1 chunks
+  Premier chunk: Section 2
+
+Préfixe 20: 1 chunks
+  Premier chunk: Section 20
+
+Préfixe 21: 1 chunks
+  Premier chunk: Section 21
+
+Préfixe 22: 1 chunks
+  Premier chunk: Section 22
+
+Préfixe 22.1: 1 chunks
+  Premier chunk: Section 22.1
+
+Préfixe 22.3: 1 chunks
+  Premier chunk: Section 22.3
+
+Préfixe 3: 1 chunks
+  Premier chunk: Section 3
+
+Préfixe 5.2: 1 chunks
+  Premier chunk: Section 5.2.1
+
+Préfixe 9: 1 chunks
+  Premier chunk: Section 9
+
+Préfixe 9.1: 1 chunks
+  Premier chunk: Section 9.1
+
+Préfixe 9.10: 1 chunks
+  Premier chunk: Section 9.10
+
+Préfixe 9.3: 1 chunks
+  Premier chunk: Section 9.3
+
+Préfixe 9.4: 1 chunks
+  Premier chunk: Section 9.4
+
+Préfixe 9.5: 1 chunks
+  Premier chunk: Section 9.5
+
+Préfixe 9.6: 1 chunks
+  Premier chunk: Section 9.6
+
+Préfixe 9.7: 1 chunks
+  Premier chunk: Section 9.7
+
+---
+
+📊 Structure hiérarchique des chunks
+---
+Section 1 (Préfixe: 1):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: 1. Delayed Unit Delivery...
+Section 12 (Préfixe: 12):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: 12 Insurance and Loss or Damage in Transit...
+  └─ Sous-sections:
+  └──Section 12.1 (Préfixe: 12.1):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: 12.1 Transport insurance Transport insurance will ...
+Section 16 (Préfixe: 16):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: 16. \*\*Suspension\*\*...
+Section 19 (Préfixe: 19):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: 19. \*\*Entire Agreement\*\*...
+Section 2 (Préfixe: 2):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: 2. Late Submission of Documents...
+Section 20 (Préfixe: 20):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: 20. \*\*Waiver\*\*...
+Section 21 (Préfixe: 21):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: 21. \*\*Notices\*\*...
+Section 22 (Préfixe: 22):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: - 22. \*\*Miscellaneous\*\*...
+  └─ Sous-sections:
+  └──Section 22.1 (Préfixe: 22.1):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: - 22.1 \*\*Electronic Commerce\*\*...
+  └──Section 22.3 (Préfixe: 22.3):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: 22.3 Surviving Provisions...
+Section 3 (Préfixe: 3):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: 3. Maximum Amount...
+Section 9 (Préfixe: 9):
+  ├─ Niveau: 1
+  ├─ Chunks: 1
+  └─ Exemple: - 9. Delivery and Transfer of Risk and Title...
+  └─ Sous-sections:
+  └──Section 9.1 (Préfixe: 9.1):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: - 9.1 Delivery...
+  └──Section 9.10 (Préfixe: 9.10):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: 9.10 Acceptance...
+  └──Section 9.3 (Préfixe: 9.3):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: 9.3 Transportation...
+  └──Section 9.4 (Préfixe: 9.4):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: 9.4 Packing and Marking...
+  └──Section 9.5 (Préfixe: 9.5):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: 9.5 Importation...
+  └──Section 9.6 (Préfixe: 9.6):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: 9.6 Origin...
+  └──Section 9.7 (Préfixe: 9.7):
+    ├─ Niveau: 2
+    ├─ Chunks: 1
+    └─ Exemple: 9.7 Transfer of Title...
+---
+
+📝 Chunks du document
+---
+
+### Chunk 1/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+
+Document Metadata:
+- Title: Referentiel_B_llama3.2-vision_90b.pdf
+- Author: Unknown
+- Pages: Unknown
+
+Content:
+Annex A: Alstom / ABB General Terms & Conditions
+
+```
+
+---
+
+### Chunk 2/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### Formation and Content of Contract
+
+The Purchase Order together with its attachments and other documents incorporated into the Contract by referen
+
+Unless otherwise stated in the Purchase Order, the contract (the "Contract") shall consist of the following do
+
+- \* The Purchase Order together with Supplier's Purchase Order acknowledgement
+- \* The PRPC
+- \* These Alstom and ABB General Terms & Conditions including its Appendices
+- \* The Client's Specification, if applicable
+- \* The Master Technical Specification incorporated into the Contract by reference in the Purchase Order
+- \* Quality Assurance plans including test and inspection requirements, incorporated into the Contract by refe
+- \* Environmental, Health & Safety requirements, incorporated into the Contract by reference in the Purchase O
+- \* Shipping, packing and marking standards and instructions, incorporated into the Contract by reference in t
+- \* Other documents incorporated into the Contract by reference in the Purchase Order
+- \* Supplier's proposal
+
+Terms and conditions of contracts of the Parties shall not apply even if the Parties or one of the Parties hav
+
+The Contract may not be modified except by a written change order issued by Purchaser in accordance with Claus
+
+accepting or acknowledging the Purchase Order (including its attachments and other documents incorporated into
+
+The invalidity, in whole or in part, of any provision of the Contract shall not affect the remainder of such p
+
+\*\*2. Definitions and Interpretations\*\*
+
+- \* \*\*2.1 Definitions\*\*
+- \* "ALSTOM Affiliate" means any company being a member of the group of companies of ALSTOM S.A., Paris.
+- \* "ABB Affiliate" means any company being a member of the group of companies of ABB Ltd, Zurich.
+- \* "Applicable Legislation" means, without prejudice to Clause 18.1, any relevant laws, regulations, code
+- \* "Client" means the Purchaser's customer to whom the Work will be ultimately delivered by the Purchaser
+- \* "Contract" shall have the meaning given to it in Clause 1, it being understood that the subject of the
+- \* "Defect" means (i) defect and deficiency of the Unit(s) in design, workmanship or material, or (ii) no
+- \* "Parties" means the Purchaser and the Supplier; "Party" means either of them, as the context requires.
+- \* "PRPC" means the project-related purchasing conditions issued by the Purchaser which shall be limited
+- \* "Purchase Order" or "PO" means the purchase order issued by the Purchaser and accepted by Supplier as
+- \* "Purchaser" means ALSTOM (Switzerland) Ltd or any ALSTOM Affiliate named as Purchaser in the Purchase
+
+"Site Services" means such services related to the Unit(s) as will, if ordered by the Purchaser, be performed "FAT" means the tests as specified in the Technical Specification, including and limited to the delivery of al "SAT" means the tests as specified in the Technical Specification, including and limited to the delivery of al "Supplier" means ABB Switzerland Ltd or any ABB Affiliate named as Purchaser in the Purchase Order. "Master Technical Specification" means the document of the same name incorporated into the Contract by referen "Client Specification" means the portions of the Client's specification relevant for the Work, as amended by m "Technical Specification" means the Master Technical Specification and Client Specification.
+
+"Unit" means the functional unit consisting of the equipment, materials, works, parts, manuals, drawings, docu "Equipment" means the scope of supply consisting of one or more Units.
+
+"Services" means the Site Services, the term "Services" shall include any changes made thereto pursuant to Cla "Work" means the Equipment and, if ordered by the Purchaser, the Services, to be provided by the Supplier, all "Site" means the place where the Site Services, if any, will be performed by the Supplier.
+
+"Client Contract" means the contract entered into between the Purchaser and the Client for the delivery of the
+
+```
+
+---
+
+### Chunk 3/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### 2.2 Interpretations
+
+Reference to Clauses shall mean clauses of the Contract unless otherwise specified or unless the context clear Clause headings used in the Contract are for ease of reference only and do not form part of the Contract or it The term "including" shall be construed as "including, but not limited to", unless expressly stated to the con The interpretation of international trade terms shall be in accordance with Incoterms 2000, unless otherwise s
+
+```
+
+---
+
+### Chunk 4/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### 3. Work
+
+```
+
+---
+
+### Chunk 5/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### 3.1 The Work
+
+The Supplier shall perform the Work in its entirety in the manner and at the times set forth in the Contract. Save where the Contract expressly provides otherwise, the cost of performing the Work shall be borne exclusive The Work shall include any and all works, materials, equipment, parts, drawings, documents, and other supplies The Supplier's proposal for the delivery of the Unit(s) shall include the performance of the SAT provided the The Supplier represents that it has acquainted itself with all facts, data, documents, circumstances, requirem The Supplier shall be responsible for its own interpretation of any documentation and information received and
+
+in connection with the Contract shall in any way release the Supplier from the obligation to review any such d
+
+Notwithstanding anything to the contrary, the Supplier shall in no event have any responsibility for any Site
+
+\*\*3.2 Changes\*\*
+
+The Purchaser shall have the right to require the Supplier to make any changes in the Work.
+
+If in the Supplier's opinion such changes will cause an increase or decrease in the cost of or time required f Notwithstanding that a change order may not have been finalized, if instructed to do so by the Purchaser, the If after the date of the acknowledgement of the Purchase Order the Supplier becomes aware of the introduction \*\*3.3 Hazardous Goods\*\*
+
+Unless otherwise agreed in writing, the Supplier is to be supplied to the Purchaser will not contain arsenic,
+
+safety in handling, transport, storage or use, the Supplier shall prior to their delivery furnish to the Purch In particular the Supplier shall provide to the Purchaser in writing all such data, instructions and warnings The Supplier shall indemnify the Purchaser against any and all liabilities, claims and expenses which may aris ### Free-Issue Materials and Tooling
+
+Where the Purchaser for the purpose of the Contract issues materials (including equipment, components, tooling
+
+```
+
+---
+
+### Chunk 6/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### Execution of the Work
+
+```
+
+---
+
+### Chunk 7/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### Compliance
+
+The Supplier warrants that the Unit(s) delivered and Services rendered hereunder are in strict compliance with The Work shall be performed in accordance with good international power engineering practice, shall conform to
+
+\*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+Page 6 of 28
+
+```
+
+---
+
+### Chunk 8/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### proper operation. Any Unit or any Service which do not comply with all of the above shall be considered t 5.1.3 Supplier further agrees to provide at Purchaser's request certificates or other documentation relating t 5.2 \*\*Inspection and Testing\*\*
+
+```
+
+---
+
+### Chunk 9/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 5.2.1
+- **Hiérarchie complète**: 5 -> 5.2 -> 5.2.1
+- **Section parente**: 5.2
+- **Type**: subsubsection
+
+**Contenu**:
+```markdown
+5.2.1 The Purchaser, the Client and any other properly interested third party (other than competitors of the S 5.2.2 The Supplier shall give to the Purchaser at least ten (10) working days' advance notice in writing of te 5.2.3 The Unit(s) shall not be dispatched to the Purchaser without an inspection and release by the Purchaser, If the Contract includes the carrying out of tests on the Unit(s) after its (their) receipt by the Purchaser, 5.2.4 Inspection and testing carried out in accordance with this Clause shall not relieve the Supplier of any 5.2.5 The Supplier shall keep the test records available to the Purchaser and the Client as per the applicable 5.3 \*\*Drawings and Other Submittals\*\*
+
+The Supplier shall furnish all required documentation in accordance with the Contract and in the English langu The Purchaser's approval, if required according to the Contract, of Supplier's drawings, calculations and othe
+
+Purchaser shall furnish the documents set out in the Master Technical Specification to Supplier on the dates s
+
+\*\*6. Rejection, Warranties and Remedy of Defects\*\*
+
+\*\*6.1 Rejection\*\*
+
+If at any time prior to the expiration of the applicable warranty period (as defined in Clause 6.3) any Unit o
+
+\*\*6.2 Warranties and Representation\*\*
+
+Supplier warrants that the Work will be free from all Defects and will be fit for the purpose as specified in
+
+Supplier warrants that the Unit(s) provided pursuant to this Contract will be free of title claims, and Suppli
+
+Supplier represents that it has not paid any commission, fees or grant any rebates to any employees or officer
+
+\*\*6.3 Warranty Period\*\*
+
+The warranties given under Clause 6.2 for the Unit(s) shall apply for a period of twenty-four (24) months from The warranties given under Clause 6.2 for the Services shall apply for the period set forth in the preceding P \*\*6.4 Defects\*\*
+
+If Purchaser notifies Supplier in writing that any part of a Unit or Service is found at any time prior to exp \*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+\*\*Page 8 of 28\*\*
+
+of the Unit and/or to reperform the defective Service, at its expense, within such reasonable time as will be For any repairs or replacements of the defective Unit Supplier shall perform at its cost such tests as reasona Any repaired or replaced part of the Unit shall carry warranties on the same terms as set forth herein for a p Any reperformed Service shall carry warranties on the same terms as set forth herein for a period set forth in If the Supplier fails to remedy any Defect in the manner and at the time or times herein provided the Purchase (a) itself or by a third party to take such action as may be required to cure the Defect expeditiously at Supp (b) to terminate, with respect to the defective Unit, the Contract pursuant to Clause 17.2 and to require Supp 6.5 Warranty Exclusions
+
+The Supplier shall not be responsible for any Defect to the extent that the Defect is caused by any act or omi AAGT&C dated 14.02.07 Final Version.doc Page 9 of 28
+
+```
+
+---
+
+### Chunk 10/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# 6.6 Exclusivity of Remedies
+
+Notwithstanding anything to the contrary contained or implied in the Contract, the Purchaser's rights and reme
+
+```
+
+---
+
+### Chunk 11/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# 7. Price Basis
+
+```
+
+---
+
+### Chunk 12/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# 7.1 Contract Price
+
+Purchaser undertakes to pay to Supplier for the Work the price set forth in the Purchase Order. Where the Purc
+
+Unless otherwise agreed elsewhere in the Purchase Order, the Contract price is based on an EXW delivery with t
+
+```
+
+---
+
+### Chunk 13/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# 7.2 Taxes
+
+The Contract price includes all taxes, fees or duties levied in connection with the delivery of the Equipment If any taxes, customs duties, fees and duties are levied after the EXW delivery of the Unit(s) in accordance w
+
+```
+
+---
+
+### Chunk 14/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# 8. Terms of Payment and Security
+
+```
+
+---
+
+### Chunk 15/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# 8.1 Terms of Payment
+
+The terms of payment applicable to the price of the Equipment and the Services shall, be based on the Appendix Should the issuance of the PAC be delayed by more than three (3) months after the scheduled date of issuance o
+
+All payments shall be made to Supplier within sixty (60) days after receipt of the Supplier's invoice accompan Notwithstanding anything to the contrary contained or implied in the Contract, the Purchaser shall be under no The Purchaser shall not be entitled to set-off any amounts of money owing to Supplier pursuant to the Contract
+
+```
+
+---
+
+### Chunk 16/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# 8.2 Performance Bond
+
+Upon signing of the Contract the Supplier shall provide a guarantee as set forth in Appendix A attached hereto
+
+```
+
+---
+
+### Chunk 17/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 9
+- **Hiérarchie complète**: 9 (8.2 Performance Bond)
+- **Titre du chapitre**: 8.2 Performance Bond
+- **Type**: section
+
+**Contenu**:
+```markdown
+- 9. Delivery and Transfer of Risk and Title
+```
+
+---
+
+### Chunk 18/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 9.1
+- **Hiérarchie complète**: 9 (8.2 Performance Bond) -> 9.1 (8.2 Performance Bond)
+- **Section parente**: 9
+- **Titre du chapitre**: 8.2 Performance Bond
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+- 9.1 Delivery
+
+Unless otherwise stated in the Contract, the Unit(s) shall be delivered EXW, agreed place of manufacture (as p The delivery date(s), the date of completion of the Work or, in the case of a service being performed at regul
+
+```
+
+---
+
+### Chunk 19/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# 9.2 Transport Documents
+
+The Supplier shall, subject to and in accordance with the Purchaser's Shipping, packing and marking standards
+
+provide an invoice and such other documentation as has been agreed by the Parties.
+
+The Supplier shall immediately notify Purchaser of any known documentation errors and shall reimburse to Purch
+
+```
+
+---
+
+### Chunk 20/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 9.3
+- **Hiérarchie complète**: 9 (8.2 Performance Bond) -> 9.3 (9.2 Transport Documents)
+- **Section parente**: 9
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+9.3 Transportation
+
+The Purchaser shall be responsible for transporting the Unit(s). If the specified accompanying documents are n
+
+```
+
+---
+
+### Chunk 21/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 9.4
+- **Hiérarchie complète**: 9 (8.2 Performance Bond) -> 9.4 (9.2 Transport Documents)
+- **Section parente**: 9
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+9.4 Packing and Marking
+
+Packing and marking will be in accordance with the Purchaser's Shipping, packing and marking standards and ins
+
+```
+
+---
+
+### Chunk 22/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 9.5
+- **Hiérarchie complète**: 9 (8.2 Performance Bond) -> 9.5 (9.2 Transport Documents)
+- **Section parente**: 9
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+9.5 Importation
+
+If the Unit(s) will be delivered to a destination country that has a trade agreement or a special import/custo
+
+```
+
+---
+
+### Chunk 23/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 9.6
+- **Hiérarchie complète**: 9 (8.2 Performance Bond) -> 9.6 (9.2 Transport Documents)
+- **Section parente**: 9
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+9.6 Origin
+
+The Supplier shall manufacture, procure and deliver the Unit(s) from the agreed places of origin.
+
+The Supplier shall avoid any export or import constraint violation and shall declare the origin of the Unit(s)
+
+```
+
+---
+
+### Chunk 24/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 9.7
+- **Hiérarchie complète**: 9 (8.2 Performance Bond) -> 9.7 (9.2 Transport Documents)
+- **Section parente**: 9
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+9.7 Transfer of Title
+
+Save as expressly otherwise provided in the Contract, title to the Unit(s) to be supplied by the Supplier shal
+
+AAGT&C dated 14.02.07 Final Version.doc
+
+Page 12 of 28
+
+```
+
+---
+
+### Chunk 25/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### 9.8 Transfer of Risk
+
+Risk of loss of and damage to the Unit(s) delivered in accordance with the Contract shall pass to the Purchase
+
+```
+
+---
+
+### Chunk 26/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### 9.9 Core and Custody
+
+Goods belonging to or provided by the Purchaser, which are in the Supplier's custody for any purpose, shall be
+
+```
+
+---
+
+### Chunk 27/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 9.10
+- **Hiérarchie complète**: 9 (8.2 Performance Bond) -> 9.10 (9.2 Transport Documents)
+- **Section parente**: 9
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+9.10 Acceptance
+
+Prior to shipment, the Supplier shall perform the Factory Acceptance Test (FAT) to demonstrate readiness and f
+
+Subject to and in accordance with the Contract, the Supplier undertakes to perform the Site Acceptance Test (S
+
+The Supplier shall invite the Purchaser to the FAT and/or SAT (collectively the "Acceptance Tests") three week
+
+If the Purchaser declines to take part in the FAT and/or SAT or fails to attend the test after due notificatio
+
+If the FAT and/or SAT fail for reasons attributable to the Supplier, the Supplier shall be liable to perform r
+
+```
+
+---
+
+### Chunk 28/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### TO:
+
+[UNREADABLE]
+
+```
+
+---
+
+### Chunk 29/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### FROM:
+
+[UNREADABLE]
+
+```
+
+---
+
+### Chunk 30/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### DATE:
+
+[UNREADABLE]
+
+```
+
+---
+
+### Chunk 31/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### SUBJECT:
+
+[UNREADABLE]
+
+Insignificant Defects"), terminate the Contract pursuant to Clause 17.2 for Supplier's material breach by noti
+
+The Supplier shall bear all costs incurred in repeating the FAT.
+
+In case the SAT has to be repeated for reasons attributable to the Supplier, the Supplier shall bear its own m In case the SAT has to be repeated for reasons attributable to both, the Supplier and the Purchaser, each Part Upon successful completion of the Acceptance Tests the Work shall be deemed accepted by the Purchaser, and the If any of the aforesaid Acceptance Tests shows that the Unit(s) is/are substantially in conformance with the r \*\*10. Delayed Delivery\*\*
+
+The Supplier shall notify the Purchaser immediately in writing if the delivery of a Unit or the performance of Unless the delay is the fault of the Purchaser, the cost of the acceleration measures including transportation If the Supplier fails to deliver any Unit as scheduled due to reasons attributable to the Supplier, the Purcha If the delivery of all or any portion of documents as listed in Appendix B is delayed beyond the respective de
+
+damages at the rates and up to the maximum amount as set forth in Appendix B hereof.
+
+The Parties agree that such rates and maximum amounts are reasonable pre-estimates of the damages the Purchase
+
+Notwithstanding anything to the contrary contained or implied in the Contract, the liquidated damages set fort
+
+```
+
+---
+
+### Chunk 32/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### 11. Liabilities and Indemnities
+
+```
+
+---
+
+### Chunk 33/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### 11.1 Indemnification
+
+Supplier shall indemnify and save harmless the Purchaser, its officers, employees, servants or agents at all t
+
+```
+
+---
+
+### Chunk 34/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### 11.2 Economic Loss
+
+Notwithstanding anything to the contrary contained or implied in the Contract, but except (i) for the payment The Supplier shall have no obligation to indemnify the Purchaser against any claims by the Client relating to
+
+\*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+Page 15 of 28
+
+```
+
+---
+
+### Chunk 35/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 11.3
+- **Hiérarchie complète**: 11 -> 11.3 (9.2 Transport Documents)
+- **Section parente**: 11
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+11.3 Product Liability
+
+The Supplier agrees to indemnify the Purchaser and the Client, subject to and in accordance with the applicabl
+
+```
+
+---
+
+### Chunk 36/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 11.4
+- **Hiérarchie complète**: 11 -> 11.4 (9.2 Transport Documents)
+- **Section parente**: 11
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+11.4 Limitations of Liability Notwithstanding anything to the contrary contained or implied in the Contract, the Supplier's aggregate liabil
+
+The Supplier's aggregate liability for all claims of any kind, whether by way of indemnity, breach of statutor
+
+```
+
+---
+
+### Chunk 37/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 11.5
+- **Hiérarchie complète**: 11 -> 11.5 (9.2 Transport Documents)
+- **Section parente**: 11
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+11.5 Precedence This Clause 11 shall govern and take precedence over any other provision elsewhere in the Contract. Subject to
+
+```
+
+---
+
+### Chunk 38/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 12
+- **Hiérarchie complète**: 12 (9.2 Transport Documents)
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: section
+
+**Contenu**:
+```markdown
+12 Insurance and Loss or Damage in Transit
+
+```
+
+---
+
+### Chunk 39/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 12.1
+- **Hiérarchie complète**: 12 (9.2 Transport Documents) -> 12.1 (9.2 Transport Documents)
+- **Section parente**: 12
+- **Titre du chapitre**: 9.2 Transport Documents
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+12.1 Transport insurance Transport insurance will be taken out or arranged by the Purchaser, it being agreed that in the insurance poli
+
+\*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+Page 16 of 28
+
+The Supplier shall in no event be liable for any damage to the Unit(s) which may occur during transport except The Purchaser shall claim all damages due to inadequate loading and lashing by the Supplier with its transport Insurance Claims
+
+The Purchaser shall be responsible for the transportation of the Unit(s) (Clause 9.3). It shall advise the Sup
+
+Supplier Insurance
+
+The Supplier shall maintain:
+
+(a) Comprehensive General Liability insurance in the amount of Euro 3,000,000 (three million Euros) combined s
+
+(b) Workers Compensation Insurance in accordance with statutory limits; and
+
+(c) Property Insurance covering the full replacement value of all property and services owned, rented or lease
+
+Upon request, the Supplier shall furnish to the Purchaser a Certificate of Insurance completed by its insuranc
+
+Force Majeure
+
+If performance of the Contract is delayed by any act of God, strike (other than a strike which is specific to If the delay continues for more than [UNREADABLE] days after written notice of the delay has been given to the In the event of termination under this Article 13, all obligations hereunder shall cease and each Party shall
+
+Upon the occurrence of an event of Force Majeure the Parties shall take all reasonable steps to reduce the del
+
+```
+
+---
+
+### Chunk 40/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### 14. Assignment and Subcontracts
+
+The Contract shall not be assigned or subcontracted by the Supplier as a whole. The Supplier shall not assign
+
+The Purchaser may assign the Contract to any ALSTOM Affiliate subject to prior written notice to the Supplier.
+
+The Purchaser may not assign the Contract to the Client, except as otherwise mutually agreed upon in the PRPC.
+
+```
+
+---
+
+### Chunk 41/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### 15. Intellectual Property Rights
+
+```
+
+---
+
+### Chunk 42/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# #### 15.1 Proprietary Rights
+
+All information and know-how including drawings, specifications and other data provided by the Purchaser in co Unless specifically requested by the Purchaser in the Contract any inventions, patents, copyrights, design rig However and independently of the existence of the aforementioned intellectual property rights, the Purchaser s
+
+Work and any modification thereof exclusively for the particular plant forming the basis for the Technical Spe
+
+```
+
+---
+
+### Chunk 43/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 15.2
+- **Hiérarchie complète**: 15 -> 15.2 (#### 15.1 Proprietary Rights)
+- **Section parente**: 15
+- **Titre du chapitre**: #### 15.1 Proprietary Rights
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+15.2 \*\*Patent Infringement\*\*
+
+Supplier represents and warrants that the Unit(s) performed pursuant to this Contract and the sale or use ther
+
+```
+
+---
+
+### Chunk 44/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 15.3
+- **Hiérarchie complète**: 15 -> 15.3 (#### 15.1 Proprietary Rights)
+- **Section parente**: 15
+- **Titre du chapitre**: #### 15.1 Proprietary Rights
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+15.3 \*\*Advertising\*\*
+
+Supplier shall not issue any publicity or advertising relating to this Contract without Purchaser's prior writ
+
+```
+
+---
+
+### Chunk 45/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 16
+- **Hiérarchie complète**: 16 (#### 15.1 Proprietary Rights)
+- **Titre du chapitre**: #### 15.1 Proprietary Rights
+- **Type**: section
+
+**Contenu**:
+```markdown
+16. \*\*Suspension\*\*
+
+The Supplier shall have no right to suspend the performance of the Work, unless the Purchaser, for any reason The Supplier shall discontinue performance under the Contract to the extent specified in the notice of suspens Save where the Purchaser has suspended the Supplier's breach and/or by reason of Force Majeure, the Purchaser In the event of a suspension by the Purchaser, a change order shall be issued in accordance with Clause 3.2, u
+
+```
+
+---
+
+### Chunk 46/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### 17. Termination for Convenience or Breach
+
+```
+
+---
+
+### Chunk 47/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### 17.1 Termination for Convenience
+
+Purchaser may terminate all or any part of this Contract at any time by written notice to Supplier. Upon termi
+
+Supplier shall take all reasonable steps to minimize its costs and losses and the Purchaser's liability under
+
+```
+
+---
+
+### Chunk 48/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# #### 17.2 Termination for Breach
+
+Purchaser may terminate the whole or part of the Contract by written notice without prejudice to any other rig
+
+- \* the Supplier is in material breach of its obligations (including non-compliance with Applicable Legislatio
+- \* the Supplier fails to deliver the Units due to reasons attributable to the Supplier by the date that the m
+- \* if the Supplier fails to make sufficient progress and such failure endangers the timely completion of the
+- \* the Supplier becomes bankrupt or insolvent or makes an arrangement with its creditors or has a receiver or
+
+In the event of termination under this clause, the Supplier will be liable to the Purchaser for all liabilitie
+
+- \* the Purchaser shall have the right to terminate this Contract immediately by giving written notice to the
+- \* the Supplier shall cease all work under this Contract immediately upon receipt of such notice.
+
+\*\*AAGT&C dated 14.02.07 Final Version.doc\*\*
+
+\*\*Page 20 of 28\*\*
+
+value the Work performed as of the date of termination and certify the amount (the "Certified Work").
+
+The Purchaser shall not be liable to make any further payment to Supplier until the Completion Cost have been
+
+\*\*17.3 Termination for Significant Breach\*\*
+
+If the Supplier's breach is so significant that the Work or part thereof cannot be used for its purpose specif
+
+\*\*17.4 Supplier's Continuing Obligations\*\*
+
+The Supplier shall continue performance of those portions of the Contract not terminated.
+
+Upon termination and at Purchaser's request, Supplier shall:
+
+(i) promptly turn over to Purchaser any or all portions of the Equipment whether or not completed, as well as
+
+(ii) assign to Purchaser all subcontracts and vendor contracts relating to the performance of the Contract to
+
+(iii) do and procure all things necessary to vest and secure good title in the goods comprising the Work in th
+
+\*\*17.5 Prolonged Force Majeure\*\*
+
+If an event of Force Majeure exceeds a continuous period of six (6) months either Party shall be entitled, upo
+
+\*\*17.6 Termination by Supplier\*\*
+
+The Supplier may terminate the whole or part of the Contract by written notice without prejudice to any other
+
+[No text visible]
+
+AAGT&C dated 14.02.07 Final Version.doc Page 21 of 28
+
+```
+
+---
+
+### Chunk 49/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 17.6.1
+- **Hiérarchie complète**: 17 -> 17.6 -> 17.6.1 (#### 17.2 Termination for Breach)
+- **Section parente**: 17.6
+- **Titre du chapitre**: #### 17.2 Termination for Breach
+- **Type**: subsubsection
+
+**Contenu**:
+```markdown
+17.6.1 the Purchaser fails to make any payment when due which failure continues for more than one hundred eigh 17.6.2 the Purchaser becomes bankrupt or insolvent or makes an arrangement with its creditors or has a receive
+
+In case of termination of the Contract due to Purchaser's default as set forth above the Supplier shall be com
+
+\*\*18. Law and Disputes\*\*
+
+\*\*18.1 Governing Law and Dispute Settlement\*\*
+
+This Contract is governed exclusively by the substantive Swiss law. The application of the "United Nations' Co
+
+Disputes which cannot be resolved in good faith negotiations within sixty (60) days following a written disput
+
+During the pendency of the dispute resolution the Parties shall continue to perform the Contract.
+
+\*\*18.2 Joinder\*\*
+
+If any third party (including the Client) makes any claim against the Purchaser arising from the performance o
+
+\*\*18.3 Decisions\*\*
+
+The decision of any court or arbitration tribunal deciding upon any claim in respect of the Work shall, so far
+
+\*\*18.4 Mediation\*\*
+
+The Parties shall make reasonable efforts to resolve a dispute through mediation and shall in good faith agree
+
+AAGT&C dated 14.02.07 Final Version.doc
+
+Page 22 of 28
+
+```
+
+---
+
+### Chunk 50/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 19
+- **Hiérarchie complète**: 19 (#### 17.2 Termination for Breach)
+- **Titre du chapitre**: #### 17.2 Termination for Breach
+- **Type**: section
+
+**Contenu**:
+```markdown
+19. \*\*Entire Agreement\*\*
+
+The Contract constitutes the entire agreement and understanding between the Parties on the subject matter
+
+```
+
+---
+
+### Chunk 51/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 20
+- **Hiérarchie complète**: 20 (#### 17.2 Termination for Breach)
+- **Titre du chapitre**: #### 17.2 Termination for Breach
+- **Type**: section
+
+**Contenu**:
+```markdown
+20. \*\*Waiver\*\*
+
+A Party's exercise or failure to exercise or enforce any right or remedy provided by the Contract shall no
+
+```
+
+---
+
+### Chunk 52/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 21
+- **Hiérarchie complète**: 21 (#### 17.2 Termination for Breach)
+- **Titre du chapitre**: #### 17.2 Termination for Breach
+- **Type**: section
+
+**Contenu**:
+```markdown
+21. \*\*Notices\*\*
+
+All notices, demands or communications related to this Contract shall be in writing and sent by fax or mai
+
+```
+
+---
+
+### Chunk 53/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 22
+- **Hiérarchie complète**: 22 (#### 17.2 Termination for Breach)
+- **Titre du chapitre**: #### 17.2 Termination for Breach
+- **Type**: section
+
+**Contenu**:
+```markdown
+- 22. \*\*Miscellaneous\*\*
+```
+
+---
+
+### Chunk 54/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 22.1
+- **Hiérarchie complète**: 22 (#### 17.2 Termination for Breach) -> 22.1 (#### 17.2 Termination for Breach)
+- **Section parente**: 22
+- **Titre du chapitre**: #### 17.2 Termination for Breach
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+- 22.1 \*\*Electronic Commerce\*\*
+
+Upon Purchaser's request Supplier agrees to participate in all of Purchaser's current and future electroni
+
+```
+
+---
+
+### Chunk 55/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+# 22.2 \*\*Execution Copies\*\*
+
+This Contract may be executed in one or more counterparts, each of which shall have the same force and eff
+
+```
+
+---
+
+### Chunk 56/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 22.3
+- **Hiérarchie complète**: 22 (#### 17.2 Termination for Breach) -> 22.3 (22.2 \*\*Execution Copies\*\*)
+- **Section parente**: 22
+- **Titre du chapitre**: 22.2 \*\*Execution Copies\*\*
+- **Type**: subsection
+
+**Contenu**:
+```markdown
+22.3 Surviving Provisions
+
+The following Clauses shall survive termination or expiration of the Contract and will remain binding upon and
+
+\*\*Late Payments\*\* If either Party fails to make payment of any amount which it is due to pay to the other Party on the date stat
+
+\*\*Confidentiality\*\* Each Party may during the term of the Contract disclose certain confidential information to the other Party as
+
+The provisions set forth in this clause will not apply to any information, which now or hereafter (i) is in th
+
+\*\*Spore Parts\*\* The Supplier undertakes to supply spore parts for the Units, which correspond to the original parts (or where
+
+AAGT&C dated 14.02.07 Final Version.doc Page 24 of 28
+
+```
+
+---
+
+### Chunk 57/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### Appendix A
+
+```
+
+---
+
+### Chunk 58/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+## Performance Bond (Specimen)
+
+```
+
+---
+
+### Chunk 59/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### ALSTOM
+
+Performance Guarantee No.
+
+We have been informed that you have concluded on a Contract No. with Messrs. (hereinafter called "Supplier") f This being stated, we, (name and address of bank), irrespective of the validity and the legal effects of the a upon receipt of your written request for payment and your written confirmation stating that in your belief Sup For the purpose of identification, your request for payment and your confirmation have to be presented through Our guarantee is valid until and expires in full and automatically, should your written request for payment no With each payment under this guarantee our obligation will be reduced pro rata.
+
+```
+
+---
+
+### Chunk 60/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+### Appendix B
+
+Liquidated Damages
+
+```
+
+---
+
+### Chunk 61/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 1
+- **Hiérarchie complète**: 1 (Performance Bond (Specimen))
+- **Titre du chapitre**: Performance Bond (Specimen)
+- **Type**: section
+
+**Contenu**:
+```markdown
+1. Delayed Unit Delivery
+
+If a Unit is delayed beyond its scheduled delivery date due to reasons attributable to Supplier liquidated dam
+
+```
+
+---
+
+### Chunk 62/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 2
+- **Hiérarchie complète**: 2 (Performance Bond (Specimen))
+- **Titre du chapitre**: Performance Bond (Specimen)
+- **Type**: section
+
+**Contenu**:
+```markdown
+2. Late Submission of Documents
+
+If the submission of any of the documents listed below is delayed against the scheduled delivery date due to a (i) If the Contract price is equal to or less than one million Euros (1'000'000 Euros), the liquidated damages (ii) If the Contract price is greater than one million Euros (1'000'000 Euros), the liquidated damages shall a The total number of documents with respect to which liquidated damages may become applicable in case of late s (a) layout drawings / civil guide drawings (b) site support document for field assembly/erection supervision and for engineering/commissioning handover b
+
+(c) each monthly progress report to be submitted on the 25th calendar day of the Month, except as otherwise sp (d) each pre-notice of shipment to be submitted not later than 28 days prior to the scheduled shipment date (e) shipping documents including the packing list to be submitted not later than 7 days prior to shipment date Notwithstanding anything to the contrary contained or implied in the Contract, the liquidated damages set fort
+
+the Purchaser for any delay in the submission of any or all of the documents.
+
+If the submission of any document(s) other than those listed above is (are) delayed as against the scheduled d
+
+```
+
+---
+
+### Chunk 63/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Section**: 3
+- **Hiérarchie complète**: 3 (Performance Bond (Specimen))
+- **Titre du chapitre**: Performance Bond (Specimen)
+- **Type**: section
+
+**Contenu**:
+```markdown
+3. Maximum Amount
+
+The total amount of liquidated damages for delayed delivery of the Unit(s) and late submission of documents is
+
+```
+
+---
+
+### Chunk 64/64
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Type**: title
+
+**Contenu**:
+```markdown
+#### General Conditions
+
+(a) Delivery of an incomplete Unit or submission of incomplete documents specified above shall be deemed a lat
+
+(b) Delivery of defective Units or Services or submission of defective documents specified above shall be deem
+
+(c) Unless otherwise agreed in the Contract, liquidated damages are payable to the Purchaser within sixty (60)
+
+Appendix C
+
+Terms of Payment
+
+AAGT&C dated 14.02.07 Final Version.doc
+
+Page 28 of 28
+
+```
+
+---
+
+📋 Résumé
+---
+- **Document**: Referentiel_B_llama3.2-vision_90b.pdf
+- **Nombre total de chunks**: 64
+- **Temps total de traitement**: 85.85 secondes
+---
+
+
+🔍 Génération des embeddings...
+🎮 Using MPS (Metal Performance Shaders) for embeddings
+
+📊 Résultats de la transformation :
+Nombre total de chunks : 64
+Dimension des embeddings : (1024,)
+
+=== Chunk 1/64 ===
+Type: title
+
+Contenu:
+--------------------------------------------------
+
+Document Metadata:
+- Title: Referentiel_B_llama3.2-vision_90b.pdf
+- Author: Unknown
+- Pages: Unknown
+
+Content:
+Annex A: Alstom / ABB General Terms & Conditions
+
+--------------------------------------------------
+
+Embedding (premiers éléments):
+[ 0.01383 -0.02269 -0.02943  0.03482 -0.04602]
+Norme L2: 1.0000
+
+=== Chunk 2/64 ===
+Type: title
+
+Contenu:
+--------------------------------------------------
+### Formation and Content of Contract
+
+The Purchase Order together with its attachments and other documents incorporated into the Contract by referen
+
+Unless otherwise stated in the Purchase Order, th...
+--------------------------------------------------
+
+Embedding (premiers éléments):
+[ 0.00542 -0.00947 -0.0129   0.0524  -0.02951]
+Norme L2: 1.0000
+
+=== Chunk 3/64 ===
+Type: title
+
+Contenu:
+--------------------------------------------------
+#### 2.2 Interpretations
+
+Reference to Clauses shall mean clauses of the Contract unless otherwise specified or unless the context clear Clause headings used in the Contract are for ease of reference ...
+--------------------------------------------------
+
+Embedding (premiers éléments):
+[ 0.03955   0.002373 -0.05493   0.0554   -0.0403  ]
+Norme L2: 0.9995
+
+=== Chunk 4/64 ===
+Type: title
+
+Contenu:
+--------------------------------------------------
+#### 3. Work
+
+--------------------------------------------------
+
+Embedding (premiers éléments):
+[ 0.0346   0.00892 -0.05124  0.00827 -0.05423]
+Norme L2: 1.0000
+
+=== Chunk 5/64 ===
+Type: title
+
+Contenu:
+--------------------------------------------------
+#### 3.1 The Work
+
+The Supplier shall perform the Work in its entirety in the manner and at the times set forth in the Contract. Save where the Contract expressly provides otherwise, the cost of perfo...
+--------------------------------------------------
+
+Embedding (premiers éléments):
+[-0.04117   0.0453   -0.03503   0.014244 -0.02635 ]
+Norme L2: 1.0000
+
+... (affichage limité aux 5 premiers chunks)
+
+📈 Statistiques sur les embeddings:
+Norme moyenne: 1.0000
+Norme min: 0.9995
+Norme max: 1.0000
+
+🔍 Exemple de similarités entre chunks:
+Similarité entre chunk 1 et 2: 0.6538
+Similarité entre chunk 2 et 3: 0.6050
+Similarité entre chunk 3 et 4: 0.7075
+
+Initialisation de l'index de recherche...
+🎮 Using MPS (Metal Performance Shaders) for embeddings
+
+Système de chat activé. Vous pouvez maintenant poser des questions sur le contrat.
+Tapez 'exit' ou 'quit' pour quitter.
