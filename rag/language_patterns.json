@@ -1,0 +1,134 @@
+{
+    "fr": {
+        "name": "French",
+        "patterns": {
+            "signature": "^(?:Signé|Fait à|À|En foi de quoi|Par les présentes|En conséquence|En foi de quoi|En conséquence de quoi)\\s*:?\\s*$",
+            "date": "^(?:Fait à|À|Le|En date du|Le présent contrat est établi le)\\s+.+,\\s+(?:le\\s+)?(\\d{1,2}\\s+\\w+\\s+\\d{4}|\\d{1,2}/\\d{1,2}/\\d{4})",
+            "party": [
+                "^Entre\\s+les\\s+soussignés\\s*:",
+                "^D'une\\s+part\\s*:",
+                "^D'autre\\s+part\\s*:",
+                "^Entre\\s+:",
+                "^D'une\\s+part\\s*,\\s*([^,]+)",
+                "^D'autre\\s+part\\s*,\\s*([^,]+)",
+                "^Le\\s+client\\s*:",
+                "^Le\\s+prestataire\\s*:",
+                "^La\\s+société\\s*:",
+                "^L'entreprise\\s*:"
+            ]
+        }
+    },
+    "en": {
+        "name": "English",
+        "patterns": {
+            "signature": "^(?:Signed|Done at|In witness whereof|By these presents|In consideration|In witness whereof|In consideration whereof)\\s*:?\\s*$",
+            "date": "^(?:Done at|At|On|Dated|This agreement is made on)\\s+.+,\\s+(?:the\\s+)?(\\d{1,2}\\s+\\w+\\s+\\d{4}|\\d{1,2}/\\d{1,2}/\\d{4})",
+            "party": [
+                "^Between\\s*:",
+                "^Party\\s+A\\s*:",
+                "^Party\\s+B\\s*:",
+                "^First\\s+Party\\s*:",
+                "^Second\\s+Party\\s*:",
+                "^The\\s+Client\\s*:",
+                "^The\\s+Provider\\s*:",
+                "^The\\s+Company\\s*:",
+                "^The\\s+Business\\s*:"
+            ]
+        }
+    },
+    "es": {
+        "name": "Spanish",
+        "patterns": {
+            "signature": "^(?:Firmado|Hecho en|En fe de lo cual|Por las presentes|En consideración|En fe de lo cual|En consideración de lo cual)\\s*:?\\s*$",
+            "date": "^(?:Hecho en|En|El|Con fecha|El presente contrato se celebra el)\\s+.+,\\s+(?:el\\s+)?(\\d{1,2}\\s+\\w+\\s+\\d{4}|\\d{1,2}/\\d{1,2}/\\d{4})",
+            "party": [
+                "^Entre\\s+los\\s+abajo\\s+firmados\\s*:",
+                "^Por\\s+una\\s+parte\\s*:",
+                "^Por\\s+otra\\s+parte\\s*:",
+                "^Entre\\s+:",
+                "^Por\\s+una\\s+parte\\s*,\\s*([^,]+)",
+                "^Por\\s+otra\\s+parte\\s*,\\s*([^,]+)",
+                "^El\\s+cliente\\s*:",
+                "^El\\s+proveedor\\s*:",
+                "^La\\s+empresa\\s*:",
+                "^La\\s+sociedad\\s*:"
+            ]
+        }
+    },
+    "de": {
+        "name": "German",
+        "patterns": {
+            "signature": "^(?:Unterschrieben|Geschehen zu|Zu\\s+Urkund\\s+dessen|Durch\\s+diese\\s+Urkunde|In\\s+Erwägung|Zu\\s+Urkund\\s+dessen|In\\s+Erwägung\\s+dessen)\\s*:?\\s*$",
+            "date": "^(?:Geschehen zu|Zu|Am|Datiert|Dieser\\s+Vertrag\\s+wird\\s+geschlossen\\s+am)\\s+.+,\\s+(?:den\\s+)?(\\d{1,2}\\.\\s+\\w+\\s+\\d{4}|\\d{1,2}\\.\\d{1,2}\\.\\d{4})",
+            "party": [
+                "^Zwischen\\s*:",
+                "^Einerseits\\s*:",
+                "^Andererseits\\s*:",
+                "^Zwischen\\s+:",
+                "^Einerseits\\s*,\\s*([^,]+)",
+                "^Andererseits\\s*,\\s*([^,]+)",
+                "^Der\\s+Kunde\\s*:",
+                "^Der\\s+Anbieter\\s*:",
+                "^Die\\s+Firma\\s*:",
+                "^Das\\s+Unternehmen\\s*:"
+            ]
+        }
+    },
+    "it": {
+        "name": "Italian",
+        "patterns": {
+            "signature": "^(?:Firmato|Fatto a|In\\s+fede\\s+di\\s+che|Per\\s+le\\s+presenti|In\\s+considerazione|In\\s+fede\\s+di\\s+che|In\\s+considerazione\\s+di\\s+che)\\s*:?\\s*$",
+            "date": "^(?:Fatto a|A|Il|In\\s+data|Il\\s+presente\\s+contratto\\s+è\\s+stipulato\\s+il)\\s+.+,\\s+(?:il\\s+)?(\\d{1,2}\\s+\\w+\\s+\\d{4}|\\d{1,2}/\\d{1,2}/\\d{4})",
+            "party": [
+                "^Tra\\s+i\\s+sottoscritti\\s*:",
+                "^Da\\s+una\\s+parte\\s*:",
+                "^Dall'altra\\s+parte\\s*:",
+                "^Tra\\s+:",
+                "^Da\\s+una\\s+parte\\s*,\\s*([^,]+)",
+                "^Dall'altra\\s+parte\\s*,\\s*([^,]+)",
+                "^Il\\s+cliente\\s*:",
+                "^Il\\s+fornitore\\s*:",
+                "^La\\s+società\\s*:",
+                "^L'impresa\\s*:"
+            ]
+        }
+    },
+    "pt": {
+        "name": "Portuguese",
+        "patterns": {
+            "signature": "^(?:Assinado|Feito em|Em\\s+testemunho\\s+do\\s+que|Por\\s+estas\\s+presentes|Em\\s+consideração|Em\\s+testemunho\\s+do\\s+que|Em\\s+consideração\\s+do\\s+que)\\s*:?\\s*$",
+            "date": "^(?:Feito em|Em|O|Com\\s+data|O\\s+presente\\s+contrato\\s+é\\s+celebrado\\s+em)\\s+.+,\\s+(?:o\\s+)?(\\d{1,2}\\s+\\w+\\s+\\d{4}|\\d{1,2}/\\d{1,2}/\\d{4})",
+            "party": [
+                "^Entre\\s+os\\s+abaixo\\s+assinados\\s*:",
+                "^Por\\s+uma\\s+parte\\s*:",
+                "^Por\\s+outra\\s+parte\\s*:",
+                "^Entre\\s+:",
+                "^Por\\s+uma\\s+parte\\s*,\\s*([^,]+)",
+                "^Por\\s+outra\\s+parte\\s*,\\s*([^,]+)",
+                "^O\\s+cliente\\s*:",
+                "^O\\s+fornecedor\\s*:",
+                "^A\\s+empresa\\s*:",
+                "^A\\s+sociedade\\s*:"
+            ]
+        }
+    },
+    "nl": {
+        "name": "Dutch",
+        "patterns": {
+            "signature": "^(?:Ondertekend|Gedaan te|Ten\\s+blijke\\s+waarvan|Bij\\s+deze|In\\s+overweging|Ten\\s+blijke\\s+waarvan|In\\s+overweging\\s+waarvan)\\s*:?\\s*$",
+            "date": "^(?:Gedaan te|Te|Op|Gedateerd|Dit\\s+contract\\s+wordt\\s+gesloten\\s+op)\\s+.+,\\s+(?:de\\s+)?(\\d{1,2}\\s+\\w+\\s+\\d{4}|\\d{1,2}-\\d{1,2}-\\d{4})",
+            "party": [
+                "^Tussen\\s*:",
+                "^Enerzijds\\s*:",
+                "^Anderzijds\\s*:",
+                "^Tussen\\s+:",
+                "^Enerzijds\\s*,\\s*([^,]+)",
+                "^Anderzijds\\s*,\\s*([^,]+)",
+                "^De\\s+klant\\s*:",
+                "^De\\s+aanbieder\\s*:",
+                "^Het\\s+bedrijf\\s*:",
+                "^De\\s+onderneming\\s*:"
+            ]
+        }
+    }
+} 
