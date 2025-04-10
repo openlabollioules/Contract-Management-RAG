@@ -91,6 +91,48 @@ class IntelligentSplitter:
         if match := re.match(pattern_subsection, line):
             return match.group(1)
             
+        # Pattern pour les titres de chapitre avec formatage Markdown
+        # Ex: "## **1. Formation**", "### **2. Definitions**"
+        pattern_markdown = r'^#+\s*\*\*(\d+)\.\s+(.*?)\*\*$'
+        if match := re.match(pattern_markdown, line):
+            section_number = match.group(1)
+            title = match.group(2).strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
+            
+        # Pattern pour les titres de chapitre avec formatage spécial
+        # Ex: "**Titre du chapitre**: **6. Procedure for Equipment Design...**"
+        pattern_special = r'\*\*Titre du chapitre\*\*:\s*\*\*(\d+(?:\.\d+)*\.?)\s+(.*?)\*\*'
+        if match := re.match(pattern_special, line):
+            section_number = match.group(1)
+            if section_number.endswith('.'):
+                section_number = section_number[:-1]
+            title = match.group(2).strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
+            
+        # Pattern pour les titres de chapitre avec format "### FORCE MAJEURE 11."
+        # Ex: "### FORCE MAJEURE 11.", "#### 18. CONTRACTOR CLAIMS"
+        pattern_title_number = r'^#+\s*([A-Z\s]+)\s*(\d+)\.?$'
+        if match := re.match(pattern_title_number, line):
+            section_number = match.group(2)
+            title = match.group(1).strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
+            
+        # Pattern pour les titres de chapitre avec format "### 11. FORCE MAJEURE"
+        # Ex: "### 11. FORCE MAJEURE", "#### 18. CONTRACTOR CLAIMS"
+        pattern_number_title = r'^#+\s*(\d+)\.\s*([A-Z\s]+)$'
+        if match := re.match(pattern_number_title, line):
+            section_number = match.group(1)
+            title = match.group(2).strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
+            
         return None
 
     def _get_hierarchy(self, section_number: str) -> List[str]:
