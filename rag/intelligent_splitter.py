@@ -114,6 +114,16 @@ class IntelligentSplitter:
             if title:
                 self.section_titles[section_number] = title
             return section_number
+
+        # Nouveau pattern pour les sous-sections avec formatage Markdown
+        # Ex: "# 6.4 Defects", "#### 6.1 Rejection"
+        pattern_markdown_subsection = r'^#+\s*(\d+(?:\.\d+)+)\s*(.*?)$'
+        if match := re.match(pattern_markdown_subsection, line):
+            section_number = self._normalize_section_number(match.group(1))
+            title = match.group(2).strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
             
         # Pattern pour les titres de chapitre avec formatage spécial
         # Ex: "**Titre du chapitre**: **6. Procedure for Equipment Design...**"
