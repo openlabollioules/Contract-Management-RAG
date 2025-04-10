@@ -65,6 +65,10 @@ class IntelligentSplitter:
         """Détecte si une ligne commence une nouvelle section."""
         line = line.strip()
         
+        # Exclure les lignes de pagination et de version
+        if re.match(r'^(?:Page|Version|Document|File|Date|Time|Author|Status|Confidential|Proprietary|Copyright|All rights reserved|©|\(c\)|\(C\)|\[|\]|\||\+|-|=|_|\s*$)', line, re.IGNORECASE):
+            return None
+        
         # Pattern pour les titres de chapitre avec marqueurs de formatage
         # Ex: "# 1. Formation", "- 2. Definitions", "3. Work"
         pattern_chapter = r'^(?:[#*-]+\s*)?(\d+)\.\s+(.*?)$'
@@ -198,6 +202,10 @@ class IntelligentSplitter:
         print(f"📊 Document analysé: {len(lines)} lignes")
         
         for line in tqdm(lines, desc="Traitement des lignes", unit="ligne"):
+            # Exclure les lignes de pagination et de version
+            if re.match(r'^(?:Page|Version|Document|File|Date|Time|Author|Status|Confidential|Proprietary|Copyright|All rights reserved|©|\(c\)|\(C\)|\[|\]|\||\+|-|=|_|\s*$)', line.strip(), re.IGNORECASE):
+                continue
+            
             # Vérifier si c'est le début d'une nouvelle section
             section_number = self._is_section_start(line)
             
