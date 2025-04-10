@@ -27,7 +27,7 @@ class Chunk:
     content: str
     section_number: Optional[str] = None
     document_title: Optional[str] = None
-    hierarchy: Optional[Dict[str, str]] = None  # Dictionnaire contenant la hiérarchie complète
+    hierarchy: Optional[List[str]] = None
     parent_section: Optional[str] = None  # Numéro de la section parente
     chapter_title: Optional[str] = None  # Titre du chapitre
 
@@ -36,7 +36,7 @@ class IntelligentSplitter:
         self.document_title = document_title
         self.chunk_count = 0
         self.section_hierarchy = {}  # Pour stocker la hiérarchie des sections
-        self.section_titles = {}  # Pour stocker les titres des sections
+        self.section_titles = {}  # Stocke les titres des chapitres (ex: "3": "Work")
 
     def _normalize_section_number(self, section_number: str) -> str:
         """Normalise un numéro de section en ajoutant un point entre les chiffres séparés par un espace."""
@@ -45,77 +45,59 @@ class IntelligentSplitter:
             return section_number.replace(' ', '.')
         return section_number
 
+    def _is_chapter_title(self, line: str) -> Optional[Tuple[str, str]]:
+        """Détecte si une ligne est un titre de chapitre (ex: '3. Work')."""
+        pattern = r'^(\d+)\.\s+(.*?)$'
+        match = re.match(pattern, line.strip())
+        if match:
+            return match.group(1), match.group(2).strip()
+        return None
+
+    def _is_subsection(self, line: str) -> Optional[str]:
+        """Détecte si une ligne est une sous-section (ex: '3.1 The Work')."""
+        pattern = r'^(\d+(?:\.\d+)+)\s*(.*?)$'
+        match = re.match(pattern, line.strip())
+        if match:
+            return match.group(1)
+        return None
+
     def _is_section_start(self, line: str) -> Optional[str]:
-        """Détecte si une ligne commence par un numéro de section."""
+        """Détecte si une ligne commence une nouvelle section."""
         line = line.strip()
         
-        # Pattern pour les titres de chapitre (X ou X.)
-        # Exemples :
-        # - "### WARRANTY 10."
-        # - "## **5.**"
-        # - "## **7. Contract Price**"
-        # - "## CONFIDENTIALITY AND INTELLECTUAL PROPERTY RIGHTS 12."
-        # - "### 1. APPLICABILITY AND DEFINITIONS"
-        # - "5."
-        # - "### COMPLIANCE 13."
-        # - "# 21. DISPUTE RESOLUTION"
-        # - "## CONFIDENTIALITY AND INTELLECTUAL PROPERTY RIGHTS" suivi de "12."
-        
-        # Pattern pour les titres de chapitre (X ou X.)
-        pattern_chapter = r'^\#+\s*\**\s*(\d+)\.?\s*(.*?)\**\s*$|^\#+\s*\**\s*(.*?)\s*(\d+)\.?\s*\**\s*$|^\#+\s*\**\s*(.*?)\s*\**\s*$'
-        match = re.match(pattern_chapter, line)
-        if match:
-            # Si le numéro est au début (premier groupe)
-            if match.group(1):
-                section_number = match.group(1)
-                title = match.group(2).strip()
-            # Si le numéro est à la fin (quatrième groupe)
-            elif match.group(4):
-                section_number = match.group(4)
-                title = match.group(3).strip()
-            # Si c'est juste un titre (cinquième groupe), on vérifie la ligne suivante
-            elif match.group(5):
-                return None
-            
-            # Si c'est un chapitre (un seul chiffre), stocker le titre
-            if '.' not in section_number and title:
+        # Pattern pour les titres de chapitre avec marqueurs de formatage
+        # Ex: "# 1. Formation", "- 2. Definitions", "3. Work"
+        pattern_chapter = r'^(?:[#*-]+\s*)?(\d+)\.\s+(.*?)$'
+        if match := re.match(pattern_chapter, line):
+            section_number = match.group(1)
+            title = match.group(2).strip()
+            if title:
                 self.section_titles[section_number] = title
-                
             return section_number
             
-        # Pattern pour les numéros seuls (pour la ligne après un titre)
-        pattern_number = r'^(\d+)\.\s*$'
-        match = re.match(pattern_number, line)
-        if match:
-            return match.group(1)
-            
-        # Pattern pour les sections (X.Y, X.Y.Z, etc.)
-        pattern_section = r'^\#+\s*\**\s*(\d+(?:\.\d+)+)\s*(.*?)\**\s*$'
-        match = re.match(pattern_section, line)
-        if match:
-            return match.group(1)
-            
-        # Pattern pour les numéros au début
-        pattern_start = r'^(?:[*-]|\#+)?\s*\**\s*(\d+(?:\.\d+)+).*$'
-        match = re.match(pattern_start, line)
-        if match:
+        # Pattern pour les sous-sections avec marqueurs de formatage
+        # Ex: "# 3.1 The Work", "- 3.2 Changes"
+        pattern_subsection = r'^(?:[#*-]+\s*)?(\d+(?:\.\d+)+)\s*(.*?)$'
+        if match := re.match(pattern_subsection, line):
             return match.group(1)
             
         return None
 
-    def _update_hierarchy(self, section_number: str, title: str):
-        """Met à jour la hiérarchie des sections avec le nouveau titre."""
-        # Construire la hiérarchie complète avec le titre du chapitre principal
+    def _get_hierarchy(self, section_number: str) -> List[str]:
+        """Retourne la hiérarchie complète pour une section."""
+        if not section_number:
+            return []
+            
         parts = section_number.split('.')
-        
-        # Si c'est un chapitre (un seul chiffre), retourner le titre complet
-        if len(parts) == 1:
-            if section_number in self.section_titles:
-                return [f"{section_number} (**{section_number}. {self.section_titles[section_number]}**)"]
-            return [section_number]
-        
-        # Pour les sections (X.Y, X.Y.Z, etc.), retourner le titre du chapitre principal -> numéro de section
         chapter_number = parts[0]
+        
+        # Si c'est un chapitre
+        if len(parts) == 1:
+            if chapter_number in self.section_titles:
+                return [f"{chapter_number} (**{chapter_number}. {self.section_titles[chapter_number]}**)"]
+            return [chapter_number]
+            
+        # Si c'est une sous-section
         if chapter_number in self.section_titles:
             return [f"{chapter_number} (**{chapter_number}. {self.section_titles[chapter_number]}**) -> {section_number}"]
         return [chapter_number, "->", section_number]
@@ -203,92 +185,59 @@ class IntelligentSplitter:
         print(f"\n📊 Nombre total de chunks: {len(chunks)}")
 
     def split(self, text: str) -> List[Chunk]:
-        """Divise le texte en chunks selon les numéros de section."""
-        print("\n🔍 Analyse de la structure du document...")
+        """Divise le texte en chunks intelligents."""
+        print("\n🔍 Découpage du texte en chunks...")
         start_time = time.time()
         
         chunks = []
         current_lines = []
         current_section = None
-        current_title = None
         previous_line = None
         
         lines = text.split('\n')
         print(f"📊 Document analysé: {len(lines)} lignes")
         
         for line in tqdm(lines, desc="Traitement des lignes", unit="ligne"):
-            # Vérifier si c'est un titre de chapitre
-            chapter_info = self._extract_chapter_title(line)
-            if chapter_info:
-                section_number, title = chapter_info
-                self.section_titles[section_number] = title
-                continue
-                
-            # Si la ligne précédente était un titre et que celle-ci est un numéro
-            if previous_line and line.strip():
-                pattern_chapter = r'^\#+\s*\**\s*(.*?)\s*\**\s*$'
-                match_previous = re.match(pattern_chapter, previous_line)
-                pattern_number = r'^(\d+)\.\s*$'
-                match_current = re.match(pattern_number, line)
-                
-                if match_previous and match_current:
-                    section_number = match_current.group(1)
-                    title = match_previous.group(1).strip()
-                    self.section_titles[section_number] = title
-                    current_section = section_number
-                    current_lines.extend([previous_line, line])
-                    previous_line = line
-                    continue
-            
+            # Vérifier si c'est le début d'une nouvelle section
             section_number = self._is_section_start(line)
             
-            # Si on trouve un nouveau numéro de section, créer le chunk précédent
+            # Si on trouve une nouvelle section et qu'on a du contenu en cours
             if section_number and current_lines:
-                # Extraire le titre de la section actuelle
-                if current_section:
-                    hierarchy = self._update_hierarchy(current_section, current_title)
-                    
-                    # Créer le chunk avec le contenu accumulé
-                    chunk = Chunk(
-                        content='\n'.join(current_lines),
-                        section_number=current_section,
-                        document_title=self.document_title,
-                        hierarchy=hierarchy,
-                        parent_section=self._get_parent_section(current_section),
-                        chapter_title=self.section_titles.get(current_section.split('.')[0])
-                    )
-                    chunks.append(chunk)
-                    self.chunk_count += 1
-                
-                # Réinitialiser pour le nouveau chunk
-                current_lines = []
-                current_section = section_number
-            
-            current_lines.append(line)
-            previous_line = line
-        
-        # Ajouter le dernier chunk
-        if current_lines:
-            if current_section:
-                hierarchy = self._update_hierarchy(current_section, current_title)
-                
+                # Créer un chunk avec le contenu accumulé
                 chunk = Chunk(
                     content='\n'.join(current_lines),
                     section_number=current_section,
                     document_title=self.document_title,
-                    hierarchy=hierarchy,
-                    parent_section=self._get_parent_section(current_section),
-                    chapter_title=self.section_titles.get(current_section.split('.')[0])
+                    hierarchy=self._get_hierarchy(current_section)
                 )
-            else:
-                chunk = Chunk(
-                    content='\n'.join(current_lines),
-                    document_title=self.document_title
-                )
+                chunks.append(chunk)
+                self.chunk_count += 1
+                
+                # Réinitialiser pour le nouveau chunk
+                current_lines = []
+                current_section = section_number
+                
+            # Si c'est une nouvelle section mais qu'on n'a pas de contenu en cours
+            elif section_number:
+                current_section = section_number
+                
+            # Ajouter la ligne au contenu en cours
+            current_lines.append(line)
+            previous_line = line
+            
+        # Ajouter le dernier chunk s'il y a du contenu
+        if current_lines:
+            chunk = Chunk(
+                content='\n'.join(current_lines),
+                section_number=current_section,
+                document_title=self.document_title,
+                hierarchy=self._get_hierarchy(current_section)
+            )
             chunks.append(chunk)
             self.chunk_count += 1
-        
+            
         print(f"\n✅ Découpage terminé en {time.time() - start_time:.2f} secondes")
+        print(f"📦 Nombre de chunks créés: {len(chunks)}")
         
         # Afficher les chunks
         self.display_chunks(chunks)

@@ -14,6 +14,7 @@ class HierarchicalGrouper:
     def __init__(self):
         self.root_groups: Dict[str, HierarchicalGroup] = {}
         self.depth_stats = defaultdict(int)
+        self.section_titles = {}
 
     def _get_section_level(self, section_number: str) -> int:
         """Détermine le niveau hiérarchique d'une section."""
@@ -72,4 +73,21 @@ class HierarchicalGrouper:
 
     def get_depth_statistics(self) -> Dict[int, int]:
         """Retourne des statistiques sur la profondeur des sections."""
-        return dict(self.depth_stats) 
+        return dict(self.depth_stats)
+
+    def _update_hierarchy(self, section_number: str, title: str):
+        """Met à jour la hiérarchie des sections avec le nouveau titre."""
+        # Construire la hiérarchie complète avec le titre du chapitre principal
+        parts = section_number.split('.')
+        
+        # Si c'est un chapitre (un seul chiffre), retourner le titre complet
+        if len(parts) == 1:
+            if section_number in self.section_titles:
+                return [f"{section_number} (**{section_number}. {self.section_titles[section_number]}**)"]
+            return [section_number]
+        
+        # Pour les sections (X.Y, X.Y.Z, etc.), retourner le titre du chapitre principal -> numéro de section
+        chapter_number = parts[0]
+        if chapter_number in self.section_titles:
+            return [f"{chapter_number} (**{chapter_number}. {self.section_titles[chapter_number]}**) -> {section_number}"]
+        return [chapter_number, "->", section_number] 
