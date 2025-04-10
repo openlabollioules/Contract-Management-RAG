@@ -133,6 +133,16 @@ class IntelligentSplitter:
                 self.section_titles[section_number] = title
             return section_number
             
+        # Pattern pour les titres de chapitre avec numéro collé à la fin
+        # Ex: "## **CONFIDENTIALITY AND INTELLECTUAL PROPERTY RIGHTS12.**"
+        pattern_title_number_attached = r'^#+\s*\*\*([A-Z\s]+)(\d+)\.?\*\*$'
+        if match := re.match(pattern_title_number_attached, line):
+            section_number = match.group(2)
+            title = match.group(1).strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
+            
         return None
 
     def _get_hierarchy(self, section_number: str) -> List[str]:
