@@ -79,16 +79,24 @@ class IntelligentSplitter:
         line = line.strip()
         
         # Exclure les lignes de pagination et de version
-        if re.match(r'^(?:Page|Version|Document|File|Date|Time|Author|Status|Confidential|Proprietary|Copyright|All rights reserved|©|\(c\)|\(C\)|\[|\]|\||\+|-|=|_|\s*$)', line, re.IGNORECASE):
+        if re.match(r'^(?:Page|Version|Document|File|Date|Time|Author|Status|Confidential|Proprietary|Copyright|All rights reserved|©|\(c\)|\(C\)|\[|\]|\||\+|=|_|\s*$)', line, re.IGNORECASE):
             return None
         
         # Vérifier d'abord si la ligne contient un numéro
         if not re.search(r'\d+', line):
             return None
         
+        # Pattern pour les sous-sections avec tiret (ex: "- 3.1 The Work")
+        pattern_dash_subsection = r'^-\s*(\d+(?:\.\d+)+)\s*(.*?)$'
+        if match := re.match(pattern_dash_subsection, line):
+            section_number = self._normalize_section_number(match.group(1))
+            title = match.group(2).strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
+            
         # Pattern pour les titres de chapitre avec marqueurs de formatage
         # Ex: "# 1. Formation", "- 2. Definitions", "3. Work"
-        # Le numéro doit être suivi d'un point et d'un espace
         pattern_chapter = r'^(?:[#*-]+\s*)?(\d+)\.\s+(.*?)$'
         if match := re.match(pattern_chapter, line):
             section_number = self._normalize_section_number(match.group(1))
@@ -96,13 +104,6 @@ class IntelligentSplitter:
             if title:
                 self.section_titles[section_number] = title
             return section_number
-            
-        # Pattern pour les sous-sections avec marqueurs de formatage
-        # Ex: "# 3.1 The Work", "- 3.2 Changes"
-        # Le numéro doit être suivi d'un point et d'un espace
-        pattern_subsection = r'^(?:[#*-]+\s*)?(\d+(?:\.\d+)+)\s*(.*?)$'
-        if match := re.match(pattern_subsection, line):
-            return self._normalize_section_number(match.group(1))
             
         # Pattern pour les titres de chapitre avec formatage Markdown
         # Ex: "## **1. Formation**", "### **2. Definitions**"
@@ -266,23 +267,18 @@ class IntelligentSplitter:
         print(f"\n📊 Nombre total de chunks: {len(chunks)}")
 
     def split(self, text: str) -> List[Chunk]:
-        """Divise le texte en chunks intelligents."""
+        """Divise le texte en chunks intelligents en conservant tout le contenu."""
         print("\n🔍 Découpage du texte en chunks...")
         start_time = time.time()
         
         chunks = []
         current_lines = []
         current_section = None
-        previous_line = None
         
         lines = text.split('\n')
         print(f"📊 Document analysé: {len(lines)} lignes")
         
         for line in tqdm(lines, desc="Traitement des lignes", unit="ligne"):
-            # Exclure les lignes de pagination et de version
-            if re.match(r'^(?:Page|Version|Document|File|Date|Time|Author|Status|Confidential|Proprietary|Copyright|All rights reserved|©|\(c\)|\(C\)|\[|\]|\||\+|-|=|_|\s*$)', line.strip(), re.IGNORECASE):
-                continue
-            
             # Vérifier si c'est le début d'une nouvelle section
             section_number = self._is_section_start(line)
             
@@ -308,7 +304,6 @@ class IntelligentSplitter:
                 
             # Ajouter la ligne au contenu en cours
             current_lines.append(line)
-            previous_line = line
             
         # Ajouter le dernier chunk s'il y a du contenu
         if current_lines:

@@ -22,6 +22,7 @@ def process_contract(filepath: str) -> List[Chunk]:
     # 1. Load and extract text from PDF
     print("📄 Extraction du texte du PDF...")
     text, document_title = extract_text_contract(filepath)
+    print(text)
     print(f"✅ Texte extrait ({len(text.split())} mots)")
     
     # 2. Split text into intelligent chunks
