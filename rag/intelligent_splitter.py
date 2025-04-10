@@ -163,6 +163,16 @@ class IntelligentSplitter:
             section_number = f"{match.group(1)}.{match.group(2)}"
             return self._normalize_section_number(section_number)
             
+        # Nouveau pattern pour les sections qui commencent simplement par un numéro sans tiret
+        # Ex: "4.33 eygdyegde"
+        pattern_simple_number = r'^(\d+(?:\.\d+)*)\s*(.*?)$'
+        if match := re.match(pattern_simple_number, line):
+            section_number = self._normalize_section_number(match.group(1))
+            title = match.group(2).strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
+            
         return None
 
     def _get_hierarchy(self, section_number: str) -> List[str]:
