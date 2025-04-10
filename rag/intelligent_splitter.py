@@ -38,9 +38,17 @@ class IntelligentSplitter:
         self.section_hierarchy = {}  # Pour stocker la hiérarchie des sections
         self.section_titles = {}  # Pour stocker les titres des sections
 
+    def _normalize_section_number(self, section_number: str) -> str:
+        """Normalise un numéro de section en ajoutant un point entre les chiffres séparés par un espace."""
+        # Si le numéro contient un espace, on le remplace par un point
+        if ' ' in section_number:
+            return section_number.replace(' ', '.')
+        return section_number
+
     def _is_section_start(self, line: str) -> Optional[str]:
         """Détecte si une ligne commence par un numéro de section."""
         line = line.strip()
+        
         # Pattern pour détecter les numéros de section dans différents formats
         # Exemples : 
         # - "1.11"
@@ -54,7 +62,7 @@ class IntelligentSplitter:
         # - "### 1. APPLICABILITY AND DEFINITIONS"
         
         # Pattern pour les numéros au début
-        pattern_start = r'^(?:[*-]|\#+)?\s*\**\s*(\d+(?:\.\d+)*\.?)\**'
+        pattern_start = r'^(?:[*-]|\#+)?\s*\**\s*(\d+(?:\s*\d+)*\.?)\**'
         # Pattern pour les numéros à la fin
         pattern_end = r'^(?:[*-]|\#+)?\s*\**.*?\s+(\d+(?:\.\d+)*\.?)\s*$'
         
@@ -62,6 +70,7 @@ class IntelligentSplitter:
         match = re.match(pattern_start, line)
         if match:
             section_number = match.group(1)
+            section_number = self._normalize_section_number(section_number)
             if section_number.endswith('.'):
                 section_number = section_number[:-1]
             return section_number
@@ -70,6 +79,7 @@ class IntelligentSplitter:
         match = re.match(pattern_end, line)
         if match:
             section_number = match.group(1)
+            section_number = self._normalize_section_number(section_number)
             if section_number.endswith('.'):
                 section_number = section_number[:-1]
             return section_number
