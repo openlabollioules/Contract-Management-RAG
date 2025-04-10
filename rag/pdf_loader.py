@@ -169,7 +169,7 @@ def extract_text_contract(pdf_path):
         "output_format": "markdown",
         "use_llm": True,
         "llm_service": "marker.services.ollama.OllamaService",
-        "ollama_model": "gemma3:27b",
+        "ollama_model": "mistral-small3.1:latest",
         "ocr_engine": "tesseract",
         "ocr_language": "fra+eng",
         "table_structure": True,
