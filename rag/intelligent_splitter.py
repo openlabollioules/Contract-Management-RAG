@@ -40,9 +40,22 @@ class IntelligentSplitter:
 
     def _normalize_section_number(self, section_number: str) -> str:
         """Normalise un numéro de section en ajoutant un point entre les chiffres séparés par un espace."""
-        # Si le numéro contient un espace, on le remplace par un point
+        if not section_number:
+            return section_number
+            
+        # Nettoyer le numéro de section
+        section_number = section_number.strip()
+        
+        # Si le numéro contient des espaces, les remplacer par des points
         if ' ' in section_number:
-            return section_number.replace(' ', '.')
+            # Remplacer les espaces multiples par un seul point
+            normalized = re.sub(r'\s+', '.', section_number)
+            # S'assurer qu'il n'y a pas de points multiples
+            normalized = re.sub(r'\.+', '.', normalized)
+            # Supprimer les points en début et fin
+            normalized = normalized.strip('.')
+            return normalized
+            
         return section_number
 
     def _is_chapter_title(self, line: str) -> Optional[Tuple[str, str]]:
@@ -78,7 +91,7 @@ class IntelligentSplitter:
         # Le numéro doit être suivi d'un point et d'un espace
         pattern_chapter = r'^(?:[#*-]+\s*)?(\d+)\.\s+(.*?)$'
         if match := re.match(pattern_chapter, line):
-            section_number = match.group(1)
+            section_number = self._normalize_section_number(match.group(1))
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
@@ -89,13 +102,13 @@ class IntelligentSplitter:
         # Le numéro doit être suivi d'un point et d'un espace
         pattern_subsection = r'^(?:[#*-]+\s*)?(\d+(?:\.\d+)+)\s*(.*?)$'
         if match := re.match(pattern_subsection, line):
-            return match.group(1)
+            return self._normalize_section_number(match.group(1))
             
         # Pattern pour les titres de chapitre avec formatage Markdown
         # Ex: "## **1. Formation**", "### **2. Definitions**"
         pattern_markdown = r'^#+\s*\*\*(\d+)\.\s+(.*?)\*\*$'
         if match := re.match(pattern_markdown, line):
-            section_number = match.group(1)
+            section_number = self._normalize_section_number(match.group(1))
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
@@ -105,7 +118,7 @@ class IntelligentSplitter:
         # Ex: "**Titre du chapitre**: **6. Procedure for Equipment Design...**"
         pattern_special = r'\*\*Titre du chapitre\*\*:\s*\*\*(\d+(?:\.\d+)*\.?)\s+(.*?)\*\*'
         if match := re.match(pattern_special, line):
-            section_number = match.group(1)
+            section_number = self._normalize_section_number(match.group(1))
             if section_number.endswith('.'):
                 section_number = section_number[:-1]
             title = match.group(2).strip()
@@ -117,7 +130,7 @@ class IntelligentSplitter:
         # Ex: "### FORCE MAJEURE 11.", "#### 18. CONTRACTOR CLAIMS"
         pattern_title_number = r'^#+\s*([A-Z\s]+)\s*(\d+)\.?$'
         if match := re.match(pattern_title_number, line):
-            section_number = match.group(2)
+            section_number = self._normalize_section_number(match.group(2))
             title = match.group(1).strip()
             if title:
                 self.section_titles[section_number] = title
@@ -127,7 +140,7 @@ class IntelligentSplitter:
         # Ex: "### 11. FORCE MAJEURE", "#### 18. CONTRACTOR CLAIMS"
         pattern_number_title = r'^#+\s*(\d+)\.\s*([A-Z\s]+)$'
         if match := re.match(pattern_number_title, line):
-            section_number = match.group(1)
+            section_number = self._normalize_section_number(match.group(1))
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
@@ -137,11 +150,17 @@ class IntelligentSplitter:
         # Ex: "## **CONFIDENTIALITY AND INTELLECTUAL PROPERTY RIGHTS12.**"
         pattern_title_number_attached = r'^#+\s*\*\*([A-Z\s]+)(\d+)\.?\*\*$'
         if match := re.match(pattern_title_number_attached, line):
-            section_number = match.group(2)
+            section_number = self._normalize_section_number(match.group(2))
             title = match.group(1).strip()
             if title:
                 self.section_titles[section_number] = title
             return section_number
+            
+        # Pattern pour les numéros de section avec espace (ex: "8 1")
+        pattern_space_number = r'^(\d+)\s+(\d+)\s*(.*?)$'
+        if match := re.match(pattern_space_number, line):
+            section_number = f"{match.group(1)}.{match.group(2)}"
+            return self._normalize_section_number(section_number)
             
         return None
 
