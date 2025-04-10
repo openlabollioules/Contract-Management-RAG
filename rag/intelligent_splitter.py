@@ -115,6 +115,48 @@ class IntelligentSplitter:
             return section_number, match.group(2).strip()
         return None
 
+    def _is_table_start(self, line: str) -> bool:
+        """Détecte si une ligne marque le début d'un tableau."""
+        # Patterns pour détecter différents formats de tableaux
+        table_patterns = [
+            r'^\s*\|.*\|\s*$',                    # Tableau Markdown
+            r'^\s*\+[-+]+\+\s*$',                 # Ligne de séparation de tableau
+            r'^\s*[-]+\s*$',                      # Ligne de séparation simple
+            r'^\s*[_]+\s*$',                      # Ligne de séparation avec underscore
+            r'^\s*[=]+\s*$',                      # Ligne de séparation avec égal
+            r'^\s*[A-Za-z0-9\s]+\s*\|\s*[A-Za-z0-9\s]+\s*$',  # Ligne avec séparateur vertical
+            r'^\s*[A-Za-z0-9\s]+\s*[,;]\s*[A-Za-z0-9\s]+\s*$',  # Ligne avec séparateur horizontal
+            r'^\s*\|.*$',                         # Ligne commençant par un séparateur vertical
+            r'^\s*\+.*$',                         # Ligne commençant par un +
+            r'^\s*[-_=]+\s*$',                    # Ligne de séparation avec différents caractères
+        ]
+        
+        # Vérifier chaque pattern
+        for pattern in table_patterns:
+            if re.match(pattern, line):
+                return True
+        return False
+
+    def _is_table_end(self, line: str) -> bool:
+        """Détecte si une ligne marque la fin d'un tableau."""
+        # Un tableau se termine quand :
+        # 1. On trouve une ligne vide ET la ligne suivante n'est pas un tableau
+        # 2. On trouve un nouveau numéro de section
+        # 3. On trouve une ligne qui n'est pas un tableau ET qui n'est pas une continuation du tableau
+        if not line.strip():
+            return False
+            
+        if self._is_section_start(line) is not None:
+            return True
+            
+        if not self._is_table_start(line):
+            # Vérifier si c'est une continuation du tableau
+            # (par exemple, une cellule qui continue sur plusieurs lignes)
+            if not re.match(r'^\s*\|.*$', line) and not re.match(r'^\s*\+.*$', line):
+                return True
+                
+        return False
+
     def display_chunks(self, chunks: List[Chunk]) -> None:
         """Affiche les chunks de manière lisible."""
         print("\n📝 Affichage des chunks:")
