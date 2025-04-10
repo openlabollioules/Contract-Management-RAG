@@ -49,7 +49,7 @@ class IntelligentSplitter:
         """Détecte si une ligne commence par un numéro de section."""
         line = line.strip()
         
-        # Pattern pour les titres de chapitre avec différents formats
+        # Pattern pour les titres de chapitre (X ou X.)
         # Exemples :
         # - "### WARRANTY 10."
         # - "## **5.**"
@@ -61,7 +61,7 @@ class IntelligentSplitter:
         # - "# 21. DISPUTE RESOLUTION"
         # - "## CONFIDENTIALITY AND INTELLECTUAL PROPERTY RIGHTS" suivi de "12."
         
-        # Pattern pour les titres de chapitre avec ## ou ###
+        # Pattern pour les titres de chapitre (X ou X.)
         pattern_chapter = r'^\#+\s*\**\s*(\d+)\.?\s*(.*?)\**\s*$|^\#+\s*\**\s*(.*?)\s*(\d+)\.?\s*\**\s*$|^\#+\s*\**\s*(.*?)\s*\**\s*$'
         match = re.match(pattern_chapter, line)
         if match:
@@ -77,7 +77,7 @@ class IntelligentSplitter:
             elif match.group(5):
                 return None
             
-            # Si c'est un chapitre principal (niveau 1), stocker le titre
+            # Si c'est un chapitre (un seul chiffre), stocker le titre
             if '.' not in section_number and title:
                 self.section_titles[section_number] = title
                 
@@ -89,8 +89,14 @@ class IntelligentSplitter:
         if match:
             return match.group(1)
             
+        # Pattern pour les sections (X.Y, X.Y.Z, etc.)
+        pattern_section = r'^\#+\s*\**\s*(\d+(?:\.\d+)+)\s*(.*?)\**\s*$'
+        match = re.match(pattern_section, line)
+        if match:
+            return match.group(1)
+            
         # Pattern pour les numéros au début
-        pattern_start = r'^(?:[*-]|\#+)?\s*\**\s*(\d+\.\d+).*$'
+        pattern_start = r'^(?:[*-]|\#+)?\s*\**\s*(\d+(?:\.\d+)+).*$'
         match = re.match(pattern_start, line)
         if match:
             return match.group(1)
@@ -102,13 +108,13 @@ class IntelligentSplitter:
         # Construire la hiérarchie complète avec le titre du chapitre principal
         parts = section_number.split('.')
         
-        # Si c'est un chapitre principal, retourner le titre complet
+        # Si c'est un chapitre (un seul chiffre), retourner le titre complet
         if len(parts) == 1:
             if section_number in self.section_titles:
                 return [f"{section_number} (**{section_number}. {self.section_titles[section_number]}**)"]
             return [section_number]
         
-        # Pour les sous-sections, retourner le titre du chapitre principal -> numéro de sous-section
+        # Pour les sections (X.Y, X.Y.Z, etc.), retourner le titre du chapitre principal -> numéro de section
         chapter_number = parts[0]
         if chapter_number in self.section_titles:
             return [f"{chapter_number} (**{chapter_number}. {self.section_titles[chapter_number]}**) -> {section_number}"]
