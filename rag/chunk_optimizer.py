@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-
 from .embeddings_manager import EmbeddingsManager
 from .intelligent_splitter import ChunkMetadata, ChunkType
 

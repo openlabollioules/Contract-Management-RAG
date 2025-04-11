@@ -7,7 +7,6 @@ from rag.embeddings_manager import EmbeddingsManager
 from rag.hierarchical_grouper import HierarchicalGrouper
 from rag.intelligent_splitter import Chunk, IntelligentSplitter
 from rag.pdf_loader import extract_text_contract
-from rag.ollama_manager import OllamaManager
 
 
 def process_contract(filepath: str) -> List[Chunk]:
@@ -56,7 +55,9 @@ def process_contract(filepath: str) -> List[Chunk]:
             "chapter_title": chunk.chapter_title or "unknown",
             "title": document_title,
             "content": chunk.content,  # Stocker le contenu brut
-            "chunk_type": str(chunk.chunk_type) if hasattr(chunk, 'chunk_type') else "unknown"
+            "chunk_type": (
+                str(chunk.chunk_type) if hasattr(chunk, "chunk_type") else "unknown"
+            ),
         }
 
         # Ajouter le contenu avec les métadonnées
@@ -130,13 +131,15 @@ def chat_with_contract(query: str, n_context: int = 3) -> None:
     results = chroma_manager.search(query, n_results=n_context)
 
     # Prepare context for the prompt
-    context = "\n\n".join([
-        f"Document: {result['metadata'].get('document_title', 'Non spécifié')}\n"
-        f"Section: {result['metadata'].get('section_number', 'Non spécifié')}\n"
-        f"Chapter: {result['metadata'].get('chapter_title', 'Non spécifié')}\n"
-        f"Content: {result['document']}"
-        for result in results
-    ])
+    context = "\n\n".join(
+        [
+            f"Document: {result['metadata'].get('document_title', 'Non spécifié')}\n"
+            f"Section: {result['metadata'].get('section_number', 'Non spécifié')}\n"
+            f"Chapter: {result['metadata'].get('chapter_title', 'Non spécifié')}\n"
+            f"Content: {result['document']}"
+            for result in results
+        ]
+    )
 
     # Create the prompt with context
     prompt = f"""Tu es un assistant spécialisé dans l'analyse de contrats. 
@@ -151,6 +154,7 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
 
     # Get response from Ollama
     from rag.ollama_chat import ask_ollama
+
     response = ask_ollama(prompt)
     print("\n🤖 Réponse :")
     print(response)
@@ -162,11 +166,11 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
         print("\n" + "-" * 40)
         print(f"\nSource {i}/{len(results)}")
         print("-" * 40)
-            
+
         print(f"Distance: {result['distance']:.4f}")
-        
+
         # Afficher le contenu
-        print(result['metadata'].get('content', result['document'])[:200] + "...")
+        print(result["metadata"].get("content", result["document"])[:200] + "...")
         print("-" * 40)
 
     print(f"\n📊 Nombre total de sources: {len(results)}")
@@ -185,7 +189,7 @@ if __name__ == "__main__":
         print("\n💬 Mode chat activé. Tapez 'exit' pour quitter.")
         while True:
             query = input("\nVotre question : ")
-            if query.lower() == 'exit':
+            if query.lower() == "exit":
                 break
             chat_with_contract(query)
     # If search query is provided, perform search

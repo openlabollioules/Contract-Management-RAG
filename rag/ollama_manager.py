@@ -1,5 +1,6 @@
 import ollama
 
+
 class OllamaManager:
     def __init__(self, model: str = "mistral:latest"):
         """
@@ -21,12 +22,8 @@ class OllamaManager:
             The generated response
         """
         try:
-            response = ollama.generate(
-                model=self.model,
-                prompt=prompt,
-                stream=False
-            )
-            return response['response']
+            response = ollama.generate(model=self.model, prompt=prompt, stream=False)
+            return response["response"]
         except Exception as e:
             print(f"Erreur lors de la génération de la réponse: {str(e)}")
-            return "Désolé, je n'ai pas pu générer de réponse." 
+            return "Désolé, je n'ai pas pu générer de réponse."

@@ -1,4 +1,5 @@
-from typing import List, Dict, Optional
+from typing import Dict, List
+
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema import StrOutputParser
@@ -24,21 +25,24 @@ class ChatManager:
         """
         self.chroma_manager = chroma_manager
         self.llm = ChatOpenAI(
-            model_name=model_name,
-            openai_api_key=openai_api_key,
-            temperature=0.7
+            model_name=model_name, openai_api_key=openai_api_key, temperature=0.7
         )
 
         # Define the prompt template
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are a helpful assistant that answers questions based on the provided context.
+        self.prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """You are a helpful assistant that answers questions based on the provided context.
             Use the following pieces of context to answer the question at the end.
             If you don't know the answer, just say that you don't know, don't try to make up an answer.
             
             Context: {context}
-            """),
-            ("human", "{question}")
-        ])
+            """,
+                ),
+                ("human", "{question}"),
+            ]
+        )
 
         # Create the chain
         self.chain = (
@@ -65,7 +69,7 @@ class ChatManager:
         """
         # Get relevant documents
         relevant_docs = self.chroma_manager.search(query, n_results=n_results)
-        
+
         # Generate response
         response = self.chain.invoke(relevant_docs, query)
-        return response 
+        return response

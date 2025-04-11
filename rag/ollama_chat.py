@@ -1,9 +1,14 @@
+from typing import Optional
+
 import ollama
-from typing import Optional, Dict, Any
 
 
 class OllamaChat:
-    def __init__(self, model: str = "mistral-small3.1:latest", system_prompt: Optional[str] = None):
+    def __init__(
+        self,
+        model: str = "mistral-small3.1:latest",
+        system_prompt: Optional[str] = None,
+    ):
         """
         Initialize Ollama chat with a specific model and system prompt
 
@@ -14,7 +19,7 @@ class OllamaChat:
         self.model = model
         self.system_prompt = system_prompt
         self.messages = []
-        
+
         if system_prompt:
             self.messages.append({"role": "system", "content": system_prompt})
 
@@ -31,18 +36,16 @@ class OllamaChat:
         """
         # Add user message to history
         self.messages.append({"role": "user", "content": prompt})
-        
+
         # Generate response
-        response = ollama.chat(
-            model=self.model,
-            messages=self.messages,
-            stream=stream
-        )
-        
+        response = ollama.chat(model=self.model, messages=self.messages, stream=stream)
+
         # Add assistant response to history
-        self.messages.append({"role": "assistant", "content": response['message']['content']})
-        
-        return response['message']['content']
+        self.messages.append(
+            {"role": "assistant", "content": response["message"]["content"]}
+        )
+
+        return response["message"]["content"]
 
     def generate(self, prompt: str, stream: bool = False, **kwargs) -> str:
         """
@@ -57,12 +60,9 @@ class OllamaChat:
             The generated response
         """
         response = ollama.generate(
-            model=self.model,
-            prompt=prompt,
-            stream=stream,
-            **kwargs
+            model=self.model, prompt=prompt, stream=stream, **kwargs
         )
-        return response['response']
+        return response["response"]
 
     def reset(self) -> None:
         """Reset the chat history"""
