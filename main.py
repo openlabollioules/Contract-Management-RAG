@@ -47,16 +47,28 @@ def process_contract(filepath: str) -> List[Chunk]:
     print("\n📦 Préparation des chunks pour ChromaDB...")
     chroma_chunks = []
     for chunk in chunks:
-        # Préparer les métadonnées en s'assurant qu'elles ne sont jamais vides
+        # Préparer les métadonnées avec la même structure que display_chunks
         metadata = {
             "section_number": chunk.section_number or "unknown",
             "hierarchy": chunk.hierarchy or ["unknown"],
             "document_title": chunk.document_title or "unknown",
             "parent_section": chunk.parent_section or "unknown",
             "chapter_title": chunk.chapter_title or "unknown",
+            "title": document_title,
+            "content": chunk.content,  # Stocker le contenu brut
+            "chunk_type": str(chunk.chunk_type) if hasattr(chunk, 'chunk_type') else "unknown"
         }
 
-        chroma_chunks.append({"content": chunk.content, "metadata": metadata})
+        # Ajouter le contenu avec les métadonnées
+        content = f"""
+Section: {metadata['section_number']}
+Hiérarchie complète: {' -> '.join(metadata['hierarchy'])}
+Document: {metadata['document_title']}
+
+Contenu:
+{chunk.content}
+"""
+        chroma_chunks.append({"content": content, "metadata": metadata})
 
     # 6. Add chunks to ChromaDB
     print("\n💾 Ajout des chunks à ChromaDB...")
@@ -142,6 +154,22 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
     response = ask_ollama(prompt)
     print("\n🤖 Réponse :")
     print(response)
+
+    # Display sources with metadata
+    print("\n📚 Sources :")
+    print("=" * 80)
+    for i, result in enumerate(results, 1):
+        print("\n" + "-" * 40)
+        print(f"\nSource {i}/{len(results)}")
+        print("-" * 40)
+            
+        print(f"Distance: {result['distance']:.4f}")
+        
+        # Afficher le contenu
+        print(result['metadata'].get('content', result['document'])[:200] + "...")
+        print("-" * 40)
+
+    print(f"\n📊 Nombre total de sources: {len(results)}")
 
 
 if __name__ == "__main__":
