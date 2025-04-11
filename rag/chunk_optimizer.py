@@ -1,27 +1,28 @@
-from typing import List, Dict, Optional, Tuple
-import numpy as np
-from .intelligent_splitter import ChunkType, ChunkMetadata
-from .embeddings_manager import EmbeddingsManager
 from dataclasses import dataclass
-import time
-from tqdm import tqdm
+
+
+from .embeddings_manager import EmbeddingsManager
+from .intelligent_splitter import ChunkMetadata, ChunkType
+
 
 @dataclass
 class OptimizedChunk:
     """Représente un chunk optimisé avec ses métadonnées"""
+
     content: str
     metadata: ChunkMetadata
     chunk_type: ChunkType
     similarity_score: float = 0.0
     is_merged: bool = False
 
+
 class ChunkOptimizer:
     """Optimise les chunks en utilisant la similarité sémantique et le Text Tiling"""
-    
+
     def __init__(self, similarity_threshold: float = 0.85):
         self.similarity_threshold = similarity_threshold
         self.embeddings_manager = EmbeddingsManager()
-        
+
     """def optimize_chunks(self, chunks: List[Chunk]) -> List[Chunk]:
         print("\n🔍 Optimisation des chunks...")
         start_time = time.time()
