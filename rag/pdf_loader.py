@@ -9,6 +9,8 @@ from marker.config.parser import ConfigParser
 from marker.converters.pdf import PdfConverter
 from marker.models import create_model_dict
 from marker.output import text_from_rendered
+from PyPDF2 import PdfReader, PdfWriter
+import fitz  # PyMuPDF
 
 # Détection de l'architecture
 is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
@@ -153,9 +155,59 @@ patch_marker_models()
 patch_create_model_dict()
 
 
+def correct_pdf_orientation(pdf_path):
+    """
+    Corrige l'orientation des pages PDF qui sont dans le mauvais sens.
+    Utilise PyMuPDF pour détecter l'orientation et PyPDF2 pour appliquer la correction.
+    """
+    try:
+        # Ouvrir le PDF avec PyMuPDF pour analyser l'orientation
+        doc = fitz.open(pdf_path)
+        writer = PdfWriter()
+        
+        # Lire le PDF avec PyPDF2
+        reader = PdfReader(pdf_path)
+        
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            # Obtenir l'orientation de la page
+            rotation = page.rotation
+            
+            # Ajouter la page au writer
+            writer.add_page(reader.pages[page_num])
+            
+            # Corriger l'orientation selon la rotation détectée
+            if rotation == 90:
+                writer.pages[page_num].rotate(-90)  # Rotation vers la droite
+            elif rotation == 180:
+                writer.pages[page_num].rotate(-180)  # Retourner la page
+            elif rotation == 270:
+                writer.pages[page_num].rotate(-270)  # Rotation vers la gauche
+            
+            print(f"Page {page_num + 1}: rotation détectée = {rotation}°")
+        
+        # Sauvegarder le PDF corrigé
+        output_path = pdf_path.replace('.pdf', '_oriented.pdf')
+        with open(output_path, 'wb') as output_file:
+            writer.write(output_file)
+        
+        print(f"✅ PDF corrigé sauvegardé sous: {output_path}")
+        print(f"📄 Nombre de pages traitées: {len(doc)}")
+        
+        return output_path
+        
+    except Exception as e:
+        print(f"Erreur lors de la correction de l'orientation: {str(e)}")
+        return pdf_path  # Retourner le chemin original en cas d'erreur
+
+
 def extract_text_contract(pdf_path):
     print("📄 Chargement des modèles...")
     start_time = time.time()
+
+    # Corriger l'orientation du PDF si nécessaire
+    print("🔄 Vérification de l'orientation des pages...")
+    pdf_path = correct_pdf_orientation(pdf_path)
 
     # Configure Ollama service (local mode)
     os.environ["OLLAMA_BASE_URL"] = "http://localhost:11434"
