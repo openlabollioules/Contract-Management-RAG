@@ -352,8 +352,7 @@ def extract_text_contract(pdf_path):
     start_time = time.time()
 
     # Nettoyer le PDF (masquer signatures et tampons)
-    print("🧹 Nettoyage du PDF...")
-    pdf_path = clean_pdf(pdf_path)
+    #pdf_path = clean_pdf(pdf_path)
 
     # Corriger l'orientation du PDF si nécessaire
     print("🔄 Vérification de l'orientation des pages...")
@@ -375,10 +374,12 @@ def extract_text_contract(pdf_path):
     print("🔍 Configuration de Marker...")
     # Setup the configuration for Marker with enhanced options
     config = {
+        "converter_cls": "marker.converters.table.TableConverter",
         "output_format": "markdown",
         "use_llm": True,
         "llm_service": "marker.services.ollama.OllamaService",
         "ollama_model": "mistral-small3.1:latest",
+        "ocr": True,
         "ocr_engine": "tesseract",
         "ocr_language": "fra+eng",
         "table_structure": True,
@@ -397,6 +398,7 @@ def extract_text_contract(pdf_path):
         "s3_offline": True,
         "no_proxy": True,
         "device": str(device),
+        "debug": True,
     }
 
     try:
