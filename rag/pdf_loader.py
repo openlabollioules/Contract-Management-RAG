@@ -3,7 +3,12 @@ import logging
 import os
 import platform
 import time
-
+import subprocess
+import cv2
+import numpy as np
+import onnxruntime as ort
+from pdf2image import convert_from_path
+from transformers import SegformerImageProcessor, SegformerForSemanticSegmentation
 import torch
 from marker.config.parser import ConfigParser
 from marker.converters.pdf import PdfConverter
@@ -11,6 +16,8 @@ from marker.models import create_model_dict
 from marker.output import text_from_rendered
 from PyPDF2 import PdfReader, PdfWriter
 import fitz  # PyMuPDF
+import pytesseract
+from pytesseract import Output
 
 # Détection de l'architecture
 is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
@@ -201,9 +208,152 @@ def correct_pdf_orientation(pdf_path):
         return pdf_path  # Retourner le chemin original en cas d'erreur
 
 
+def get_text_regions(image):
+    """
+    Détecte les régions contenant du texte avec Tesseract OCR.
+    """
+    # Obtenir les données de détection de texte
+    data = pytesseract.image_to_data(image, output_type=Output.DICT)
+    
+    # Créer un masque pour les zones de texte
+    mask = np.zeros(image.shape[:2], dtype=np.uint8)
+    
+    n_boxes = len(data['level'])
+    for i in range(n_boxes):
+        if int(data['conf'][i]) > 60:  # Seuil de confiance pour le texte
+            (x, y, w, h) = (data['left'][i], data['top'][i], 
+                           data['width'][i], data['height'][i])
+            # Ajouter un petit padding autour du texte
+            padding = 5
+            x1 = max(0, x - padding)
+            y1 = max(0, y - padding)
+            x2 = min(image.shape[1], x + w + padding)
+            y2 = min(image.shape[0], y + h + padding)
+            cv2.rectangle(mask, (x1, y1), (x2, y2), 255, -1)
+    
+    return mask
+
+def detect_and_mask_signatures(image, sess, input_name, text_mask, padding=200):
+    """
+    Détecte et masque les signatures dans une image en évitant les zones de texte.
+    Utilise une approche plus agressive avec post-traitement.
+    """
+    # Redimensionner l'image pour la détection
+    h, w = image.shape[:2]
+    small = cv2.resize(image, (640, 640))
+    
+    # Préparer l'image pour le modèle
+    tensor = small[..., ::-1].transpose(2,0,1)[None].astype(np.float32) / 255.0
+    
+    # Détecter les signatures
+    outputs = sess.run(None, {input_name: tensor})
+    boxes = outputs[0]
+    
+    # Créer une copie de l'image pour le masquage
+    masked_image = image.copy()
+    signature_mask = np.zeros(image.shape[:2], dtype=np.uint8)
+    
+    # Première passe : détection des signatures
+    for box in boxes:
+        x1, y1, x2, y2, score = box[:5]
+        if score > 0.0001:  # Seuil extrêmement bas
+            # Convertir les coordonnées à la taille originale
+            x1 = int(x1 * w / 640)
+            y1 = int(y1 * h / 640)
+            x2 = int(x2 * w / 640)
+            y2 = int(y2 * h / 640)
+            
+            # Ajouter le padding
+            x1 = max(0, x1 - padding)
+            y1 = max(0, y1 - padding)
+            x2 = min(w, x2 + padding)
+            y2 = min(h, y2 + padding)
+            
+            # Marquer la zone dans le masque
+            cv2.rectangle(signature_mask, (x1, y1), (x2, y2), 255, -1)
+    
+    # Post-traitement : expansion des zones détectées
+    kernel = np.ones((50, 50), np.uint8)
+    signature_mask = cv2.dilate(signature_mask, kernel, iterations=2)
+    
+    # Deuxième passe : masquage final en évitant le texte
+    for y in range(h):
+        for x in range(w):
+            if signature_mask[y, x] > 0 and text_mask[y, x] == 0:
+                masked_image[y, x] = [255, 255, 255]
+    
+    return masked_image
+
+def clean_pdf(pdf_path):
+    """
+    Nettoie le PDF en masquant les signatures et tampons tout en protégeant le texte.
+    Utilise une approche plus agressive avec post-traitement.
+    """
+    try:
+        # Charger le modèle ONNX pour les signatures
+        sig_model_path = "offline_models/handwritten-detector-onnx/model_clean.onnx"
+        sess = ort.InferenceSession(sig_model_path, providers=["CPUExecutionProvider"])
+        input_name = sess.get_inputs()[0].name
+        
+        # Charger le modèle SegFormer pour les tampons
+        processor = SegformerImageProcessor.from_pretrained("offline_models/segformer-stamp", local_files_only=True)
+        model = SegformerForSemanticSegmentation.from_pretrained("offline_models/segformer-stamp", local_files_only=True)
+        
+        # Convertir le PDF en images
+        images = convert_from_path(pdf_path, dpi=400)
+        cleaned_images = []
+        
+        for i, image in enumerate(images):
+            print(f"Traitement de la page {i+1}/{len(images)}...")
+            
+            # Convertir en numpy array
+            img_np = np.array(image)
+            
+            # Détecter les zones de texte
+            print("Détection des zones de texte...")
+            text_mask = get_text_regions(img_np)
+            
+            # Masquer les signatures en évitant le texte
+            print("Masquage des signatures...")
+            img_np = detect_and_mask_signatures(img_np, sess, input_name, text_mask, padding=200)
+            
+            # Masquer les tampons en évitant le texte
+            print("Masquage des tampons...")
+            inputs = processor(images=img_np, return_tensors="pt")
+            with torch.no_grad():
+                outputs = model(**inputs)
+            stamp_mask = outputs.logits.argmax(dim=1).squeeze().cpu().numpy()
+            
+            # Post-traitement du masque des tampons
+            kernel = np.ones((30, 30), np.uint8)
+            stamp_mask = cv2.dilate(stamp_mask.astype(np.uint8), kernel, iterations=2)
+            
+            # Ne masquer que les zones de tampon qui ne contiennent pas de texte
+            combined_mask = np.logical_and(stamp_mask == 1, text_mask == 0)
+            img_np[combined_mask] = [255, 255, 255]
+            
+            cleaned_images.append(img_np)
+            print(f"Page {i+1} traitée.")
+        
+        # Sauvegarder le PDF nettoyé
+        cleaned_path = pdf_path.replace('.pdf', '_cleaned.pdf')
+        cleaned_images[0].save(cleaned_path, save_all=True, append_images=cleaned_images[1:])
+        
+        print(f"✅ PDF nettoyé sauvegardé sous: {cleaned_path}")
+        return cleaned_path
+        
+    except Exception as e:
+        print(f"Erreur lors du nettoyage du PDF: {str(e)}")
+        return pdf_path
+
+
 def extract_text_contract(pdf_path):
     print("📄 Chargement des modèles...")
     start_time = time.time()
+
+    # Nettoyer le PDF (masquer signatures et tampons)
+    print("🧹 Nettoyage du PDF...")
+    pdf_path = clean_pdf(pdf_path)
 
     # Corriger l'orientation du PDF si nécessaire
     print("🔄 Vérification de l'orientation des pages...")
