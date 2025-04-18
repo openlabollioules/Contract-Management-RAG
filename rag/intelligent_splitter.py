@@ -79,6 +79,7 @@ class IntelligentSplitter:
 
     def _is_section_start(self, line: str) -> Optional[str]:
         """Détecte si une ligne commence une nouvelle section."""
+        original_line = line
         line = line.strip()
 
         # Exclure les lignes de pagination et de version
@@ -92,6 +93,24 @@ class IntelligentSplitter:
         # Vérifier d'abord si la ligne contient un numéro
         if not re.search(r"\d+", line):
             return None
+
+        # SUPER PATTERN pour les cas critiques comme "### **10.2** MISSION MINISTERIELLE PME/PMI"
+        # Ce pattern est extrêmement permissif pour éviter les problèmes de caractères spéciaux
+        critical_pattern = r"^#+\s*\*\*(\d+(?:\.\d+)*)\*\*\s+(.+)$"
+        if match := re.match(critical_pattern, line):
+            section_number = match.group(1)
+            title = match.group(2).strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
+            
+        # Pattern spécifique pour le cas "**4.9** DELAI D'ETABLISSEMENT..."
+        if re.match(r"^\*\*(\d+(?:\.\d+)*)\*\*\s+[A-Z]", line):
+            section_number = re.match(r"^\*\*(\d+(?:\.\d+)*)\*\*", line).group(1)
+            title = line.split("**", 2)[2].strip()
+            if title:
+                self.section_titles[section_number] = title
+            return section_number
 
         # Pattern pour les sous-sections avec tiret (ex: "- 3.1 The Work")
         pattern_dash_subsection = r"^-\s*(\d+(?:\.\d+)+)\s*(.*?)$"
@@ -334,110 +353,57 @@ class IntelligentSplitter:
         print("\n🔍 Découpage intelligents du texte...")
         start_time = time.time()
 
-        # Initialiser les chunks
-        chunks = []
-        lines = text.split("\n")
-
-        # Variables pour suivre le chunking en cours
-        current_lines = []
-        current_section = None
-
-        # Pour déterminer si nous sommes dans un tableau
-        in_table = False
-
-        for line in tqdm(lines, desc="Traitement des lignes", unit="ligne"):
-            # Vérifier si c'est le début d'une nouvelle section
-            section_number = self._is_section_start(line)
-
-            # Si on trouve une nouvelle section et qu'on a du contenu en cours
-            if section_number and current_lines:
-                # Créer un chunk avec le contenu accumulé
-                chunk = Chunk(
-                    content="\n".join(current_lines),
-                    section_number=current_section,
-                    document_title=self.document_title,
-                    hierarchy=self._get_hierarchy(current_section),
-                )
-                chunks.append(chunk)
-                self.chunk_count += 1
-
-                # Réinitialiser pour le nouveau chunk
-                current_lines = []
-                current_section = section_number
-
-            # Si c'est une nouvelle section mais qu'on n'a pas de contenu en cours
-            elif section_number:
-                current_section = section_number
-
-            # Ajouter la ligne au contenu en cours
-            current_lines.append(line)
-
-        # Ajouter le dernier chunk s'il y a du contenu
-        if current_lines:
+        # Découpe ligne par ligne et détecte tous les débuts de section
+        lines = text.split('\n')
+        section_markers = []
+        
+        # Trouver toutes les lignes qui sont des débuts de section
+        for i, line in enumerate(lines):
+            section_number = self._is_section_start(line.strip())
+            if section_number:
+                section_markers.append((i, section_number))
+        
+        print(f"🔍 Sections détectées: {len(section_markers)}")
+        
+        # Si aucune section n'est détectée, retourner un seul chunk
+        if not section_markers:
             chunk = Chunk(
-                content="\n".join(current_lines),
-                section_number=current_section,
+                content=text,
+                section_number=None,
                 document_title=self.document_title,
-                hierarchy=self._get_hierarchy(current_section),
+                hierarchy=[],
+            )
+            return [chunk]
+            
+        # Créer des chunks à partir des marqueurs de section
+        chunks = []
+        for i in range(len(section_markers)):
+            start_idx, section_number = section_markers[i]
+            
+            # Définir la fin de la section actuelle
+            if i < len(section_markers) - 1:
+                end_idx = section_markers[i + 1][0]
+            else:
+                end_idx = len(lines)
+                
+            # Créer le contenu du chunk
+            content = '\n'.join(lines[start_idx:end_idx])
+            
+            # Créer le chunk avec les métadonnées
+            chunk = Chunk(
+                content=content,
+                section_number=section_number,
+                document_title=self.document_title,
+                hierarchy=self._get_hierarchy(section_number),
+                parent_section=self._get_parent_section(section_number),
+                chapter_title=self.section_titles.get(section_number.split('.')[0] if section_number and '.' in section_number else section_number, None)
             )
             chunks.append(chunk)
-            self.chunk_count += 1
-
-        # Maintenant, effectuer une passe supplémentaire pour détecter les sous-sections manquées
-        refined_chunks = []
-        for chunk in chunks:
-            content_lines = chunk.content.split("\n")
-            current_content = []
-            current_sect = chunk.section_number
-            
-            for line in content_lines:
-                # Vérifier si c'est le début d'une nouvelle section
-                section_number = self._is_section_start(line)
-                
-                # Si on trouve une nouvelle section et elle est différente de la section actuelle
-                if section_number and section_number != current_sect and current_content:
-                    # Créer un chunk avec le contenu accumulé
-                    refined_chunk = Chunk(
-                        content="\n".join(current_content),
-                        section_number=current_sect,
-                        document_title=self.document_title,
-                        hierarchy=self._get_hierarchy(current_sect),
-                        parent_section=self._get_parent_section(current_sect),
-                        chapter_title=self.section_titles.get(current_sect.split('.')[0] if current_sect and '.' in current_sect else current_sect, None)
-                    )
-                    refined_chunks.append(refined_chunk)
-                    
-                    # Réinitialiser pour le nouveau chunk
-                    current_content = []
-                    current_sect = section_number
-                
-                # Si c'est une nouvelle section qui correspond à la section actuelle ou pas de nouvelle section
-                # Ou première ligne d'une nouvelle section
-                if not section_number or section_number == current_sect or not current_content:
-                    current_content.append(line)
-                # Sinon, c'est une nouvelle section qui ne correspond pas à la section actuelle
-                else:
-                    # On commence un nouveau chunk avec cette ligne
-                    current_sect = section_number
-                    current_content = [line]
-            
-            # Ajouter le dernier chunk de cette passe s'il y a du contenu
-            if current_content:
-                refined_chunk = Chunk(
-                    content="\n".join(current_content),
-                    section_number=current_sect,
-                    document_title=self.document_title,
-                    hierarchy=self._get_hierarchy(current_sect),
-                    parent_section=self._get_parent_section(current_sect),
-                    chapter_title=self.section_titles.get(current_sect.split('.')[0] if current_sect and '.' in current_sect else current_sect, None)
-                )
-                refined_chunks.append(refined_chunk)
 
         print(f"\n✅ Découpage terminé en {time.time() - start_time:.2f} secondes")
-        print(f"📦 Nombre de chunks créés initialement: {len(chunks)}")
-        print(f"📦 Nombre de chunks après raffinement: {len(refined_chunks)}")
+        print(f"📦 Nombre de chunks créés: {len(chunks)}")
 
         # Afficher les chunks
-        self.display_chunks(refined_chunks)
+        self.display_chunks(chunks)
 
-        return refined_chunks
+        return chunks

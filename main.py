@@ -23,7 +23,7 @@ def process_contract(filepath: str) -> List[Chunk]:
     start_time = time.time()
 
     # 1. Load and extract text from PDF
-    print("📄 Extraction du texte du PDF...")
+    print("📄 Extraction du texte du PDF (avec détection des en-têtes/pieds de page et suppression des références d'images)...")
     text, document_title = extract_text_contract(filepath)
     print(f"✅ Texte extrait ({len(text.split())} mots)")
 

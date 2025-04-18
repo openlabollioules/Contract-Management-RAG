@@ -18,6 +18,7 @@ from PyPDF2 import PdfReader, PdfWriter
 import fitz  # PyMuPDF
 import pytesseract
 from pytesseract import Output
+import re
 
 # Détection de l'architecture
 is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
@@ -347,6 +348,93 @@ def clean_pdf(pdf_path):
         return pdf_path
 
 
+def remove_headers_footers_by_similarity(text, similarity_threshold=0.8, occurrence_threshold=3):
+    """
+    Detects and removes headers and footers from text based on line similarity.
+    Also removes image references in Markdown format.
+    
+    Args:
+        text (str): The text to process
+        similarity_threshold (float): Threshold for considering lines as similar (0-1)
+        occurrence_threshold (int): Minimum occurrences to consider a line as header/footer
+    
+    Returns:
+        str: Text with headers, footers, and image references removed
+    """
+    # First, remove image references (Markdown format)
+    image_pattern = r'!\[\]\(.*?\.(jpeg|jpg|png|gif)\)'
+    text = re.sub(image_pattern, '', text)
+    
+    # Split text into lines
+    lines = text.split('\n')
+    if not lines:
+        return text
+    
+    # Count occurrences of similar lines
+    line_occurrences = {}
+    
+    # Function to calculate similarity between two strings
+    def similarity(s1, s2):
+        # Skip empty lines
+        if not s1.strip() or not s2.strip():
+            return 0
+            
+        # For very short lines, use exact matching
+        if len(s1) < 10 or len(s2) < 10:
+            return 1.0 if s1 == s2 else 0.0
+            
+        # Simple Jaccard similarity for longer lines
+        s1_words = set(s1.lower().split())
+        s2_words = set(s2.lower().split())
+        
+        if not s1_words or not s2_words:
+            return 0
+            
+        intersection = len(s1_words.intersection(s2_words))
+        union = len(s1_words.union(s2_words))
+        
+        return intersection / union if union > 0 else 0
+    
+    # Group similar lines
+    for i, line in enumerate(lines):
+        line = line.strip()
+        if not line:
+            continue
+            
+        # Skip lines that are likely part of tables or structured content
+        if line.startswith('|') and line.endswith('|'):
+            continue
+            
+        found_similar = False
+        for key in line_occurrences:
+            if similarity(key, line) >= similarity_threshold:
+                line_occurrences[key].append(i)
+                found_similar = True
+                break
+                
+        if not found_similar:
+            line_occurrences[line] = [i]
+    
+    # Identify potential headers/footers (lines that appear multiple times)
+    potential_headers_footers = set()
+    for line, indices in line_occurrences.items():
+        if len(indices) >= occurrence_threshold:
+            potential_headers_footers.update(indices)
+    
+    # Remove headers/footers
+    cleaned_lines = [line for i, line in enumerate(lines) if i not in potential_headers_footers]
+    
+    # Join lines back into text
+    cleaned_text = '\n'.join(cleaned_lines)
+    
+    # Add a note about removed content
+    if len(potential_headers_footers) > 0:
+        removed_count = len(potential_headers_footers)
+        info_text = f"\n[Note: {removed_count} repeated header/footer lines were automatically removed]\n"
+        cleaned_text = info_text + cleaned_text
+    
+    return cleaned_text
+
 def extract_text_contract(pdf_path):
     print("📄 Chargement des modèles...")
     start_time = time.time()
@@ -428,6 +516,13 @@ def extract_text_contract(pdf_path):
         # Process the PDF and extract text
         rendered = converter(pdf_path)
         text, metadata, _ = text_from_rendered(rendered)
+        
+        # Apply header/footer removal by similarity
+        print("🔍 Détection et suppression des en-têtes, pieds de page et références d'images...")
+        text = remove_headers_footers_by_similarity(text, 
+                                                   similarity_threshold=0.8, 
+                                                   occurrence_threshold=3)
+        print("✅ Traitement des en-têtes, pieds de page et références d'images terminé")
 
         # Utiliser le nom complet du fichier (avec extension) comme titre du document
         document_title = os.path.basename(pdf_path)
@@ -468,6 +563,14 @@ Content:
             from pdfminer.high_level import extract_text
 
             simple_text = extract_text(pdf_path)
+            
+            # Apply header/footer removal to the simple extraction as well
+            print("🔍 Détection et suppression des en-têtes, pieds de page et références d'images (mode basique)...")
+            simple_text = remove_headers_footers_by_similarity(simple_text, 
+                                                              similarity_threshold=0.8, 
+                                                              occurrence_threshold=3)
+            print("✅ Traitement des en-têtes, pieds de page et références d'images terminé (mode basique)")
+            
             print("✅ Texte extrait avec succès (mode basique)")
             # Utiliser le nom complet du fichier comme titre en cas d'erreur
             document_title = os.path.basename(pdf_path)
