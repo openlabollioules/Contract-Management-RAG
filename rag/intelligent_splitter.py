@@ -348,6 +348,56 @@ class IntelligentSplitter:
 
         print(f"\n📊 Nombre total de chunks: {len(chunks)}")
 
+    def _is_empty_section_chunk(self, chunk: Chunk) -> bool:
+        """
+        Determines if a chunk is just a section title with no actual content.
+        
+        Args:
+            chunk: The Chunk object to check
+            
+        Returns:
+            bool: True if the chunk only contains a title and no content
+        """
+        # Skip if chunk has no section number
+        if not chunk.section_number:
+            return False
+            
+        # Get content lines
+        lines = chunk.content.split('\n')
+        if not lines:
+            return True
+            
+        # If the chunk has only 1-2 lines, it's likely just a title
+        if len(lines) <= 2:
+            # Check if the content is just a title
+            for line in lines:
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                    
+                # Check if this line contains the section number
+                if chunk.section_number in stripped:
+                    # This is likely just the title line
+                    continue
+                else:
+                    # Found content beyond the title
+                    return False
+                    
+            # If we got here, all lines were either empty or contain the section number
+            return True
+            
+        # Consider it empty if it has only the title and blank lines
+        non_empty_lines = [line for line in lines if line.strip()]
+        if len(non_empty_lines) <= 1:
+            return True
+            
+        # If the content is very short (just a few characters beyond the section title)
+        content_text = ' '.join(line for line in lines if line.strip() and chunk.section_number not in line)
+        if len(content_text.strip()) < 10:
+            return True
+            
+        return False
+
     def split(self, text: str) -> List[Chunk]:
         """Divise le texte en chunks intelligents."""
         print("\n🔍 Découpage intelligents du texte...")
@@ -377,6 +427,8 @@ class IntelligentSplitter:
             
         # Créer des chunks à partir des marqueurs de section
         chunks = []
+        empty_section_titles = {}
+        
         for i in range(len(section_markers)):
             start_idx, section_number = section_markers[i]
             
@@ -389,6 +441,9 @@ class IntelligentSplitter:
             # Créer le contenu du chunk
             content = '\n'.join(lines[start_idx:end_idx])
             
+            # Récupérer le titre s'il existe
+            section_title = self.section_titles.get(section_number, "")
+            
             # Créer le chunk avec les métadonnées
             chunk = Chunk(
                 content=content,
@@ -398,10 +453,19 @@ class IntelligentSplitter:
                 parent_section=self._get_parent_section(section_number),
                 chapter_title=self.section_titles.get(section_number.split('.')[0] if section_number and '.' in section_number else section_number, None)
             )
-            chunks.append(chunk)
+            
+            # Vérifier si c'est un chunk vide (juste un titre de section)
+            if self._is_empty_section_chunk(chunk):
+                # Stocker le titre pour référence ultérieure
+                empty_section_titles[section_number] = section_title
+                print(f"🔍 Section vide détectée: {section_number} - {section_title}")
+            else:
+                chunks.append(chunk)
 
         print(f"\n✅ Découpage terminé en {time.time() - start_time:.2f} secondes")
         print(f"📦 Nombre de chunks créés: {len(chunks)}")
+        if empty_section_titles:
+            print(f"📑 Sections vides ignorées: {len(empty_section_titles)}")
 
         # Afficher les chunks
         self.display_chunks(chunks)
