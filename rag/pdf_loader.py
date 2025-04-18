@@ -376,9 +376,9 @@ def extract_text_contract(pdf_path):
     config = {
         "converter_cls": "marker.converters.table.TableConverter",
         "output_format": "markdown",
-        "use_llm": True,
-        "llm_service": "marker.services.ollama.OllamaService",
-        "ollama_model": "mistral-small3.1:latest",
+        #"use_llm": False,
+        #"llm_service": "marker.services.ollama.OllamaService",
+        #"ollama_model": "mistral-small3.1:latest",
         "ocr": True,
         "ocr_engine": "tesseract",
         "ocr_language": "fra+eng",
