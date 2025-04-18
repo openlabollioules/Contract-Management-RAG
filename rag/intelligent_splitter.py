@@ -398,6 +398,68 @@ class IntelligentSplitter:
             
         return False
 
+    def _strip_title_from_content(self, chunk: Chunk) -> Chunk:
+        """
+        Removes the title line from the chunk content.
+        The title information is already stored in metadata.
+        
+        Args:
+            chunk: The Chunk object to process
+            
+        Returns:
+            Chunk: A new chunk with the title removed from content
+        """
+        if not chunk.section_number:
+            return chunk
+            
+        lines = chunk.content.split('\n')
+        if not lines:
+            return chunk
+            
+        # Find and remove title lines
+        filtered_lines = []
+        title_removed = False
+        
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            # Skip empty lines at the beginning
+            if not stripped and i < 3:
+                continue
+                
+            # Check if this is a title line (contains section number and is formatted like a header)
+            is_title_line = False
+            
+            # Check for section number in the line
+            if chunk.section_number in stripped:
+                # Check for markdown heading markers or other title formatting
+                if (stripped.startswith('#') or 
+                    stripped.startswith('**') or 
+                    stripped.endswith('**') or
+                    stripped.isupper()):
+                    is_title_line = True
+            
+            # Add the line only if it's not a title line or we've already removed a title
+            if not is_title_line or title_removed:
+                filtered_lines.append(line)
+            else:
+                title_removed = True
+        
+        # Create new chunk with filtered content
+        filtered_content = '\n'.join(filtered_lines).strip()
+        
+        # If we've stripped everything, add a minimal placeholder
+        if not filtered_content:
+            filtered_content = f"[Section {chunk.section_number} - Empty content]"
+            
+        return Chunk(
+            content=filtered_content,
+            section_number=chunk.section_number,
+            document_title=chunk.document_title,
+            hierarchy=chunk.hierarchy,
+            parent_section=chunk.parent_section,
+            chapter_title=chunk.chapter_title
+        )
+        
     def split(self, text: str) -> List[Chunk]:
         """Divise le texte en chunks intelligents."""
         print("\n🔍 Découpage intelligents du texte...")
@@ -460,6 +522,8 @@ class IntelligentSplitter:
                 empty_section_titles[section_number] = section_title
                 print(f"🔍 Section vide détectée: {section_number} - {section_title}")
             else:
+                # Retirer le titre du contenu du chunk
+                chunk = self._strip_title_from_content(chunk)
                 chunks.append(chunk)
 
         print(f"\n✅ Découpage terminé en {time.time() - start_time:.2f} secondes")

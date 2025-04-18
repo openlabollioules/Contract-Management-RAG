@@ -28,7 +28,7 @@ def process_contract(filepath: str) -> List[Chunk]:
     print(f"✅ Texte extrait ({len(text.split())} mots)")
 
     # 2. Split text into intelligent chunks
-    print("\n🔍 Découpage du texte en chunks intelligents (avec filtrage des sections vides)...")
+    print("\n🔍 Découpage du texte en chunks intelligents (avec filtrage des sections vides et suppression des titres du contenu)...")
     splitter = IntelligentSplitter(document_title=document_title)
     chunks = splitter.split(text)
 
