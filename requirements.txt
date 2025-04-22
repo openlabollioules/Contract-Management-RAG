@@ -7,7 +7,6 @@ langchain_ollama
 langdetect
 llama-index-core
 llama-index-llms-langchain
-marker
 marker-pdf
 numpy>=1.24.3
 ocrmypdf
