@@ -366,36 +366,40 @@ class IntelligentSplitter:
         lines = chunk.content.split('\n')
         if not lines:
             return True
+        
+        # Get non-empty lines
+        non_empty_lines = [line.strip() for line in lines if line.strip()]
+        if not non_empty_lines:
+            return True
+        
+        # Liste de modèles de titres typiques
+        title_patterns = [
+            # Modèle simple: "X - Title" ou "X. Title"
+            rf"^{re.escape(chunk.section_number)}[\s\-\.:]+([A-Z][A-Z\s]+)$",
+            # Modèle avec formatage: "# X - Title" ou "## X. Title"
+            rf"^#+\s*{re.escape(chunk.section_number)}[\s\-\.:]+([A-Z][A-Z\s]+)$",
+            # Modèle avec formatage en gras: "**X - Title**"
+            rf"^\*\*{re.escape(chunk.section_number)}[\s\-\.:]+([A-Z][A-Z\s]+)\*\*$",
+        ]
+        
+        # Si le contenu ne contient qu'une seule ligne non vide
+        if len(non_empty_lines) == 1:
+            content_line = non_empty_lines[0]
             
-        # If the chunk has only 1-2 lines, it's likely just a title
-        if len(lines) <= 2:
-            # Check if the content is just a title
-            for line in lines:
-                stripped = line.strip()
-                if not stripped:
-                    continue
+            # Vérifier si la ligne correspond à un modèle de titre
+            for pattern in title_patterns:
+                if re.match(pattern, content_line):
+                    return True
                     
-                # Check if this line contains the section number
-                if chunk.section_number in stripped:
-                    # This is likely just the title line
-                    continue
-                else:
-                    # Found content beyond the title
-                    return False
+            # Vérifier si c'est juste un titre simple avec le numéro de section
+            # et quelques mots en majuscules (maximum 5 mots)
+            parts = content_line.split(' - ', 1)
+            if len(parts) == 2 and parts[0].strip() == chunk.section_number:
+                title_part = parts[1].strip()
+                # Si le titre est en majuscules et court
+                if title_part.isupper() and len(title_part.split()) <= 5:
+                    return True
                     
-            # If we got here, all lines were either empty or contain the section number
-            return True
-            
-        # Consider it empty if it has only the title and blank lines
-        non_empty_lines = [line for line in lines if line.strip()]
-        if len(non_empty_lines) <= 1:
-            return True
-            
-        # If the content is very short (just a few characters beyond the section title)
-        content_text = ' '.join(line for line in lines if line.strip() and chunk.section_number not in line)
-        if len(content_text.strip()) < 10:
-            return True
-            
         return False
 
     def _strip_title_from_content(self, chunk: Chunk) -> Chunk:
