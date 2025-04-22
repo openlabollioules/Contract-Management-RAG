@@ -451,10 +451,6 @@ class IntelligentSplitter:
         # Create new chunk with filtered content
         filtered_content = '\n'.join(filtered_lines).strip()
         
-        # If we've stripped everything, add a minimal placeholder
-        if not filtered_content:
-            filtered_content = f"[Section {chunk.section_number} - Empty content]"
-            
         return Chunk(
             content=filtered_content,
             section_number=chunk.section_number,
@@ -528,7 +524,9 @@ class IntelligentSplitter:
             else:
                 # Retirer le titre du contenu du chunk
                 chunk = self._strip_title_from_content(chunk)
-                chunks.append(chunk)
+                # Ne pas ajouter de chunks vides
+                if chunk.content.strip():
+                    chunks.append(chunk)
 
         print(f"\n✅ Découpage terminé en {time.time() - start_time:.2f} secondes")
         print(f"📦 Nombre de chunks créés: {len(chunks)}")

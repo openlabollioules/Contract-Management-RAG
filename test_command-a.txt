@@ -1,2 +1,0 @@
-Loaded layout model s3://layout/2025_02_18 on device mps with dtype torch.float16
-Loaded texify model s3://texify/2025_02_18 on device mps with dtype torch.float16

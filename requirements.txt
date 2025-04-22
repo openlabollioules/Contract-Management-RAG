@@ -40,3 +40,6 @@ langdetect
 sentence-transformers
 faiss-cpu
 ocrmypdf
+PyPDF2
+PyMuPDF
+ultralytics
