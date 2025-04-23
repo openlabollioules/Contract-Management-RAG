@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
 import torch
-from tqdm import tqdm
 
 # Détection de l'architecture
 is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
@@ -103,7 +102,7 @@ class IntelligentSplitter:
             if title:
                 self.section_titles[section_number] = title
             return section_number
-            
+
         # Pattern spécifique pour le cas "**4.9** DELAI D'ETABLISSEMENT..."
         if re.match(r"^\*\*(\d+(?:\.\d+)*)\*\*\s+[A-Z]", line):
             section_number = re.match(r"^\*\*(\d+(?:\.\d+)*)\*\*", line).group(1)
@@ -351,27 +350,27 @@ class IntelligentSplitter:
     def _is_empty_section_chunk(self, chunk: Chunk) -> bool:
         """
         Determines if a chunk is just a section title with no actual content.
-        
+
         Args:
             chunk: The Chunk object to check
-            
+
         Returns:
             bool: True if the chunk only contains a title and no content
         """
         # Skip if chunk has no section number
         if not chunk.section_number:
             return False
-            
+
         # Get content lines
-        lines = chunk.content.split('\n')
+        lines = chunk.content.split("\n")
         if not lines:
             return True
-        
+
         # Get non-empty lines
         non_empty_lines = [line.strip() for line in lines if line.strip()]
         if not non_empty_lines:
             return True
-        
+
         # Liste de modèles de titres typiques
         title_patterns = [
             # Modèle simple: "X - Title" ou "X. Title"
@@ -381,102 +380,104 @@ class IntelligentSplitter:
             # Modèle avec formatage en gras: "**X - Title**"
             rf"^\*\*{re.escape(chunk.section_number)}[\s\-\.:]+([A-Z][A-Z\s]+)\*\*$",
         ]
-        
+
         # Si le contenu ne contient qu'une seule ligne non vide
         if len(non_empty_lines) == 1:
             content_line = non_empty_lines[0]
-            
+
             # Vérifier si la ligne correspond à un modèle de titre
             for pattern in title_patterns:
                 if re.match(pattern, content_line):
                     return True
-                    
+
             # Vérifier si c'est juste un titre simple avec le numéro de section
             # et quelques mots en majuscules (maximum 5 mots)
-            parts = content_line.split(' - ', 1)
+            parts = content_line.split(" - ", 1)
             if len(parts) == 2 and parts[0].strip() == chunk.section_number:
                 title_part = parts[1].strip()
                 # Si le titre est en majuscules et court
                 if title_part.isupper() and len(title_part.split()) <= 5:
                     return True
-                    
+
         return False
 
     def _strip_title_from_content(self, chunk: Chunk) -> Chunk:
         """
         Removes the title line from the chunk content.
         The title information is already stored in metadata.
-        
+
         Args:
             chunk: The Chunk object to process
-            
+
         Returns:
             Chunk: A new chunk with the title removed from content
         """
         if not chunk.section_number:
             return chunk
-            
-        lines = chunk.content.split('\n')
+
+        lines = chunk.content.split("\n")
         if not lines:
             return chunk
-            
+
         # Find and remove title lines
         filtered_lines = []
         title_removed = False
-        
+
         for i, line in enumerate(lines):
             stripped = line.strip()
             # Skip empty lines at the beginning
             if not stripped and i < 3:
                 continue
-                
+
             # Check if this is a title line (contains section number and is formatted like a header)
             is_title_line = False
-            
+
             # Check for section number in the line
             if chunk.section_number in stripped:
                 # Check for markdown heading markers or other title formatting
-                if (stripped.startswith('#') or 
-                    stripped.startswith('**') or 
-                    stripped.endswith('**') or
-                    stripped.isupper()):
+                if (
+                    stripped.startswith("#")
+                    or stripped.startswith("**")
+                    or stripped.endswith("**")
+                    or stripped.isupper()
+                ):
                     is_title_line = True
-            
+
             # Add the line only if it's not a title line or we've already removed a title
             if not is_title_line or title_removed:
                 filtered_lines.append(line)
             else:
                 title_removed = True
-        
+
         # Create new chunk with filtered content
-        filtered_content = '\n'.join(filtered_lines).strip()
-        
+        filtered_content = "\n".join(filtered_lines).strip()
+
         return Chunk(
             content=filtered_content,
             section_number=chunk.section_number,
             document_title=chunk.document_title,
             hierarchy=chunk.hierarchy,
             parent_section=chunk.parent_section,
-            chapter_title=chunk.chapter_title
+            chapter_title=chunk.chapter_title,
         )
-        
+
     def split(self, text: str) -> List[Chunk]:
         """Divise le texte en chunks intelligents."""
         print("\n🔍 Découpage intelligents du texte...")
         start_time = time.time()
 
         # Découpe ligne par ligne et détecte tous les débuts de section
-        lines = text.split('\n')
+        lines = text.split("\n")
         section_markers = []
-        
+
         # Trouver toutes les lignes qui sont des débuts de section
         for i, line in enumerate(lines):
             section_number = self._is_section_start(line.strip())
             if section_number:
                 section_markers.append((i, section_number))
-        
+
         print(f"🔍 Sections détectées: {len(section_markers)}")
-        
+
         # Si aucune section n'est détectée, retourner un seul chunk
         if not section_markers:
             chunk = Chunk(
@@ -486,26 +487,26 @@ class IntelligentSplitter:
                 hierarchy=[],
             )
             return [chunk]
-            
+
         # Créer des chunks à partir des marqueurs de section
         chunks = []
         empty_section_titles = {}
-        
+
         for i in range(len(section_markers)):
             start_idx, section_number = section_markers[i]
-            
+
             # Définir la fin de la section actuelle
             if i < len(section_markers) - 1:
                 end_idx = section_markers[i + 1][0]
             else:
                 end_idx = len(lines)
-                
+
             # Créer le contenu du chunk
-            content = '\n'.join(lines[start_idx:end_idx])
-            
+            content = "\n".join(lines[start_idx:end_idx])
+
             # Récupérer le titre s'il existe
             section_title = self.section_titles.get(section_number, "")
-            
+
             # Créer le chunk avec les métadonnées
             chunk = Chunk(
                 content=content,
@@ -513,9 +514,16 @@ class IntelligentSplitter:
                 document_title=self.document_title,
                 hierarchy=self._get_hierarchy(section_number),
                 parent_section=self._get_parent_section(section_number),
-                chapter_title=self.section_titles.get(section_number.split('.')[0] if section_number and '.' in section_number else section_number, None)
+                chapter_title=self.section_titles.get(
+                    (
+                        section_number.split(".")[0]
+                        if section_number and "." in section_number
+                        else section_number
+                    ),
+                    None,
+                ),
             )
-            
+
             # Vérifier si c'est un chunk vide (juste un titre de section)
             if self._is_empty_section_chunk(chunk):
                 # Stocker le titre pour référence ultérieure
@@ -534,6 +542,6 @@ class IntelligentSplitter:
             print(f"📑 Sections vides ignorées: {len(empty_section_titles)}")
 
         # Afficher les chunks
-        self.display_chunks(chunks)
+        # self.display_chunks(chunks)
 
         return chunks

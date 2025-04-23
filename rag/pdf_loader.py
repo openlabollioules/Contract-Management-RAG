@@ -2,23 +2,24 @@ import importlib
 import logging
 import os
 import platform
+import re
 import time
-import subprocess
+
 import cv2
+import fitz  # PyMuPDF
 import numpy as np
 import onnxruntime as ort
-from pdf2image import convert_from_path
-from transformers import SegformerImageProcessor, SegformerForSemanticSegmentation
+import pytesseract
 import torch
 from marker.config.parser import ConfigParser
 from marker.converters.pdf import PdfConverter
 from marker.models import create_model_dict
 from marker.output import text_from_rendered
+from pdf2image import convert_from_path
 from PyPDF2 import PdfReader, PdfWriter
-import fitz  # PyMuPDF
-import pytesseract
 from pytesseract import Output
-import re
+from transformers import (SegformerForSemanticSegmentation,
+                          SegformerImageProcessor)
 
 # Détection de l'architecture
 is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
@@ -172,18 +173,18 @@ def correct_pdf_orientation(pdf_path):
         # Ouvrir le PDF avec PyMuPDF pour analyser l'orientation
         doc = fitz.open(pdf_path)
         writer = PdfWriter()
-        
+
         # Lire le PDF avec PyPDF2
         reader = PdfReader(pdf_path)
-        
+
         for page_num in range(len(doc)):
             page = doc[page_num]
             # Obtenir l'orientation de la page
             rotation = page.rotation
-            
+
             # Ajouter la page au writer
             writer.add_page(reader.pages[page_num])
-            
+
             # Corriger l'orientation selon la rotation détectée
             if rotation == 90:
                 writer.pages[page_num].rotate(-90)  # Rotation vers la droite
@@ -191,19 +192,19 @@ def correct_pdf_orientation(pdf_path):
                 writer.pages[page_num].rotate(-180)  # Retourner la page
             elif rotation == 270:
                 writer.pages[page_num].rotate(-270)  # Rotation vers la gauche
-            
+
             print(f"Page {page_num + 1}: rotation détectée = {rotation}°")
-        
+
         # Sauvegarder le PDF corrigé
-        output_path = pdf_path.replace('.pdf', '_oriented.pdf')
-        with open(output_path, 'wb') as output_file:
+        output_path = pdf_path.replace(".pdf", "_oriented.pdf")
+        with open(output_path, "wb") as output_file:
             writer.write(output_file)
-        
+
         print(f"✅ PDF corrigé sauvegardé sous: {output_path}")
         print(f"📄 Nombre de pages traitées: {len(doc)}")
-        
+
         return output_path
-        
+
     except Exception as e:
         print(f"Erreur lors de la correction de l'orientation: {str(e)}")
         return pdf_path  # Retourner le chemin original en cas d'erreur
@@ -215,15 +216,19 @@ def get_text_regions(image):
     """
     # Obtenir les données de détection de texte
     data = pytesseract.image_to_data(image, output_type=Output.DICT)
-    
+
     # Créer un masque pour les zones de texte
     mask = np.zeros(image.shape[:2], dtype=np.uint8)
-    
-    n_boxes = len(data['level'])
+
+    n_boxes = len(data["level"])
     for i in range(n_boxes):
-        if int(data['conf'][i]) > 60:  # Seuil de confiance pour le texte
-            (x, y, w, h) = (data['left'][i], data['top'][i], 
-                           data['width'][i], data['height'][i])
+        if int(data["conf"][i]) > 60:  # Seuil de confiance pour le texte
+            (x, y, w, h) = (
+                data["left"][i],
+                data["top"][i],
+                data["width"][i],
+                data["height"][i],
+            )
             # Ajouter un petit padding autour du texte
             padding = 5
             x1 = max(0, x - padding)
@@ -231,8 +236,9 @@ def get_text_regions(image):
             x2 = min(image.shape[1], x + w + padding)
             y2 = min(image.shape[0], y + h + padding)
             cv2.rectangle(mask, (x1, y1), (x2, y2), 255, -1)
-    
+
     return mask
+
 
 def detect_and_mask_signatures(image, sess, input_name, text_mask, padding=200):
     """
@@ -242,18 +248,18 @@ def detect_and_mask_signatures(image, sess, input_name, text_mask, padding=200):
     # Redimensionner l'image pour la détection
     h, w = image.shape[:2]
     small = cv2.resize(image, (640, 640))
-    
+
     # Préparer l'image pour le modèle
-    tensor = small[..., ::-1].transpose(2,0,1)[None].astype(np.float32) / 255.0
-    
+    tensor = small[..., ::-1].transpose(2, 0, 1)[None].astype(np.float32) / 255.0
+
     # Détecter les signatures
     outputs = sess.run(None, {input_name: tensor})
     boxes = outputs[0]
-    
+
     # Créer une copie de l'image pour le masquage
     masked_image = image.copy()
     signature_mask = np.zeros(image.shape[:2], dtype=np.uint8)
-    
+
     # Première passe : détection des signatures
     for box in boxes:
         x1, y1, x2, y2, score = box[:5]
@@ -263,27 +269,28 @@ def detect_and_mask_signatures(image, sess, input_name, text_mask, padding=200):
             y1 = int(y1 * h / 640)
             x2 = int(x2 * w / 640)
             y2 = int(y2 * h / 640)
-            
+
             # Ajouter le padding
             x1 = max(0, x1 - padding)
             y1 = max(0, y1 - padding)
             x2 = min(w, x2 + padding)
             y2 = min(h, y2 + padding)
-            
+
             # Marquer la zone dans le masque
             cv2.rectangle(signature_mask, (x1, y1), (x2, y2), 255, -1)
-    
+
     # Post-traitement : expansion des zones détectées
     kernel = np.ones((50, 50), np.uint8)
     signature_mask = cv2.dilate(signature_mask, kernel, iterations=2)
-    
+
     # Deuxième passe : masquage final en évitant le texte
     for y in range(h):
         for x in range(w):
             if signature_mask[y, x] > 0 and text_mask[y, x] == 0:
                 masked_image[y, x] = [255, 255, 255]
-    
+
     return masked_image
+
 
 def clean_pdf(pdf_path):
     """
@@ -295,152 +302,165 @@ def clean_pdf(pdf_path):
         sig_model_path = "offline_models/handwritten-detector-onnx/model_clean.onnx"
         sess = ort.InferenceSession(sig_model_path, providers=["CPUExecutionProvider"])
         input_name = sess.get_inputs()[0].name
-        
+
         # Charger le modèle SegFormer pour les tampons
-        processor = SegformerImageProcessor.from_pretrained("offline_models/segformer-stamp", local_files_only=True)
-        model = SegformerForSemanticSegmentation.from_pretrained("offline_models/segformer-stamp", local_files_only=True)
-        
+        processor = SegformerImageProcessor.from_pretrained(
+            "offline_models/segformer-stamp", local_files_only=True
+        )
+        model = SegformerForSemanticSegmentation.from_pretrained(
+            "offline_models/segformer-stamp", local_files_only=True
+        )
+
         # Convertir le PDF en images
         images = convert_from_path(pdf_path, dpi=400)
         cleaned_images = []
-        
+
         for i, image in enumerate(images):
             print(f"Traitement de la page {i+1}/{len(images)}...")
-            
+
             # Convertir en numpy array
             img_np = np.array(image)
-            
+
             # Détecter les zones de texte
             print("Détection des zones de texte...")
             text_mask = get_text_regions(img_np)
-            
+
             # Masquer les signatures en évitant le texte
             print("Masquage des signatures...")
-            img_np = detect_and_mask_signatures(img_np, sess, input_name, text_mask, padding=200)
-            
+            img_np = detect_and_mask_signatures(
+                img_np, sess, input_name, text_mask, padding=200
+            )
+
             # Masquer les tampons en évitant le texte
             print("Masquage des tampons...")
             inputs = processor(images=img_np, return_tensors="pt")
             with torch.no_grad():
                 outputs = model(**inputs)
             stamp_mask = outputs.logits.argmax(dim=1).squeeze().cpu().numpy()
-            
+
             # Post-traitement du masque des tampons
             kernel = np.ones((30, 30), np.uint8)
             stamp_mask = cv2.dilate(stamp_mask.astype(np.uint8), kernel, iterations=2)
-            
+
             # Ne masquer que les zones de tampon qui ne contiennent pas de texte
             combined_mask = np.logical_and(stamp_mask == 1, text_mask == 0)
             img_np[combined_mask] = [255, 255, 255]
-            
+
             cleaned_images.append(img_np)
             print(f"Page {i+1} traitée.")
-        
+
         # Sauvegarder le PDF nettoyé
-        cleaned_path = pdf_path.replace('.pdf', '_cleaned.pdf')
-        cleaned_images[0].save(cleaned_path, save_all=True, append_images=cleaned_images[1:])
-        
+        cleaned_path = pdf_path.replace(".pdf", "_cleaned.pdf")
+        cleaned_images[0].save(
+            cleaned_path, save_all=True, append_images=cleaned_images[1:]
+        )
+
         print(f"✅ PDF nettoyé sauvegardé sous: {cleaned_path}")
         return cleaned_path
-        
+
     except Exception as e:
         print(f"Erreur lors du nettoyage du PDF: {str(e)}")
         return pdf_path
 
 
-def remove_headers_footers_by_similarity(text, similarity_threshold=0.8, occurrence_threshold=3):
+def remove_headers_footers_by_similarity(
+    text, similarity_threshold=0.8, occurrence_threshold=3
+):
     """
     Detects and removes headers and footers from text based on line similarity.
     Also removes image references in Markdown format.
-    
+
     Args:
         text (str): The text to process
         similarity_threshold (float): Threshold for considering lines as similar (0-1)
         occurrence_threshold (int): Minimum occurrences to consider a line as header/footer
-    
+
     Returns:
         str: Text with headers, footers, and image references removed
     """
     # First, remove image references (Markdown format)
-    image_pattern = r'!\[\]\(.*?\.(jpeg|jpg|png|gif)\)'
-    text = re.sub(image_pattern, '', text)
-    
+    image_pattern = r"!\[\]\(.*?\.(jpeg|jpg|png|gif)\)"
+    text = re.sub(image_pattern, "", text)
+
     # Split text into lines
-    lines = text.split('\n')
+    lines = text.split("\n")
     if not lines:
         return text
-    
+
     # Count occurrences of similar lines
     line_occurrences = {}
-    
+
     # Function to calculate similarity between two strings
     def similarity(s1, s2):
         # Skip empty lines
         if not s1.strip() or not s2.strip():
             return 0
-            
+
         # For very short lines, use exact matching
         if len(s1) < 10 or len(s2) < 10:
             return 1.0 if s1 == s2 else 0.0
-            
+
         # Simple Jaccard similarity for longer lines
         s1_words = set(s1.lower().split())
         s2_words = set(s2.lower().split())
-        
+
         if not s1_words or not s2_words:
             return 0
-            
+
         intersection = len(s1_words.intersection(s2_words))
         union = len(s1_words.union(s2_words))
-        
+
         return intersection / union if union > 0 else 0
-    
+
     # Group similar lines
     for i, line in enumerate(lines):
         line = line.strip()
         if not line:
             continue
-            
+
         # Skip lines that are likely part of tables or structured content
-        if line.startswith('|') and line.endswith('|'):
+        if line.startswith("|") and line.endswith("|"):
             continue
-            
+
         found_similar = False
         for key in line_occurrences:
             if similarity(key, line) >= similarity_threshold:
                 line_occurrences[key].append(i)
                 found_similar = True
                 break
-                
+
         if not found_similar:
             line_occurrences[line] = [i]
-    
+
     # Identify potential headers/footers (lines that appear multiple times)
     potential_headers_footers = set()
     for line, indices in line_occurrences.items():
         if len(indices) >= occurrence_threshold:
             potential_headers_footers.update(indices)
-    
+
     # Remove headers/footers
-    cleaned_lines = [line for i, line in enumerate(lines) if i not in potential_headers_footers]
-    
+    cleaned_lines = [
+        line for i, line in enumerate(lines) if i not in potential_headers_footers
+    ]
+
     # Join lines back into text
-    cleaned_text = '\n'.join(cleaned_lines)
-    
+    cleaned_text = "\n".join(cleaned_lines)
+
     # Add a note about removed content
     if len(potential_headers_footers) > 0:
         removed_count = len(potential_headers_footers)
         info_text = f"\n[Note: {removed_count} repeated header/footer lines were automatically removed]\n"
         cleaned_text = info_text + cleaned_text
-    
+
     return cleaned_text
+
 
 def extract_text_contract(pdf_path):
     print("📄 Chargement des modèles...")
     start_time = time.time()
 
     # Nettoyer le PDF (masquer signatures et tampons)
-    #pdf_path = clean_pdf(pdf_path)
+    # pdf_path = clean_pdf(pdf_path)
 
     # Corriger l'orientation du PDF si nécessaire
     print("🔄 Vérification de l'orientation des pages...")
@@ -464,9 +484,9 @@ def extract_text_contract(pdf_path):
     config = {
         "converter_cls": "marker.converters.table.TableConverter",
         "output_format": "markdown",
-        #"use_llm": False,
-        #"llm_service": "marker.services.ollama.OllamaService",
-        #"ollama_model": "mistral-small3.1:latest",
+        # "use_llm": False,
+        # "llm_service": "marker.services.ollama.OllamaService",
+        # "ollama_model": "mistral-small3.1:latest",
         "ocr": True,
         "ocr_engine": "tesseract",
         "ocr_language": "fra+eng",
@@ -516,13 +536,17 @@ def extract_text_contract(pdf_path):
         # Process the PDF and extract text
         rendered = converter(pdf_path)
         text, metadata, _ = text_from_rendered(rendered)
-        
+
         # Apply header/footer removal by similarity
-        print("🔍 Détection et suppression des en-têtes, pieds de page et références d'images...")
-        text = remove_headers_footers_by_similarity(text, 
-                                                   similarity_threshold=0.8, 
-                                                   occurrence_threshold=3)
-        print("✅ Traitement des en-têtes, pieds de page et références d'images terminé")
+        print(
+            "🔍 Détection et suppression des en-têtes, pieds de page et références d'images..."
+        )
+        text = remove_headers_footers_by_similarity(
+            text, similarity_threshold=0.8, occurrence_threshold=3
+        )
+        print(
+            "✅ Traitement des en-têtes, pieds de page et références d'images terminé"
+        )
 
         # Utiliser le nom complet du fichier (avec extension) comme titre du document
         document_title = os.path.basename(pdf_path)
@@ -563,14 +587,18 @@ Content:
             from pdfminer.high_level import extract_text
 
             simple_text = extract_text(pdf_path)
-            
+
             # Apply header/footer removal to the simple extraction as well
-            print("🔍 Détection et suppression des en-têtes, pieds de page et références d'images (mode basique)...")
-            simple_text = remove_headers_footers_by_similarity(simple_text, 
-                                                              similarity_threshold=0.8, 
-                                                              occurrence_threshold=3)
-            print("✅ Traitement des en-têtes, pieds de page et références d'images terminé (mode basique)")
-            
+            print(
+                "🔍 Détection et suppression des en-têtes, pieds de page et références d'images (mode basique)..."
+            )
+            simple_text = remove_headers_footers_by_similarity(
+                simple_text, similarity_threshold=0.8, occurrence_threshold=3
+            )
+            print(
+                "✅ Traitement des en-têtes, pieds de page et références d'images terminé (mode basique)"
+            )
+
             print("✅ Texte extrait avec succès (mode basique)")
             # Utiliser le nom complet du fichier comme titre en cas d'erreur
             document_title = os.path.basename(pdf_path)

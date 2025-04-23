@@ -5,13 +5,13 @@ import sys
 import time
 
 import cv2
+import fitz
 import numpy as np
 import requests
 from pdf2image import convert_from_path
+from PyPDF2 import PdfReader, PdfWriter
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from PyPDF2 import PdfReader, PdfWriter
-import fitz
 
 # === CONFIGURATION ===
 OLLAMA_URL = "http://localhost:11434/api/generate"
@@ -34,6 +34,7 @@ PROMPT = (
     "Only copy what you see on this page."
 )
 
+
 def correct_pdf_orientation(pdf_path):
     """
     Corrige l'orientation des pages PDF qui sont dans le mauvais sens.
@@ -43,18 +44,18 @@ def correct_pdf_orientation(pdf_path):
         # Ouvrir le PDF avec PyMuPDF pour analyser l'orientation
         doc = fitz.open(pdf_path)
         writer = PdfWriter()
-        
+
         # Lire le PDF avec PyPDF2
         reader = PdfReader(pdf_path)
-        
+
         for page_num in range(len(doc)):
             page = doc[page_num]
             # Obtenir l'orientation de la page
             rotation = page.rotation
-            
+
             # Ajouter la page au writer
             writer.add_page(reader.pages[page_num])
-            
+
             # Corriger l'orientation selon la rotation détectée
             if rotation == 90:
                 writer.pages[page_num].rotate(-90)  # Rotation vers la droite
@@ -62,22 +63,23 @@ def correct_pdf_orientation(pdf_path):
                 writer.pages[page_num].rotate(-180)  # Retourner la page
             elif rotation == 270:
                 writer.pages[page_num].rotate(-270)  # Rotation vers la gauche
-            
+
             print(f"Page {page_num + 1}: rotation détectée = {rotation}°")
-        
+
         # Sauvegarder le PDF corrigé
-        output_path = pdf_path.replace('.pdf', '_oriented.pdf')
-        with open(output_path, 'wb') as output_file:
+        output_path = pdf_path.replace(".pdf", "_oriented.pdf")
+        with open(output_path, "wb") as output_file:
             writer.write(output_file)
-        
+
         print(f"✅ PDF corrigé sauvegardé sous: {output_path}")
         print(f"📄 Nombre de pages traitées: {len(doc)}")
-        
+
         return output_path
-        
+
     except Exception as e:
         print(f"Erreur lors de la correction de l'orientation: {str(e)}")
         return pdf_path  # Retourner le chemin original en cas d'erreur
+
 
 def clean_vision_output(text: str) -> str:
     """Nettoie et normalise la sortie du modèle vision."""
