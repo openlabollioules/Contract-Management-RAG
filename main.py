@@ -40,52 +40,32 @@ def display_chunks_details(chunks: List[Chunk]) -> None:
 
 def display_removed_content(original_text: str, chunks: List[Chunk]) -> None:
     """
-    Affiche le contenu qui a été supprimé lors du découpage, en limitant drastiquement ce qui est considéré comme un titre
-
+    Affiche TOUTES les lignes du texte original qui ne sont pas présentes dans les chunks.
+    Utilise une comparaison ligne par ligne stricte.
+    
     Args:
         original_text: Texte original du document
         chunks: Liste des chunks après découpage
     """
     print("\n🗑️ Contenu supprimé lors du découpage:")
     print("=" * 80)
-
-    # Créer une version normalisée du texte original avec contexte
-    original_paragraphs = []
-    current_paragraph = []
-
+    
+    # Extraire toutes les lignes du texte original, avec normalisation minimale
+    original_lines = []
     for line in original_text.split("\n"):
         line = line.strip()
-        if not line:
-            if current_paragraph:
-                original_paragraphs.append(" ".join(current_paragraph))
-                current_paragraph = []
-        else:
-            current_paragraph.append(line)
-
-    if current_paragraph:
-        original_paragraphs.append(" ".join(current_paragraph))
-
-    # Créer une version normalisée du texte des chunks
-    chunk_texts = []
+        if line:  # Ignorer les lignes vides
+            original_lines.append(line)
+    
+    # Extraire toutes les lignes des chunks
+    chunk_lines = []
     for chunk in chunks:
-        chunk_paragraphs = []
-        current_paragraph = []
-
         for line in chunk.content.split("\n"):
             line = line.strip()
-            if not line:
-                if current_paragraph:
-                    chunk_paragraphs.append(" ".join(current_paragraph))
-                    current_paragraph = []
-            else:
-                current_paragraph.append(line)
-
-        if current_paragraph:
-            chunk_paragraphs.append(" ".join(current_paragraph))
-
-        chunk_texts.extend(chunk_paragraphs)
-
-    # Liste très restrictive et explicite de patterns qui correspondent uniquement à des titres
+            if line:  # Ignorer les lignes vides
+                chunk_lines.append(line)
+    
+    # Liste très restrictive de patterns qui correspondent uniquement à des titres
     # Ces patterns doivent être strictement limités aux formats de titres courants dans les contrats
     strict_title_patterns = [
         # Titres markdown (# Titre)
@@ -104,189 +84,107 @@ def display_removed_content(original_text: str, chunks: List[Chunk]) -> None:
         r"^\*\*[A-Z][A-Z\s]+\*\*$",  # **TITLE**
         r"^[A-Z][A-Z\s]+:$",  # TITLE:
     ]
-
-    # Fonction pour vérifier si un paragraphe est un titre
-    def is_strict_title(paragraph):
+    
+    # Fonction pour vérifier si une ligne est un titre
+    def is_strict_title(line):
         # Vérifier les patterns explicites de titre
         for pattern in strict_title_patterns:
-            if re.match(pattern, paragraph):
+            if re.match(pattern, line):
                 return True
-
+                
         # Vérifier le cas spécial pour "# N. TITLE"
-        if re.match(r"^#+\s+\**[0-9]+\.\s+[A-Z][A-Z\s]+\**$", paragraph):
+        if re.match(r"^#+\s+\**[0-9]+\.\s+[A-Z][A-Z\s]+\**$", line):
             return True
-
+            
         # Si le texte est court (<5 mots), tout en majuscules et pas de ponctuation finale,
         # c'est probablement un titre
-        words = paragraph.split()
+        words = line.split()
         if (
             len(words) <= 5
-            and paragraph.isupper()
-            and not paragraph.endswith((".", "!", "?", ",", ";", ":", ")", "]"))
+            and line.isupper()
+            and not line.endswith((".", "!", "?", ",", ";", ":", ")", "]"))
         ):
             return True
-
+            
         return False
-
-    # Amélioration radicale: Utiliser une approche ultra permissive pour la détection du contenu supprimé
-    def is_text_present_in_chunks(original_para, chunk_texts):
-        """Vérifie si un texte est présent dans les chunks avec une comparaison extrêmement souple"""
-
-        # Si le paragraphe est très court ou vide, considérer comme présent
-        if not original_para.strip() or len(original_para.strip()) < 10:
-            return True
-
-        # Normalisation agressive des deux textes
-        def normalize_text(text):
-            # Supprimer tous les caractères spéciaux et la ponctuation
-            text = re.sub(r"[^\w\s]", " ", text)
-            # Supprimer les espaces multiples
-            text = re.sub(r"\s+", " ", text)
-            # Mettre en minuscules
-            return text.lower().strip()
-
-        # Texte original normalisé
-        orig_norm = normalize_text(original_para)
-
-        # Si le texte est très court (moins de 4 mots), considérer qu'il est probablement présent
-        if len(orig_norm.split()) < 4:
-            return True
-
-        # Obtenir les mots significatifs du texte original (au moins 4 lettres)
-        significant_words = [w for w in orig_norm.split() if len(w) >= 4]
-
-        # Si pas de mots significatifs, considérer comme présent
-        if not significant_words:
-            return True
-
-        # Vérifier l'intégralité du texte dans un seul chunk
-        all_chunks_text = " ".join(chunk_texts)
-        all_chunks_norm = normalize_text(all_chunks_text)
-
-        # Si au moins 40% des mots significatifs sont présents dans l'ensemble des chunks,
-        # considérer le texte comme présent (seuil très permissif)
-        threshold = 0.4
-        words_found = sum(
-            1 for word in significant_words if word in all_chunks_norm.split()
-        )
-        if words_found / len(significant_words) >= threshold:
-            return True
-
-        # Pour les éléments de liste spécifiquement (très permissif)
-        if original_para.strip().startswith(("-", "•", "*", "➢")) or re.match(
-            r"^\d+[\.\)]", original_para.strip()
-        ):
-            # Extraire le contenu après le marqueur de liste
-            list_content = re.sub(r"^[-•*➢\d\.\)]+\s*", "", original_para).strip()
-            list_content_norm = normalize_text(list_content)
-
-            # Si le contenu de la liste est court, le considérer comme présent
-            if len(list_content_norm.split()) < 5:
+    
+    # Comparer chaque ligne originale avec les lignes des chunks
+    # Une ligne est considérée présente si elle est exactement dans les chunks (ou très légèrement différente)
+    def is_line_present(line, chunk_lines):
+        # Normalisation minimale
+        def normalize_for_comparison(text):
+            # Supprime juste les espaces en début/fin et réduit les espaces multiples
+            return re.sub(r"\s+", " ", text).strip()
+        
+        normalized_line = normalize_for_comparison(line)
+        
+        # Vérification exacte
+        for chunk_line in chunk_lines:
+            normalized_chunk_line = normalize_for_comparison(chunk_line)
+            if normalized_line == normalized_chunk_line:
                 return True
-
-            # Vérifier les mots significatifs du contenu de la liste
-            list_words = [w for w in list_content_norm.split() if len(w) >= 4]
-            if not list_words:
+            
+            # Vérification avec légère tolérance pour les espaces/tirets/points
+            # Remplacer les caractères spéciaux par des espaces et comparer
+            clean_line = re.sub(r"[-_.,;:()]", " ", normalized_line)
+            clean_line = re.sub(r"\s+", " ", clean_line).strip()
+            
+            clean_chunk = re.sub(r"[-_.,;:()]", " ", normalized_chunk_line)
+            clean_chunk = re.sub(r"\s+", " ", clean_chunk).strip()
+            
+            if clean_line == clean_chunk:
                 return True
-
-            # Si au moins 30% des mots significatifs sont présents, considérer comme présent (très permissif)
-            words_found = sum(
-                1 for word in list_words if word in all_chunks_norm.split()
-            )
-            if len(list_words) > 0 and words_found / len(list_words) >= 0.3:
-                return True
-
-            # Vérifier les premiers mots (peu importe leur longueur)
-            first_few_words = list_content_norm.split()[:3]  # Premiers 3 mots
-            if all(word in all_chunks_norm for word in first_few_words):
-                return True
-
-        # Dernière vérification: trouver des séquences de mots
-        # Si on trouve une séquence de 2-3 mots consécutifs, considérer comme présent
-        words = orig_norm.split()
-        for i in range(len(words) - 1):
-            if i < len(words) - 2:
-                # Séquence de 3 mots
-                seq = " ".join(words[i : i + 3])
-                if seq in all_chunks_norm:
-                    return True
-            # Séquence de 2 mots
-            seq = " ".join(words[i : i + 2])
-            if seq in all_chunks_norm:
-                return True
-
-        # Vérification spéciale: tableaux et listes numérotées
-        # Pour les lignes qui ressemblent à des entrées de tableaux ou des éléments de listes
-        if (
-            "|" in original_para
-            or re.search(r"^\s*\d+\.\d+\s+", original_para)
-            or re.search(r"^\s*[a-z]\)\s+", original_para)
-        ):
-            # Considérer très permissif, chercher juste quelques mots clés
-            key_words = [w for w in orig_norm.split() if len(w) >= 5][
-                :3
-            ]  # Jusqu'à 3 mots longs
-            if key_words and any(word in all_chunks_norm for word in key_words):
-                return True
-
+                
         return False
-
-    # Trouver les paragraphes qui sont dans l'original mais pas dans les chunks
-    removed_titles = []
-    removed_content = []
-
-    for i, para in enumerate(original_paragraphs):
-        # Ignorer les paragraphes vides ou presque vides
-        if not para.strip() or len(para.strip()) < 5:
-            continue
-
-        # Vérifier si le paragraphe est dans les chunks avec la fonction améliorée
-        if not is_text_present_in_chunks(para, chunk_texts):
-            # Ajouter le contexte (paragraphes avant et après)
+    
+    # Trouver les lignes qui ne sont pas dans les chunks
+    missing_titles = []
+    missing_content = []
+    
+    for i, line in enumerate(original_lines):
+        if not is_line_present(line, chunk_lines):
+            # Collecter le contexte (ligne précédente et suivante)
             context = []
             if i > 0:
-                context.append(f"Contexte précédent: {original_paragraphs[i-1]}")
-
-            if i < len(original_paragraphs) - 1:
-                context.append(f"Contexte suivant: {original_paragraphs[i+1]}")
-
-            # Vérifier si c'est strictement un titre selon nos patterns très limités
-            is_strict_title_result = is_strict_title(para)
-
-            # Classifier uniquement les titres très évidents, laisser tout le reste comme "contenu"
-            if is_strict_title_result:
-                context.append(f"TITRE supprimé: {para}")
-                removed_titles.append((context, "title"))
+                context.append(f"Ligne précédente: {original_lines[i-1]}")
+            
+            if i < len(original_lines) - 1:
+                context.append(f"Ligne suivante: {original_lines[i+1]}")
+            
+            # Vérifier si c'est un titre
+            if is_strict_title(line):
+                context.append(f"TITRE supprimé: {line}")
+                missing_titles.append((context, line))
             else:
-                context.append(f"CONTENU supprimé: {para}")
-                removed_content.append((context, "content"))
-
+                context.append(f"LIGNE supprimée: {line}")
+                missing_content.append((context, line))
+    
     # Afficher les titres supprimés
-    if removed_titles:
+    if missing_titles:
         print("\n📑 Titres supprimés:")
         print("-" * 40)
-        for context, _ in removed_titles:
+        for context, title in missing_titles:
             for line in context:
                 print(f"- {line}")
             print("-" * 40)
-
-    # Afficher détail des contenus supprimés
-    if removed_content:
-        print(f"\n📄 {len(removed_content)} paragraphes supprimés")
-        print("\n⚠️ Détail des paragraphes supprimés:")
+    
+    # Afficher les lignes de contenu supprimées
+    if missing_content:
+        print(f"\n📄 {len(missing_content)} lignes supprimées")
+        print("\n⚠️ Détail des lignes supprimées:")
         print("-" * 40)
-        for context, _ in removed_content:
+        for context, content in missing_content:
             for line in context:
                 print(f"- {line}")
             print("-" * 40)
-
+    
     # Statistiques
     print(f"\n📊 Statistiques du traitement:")
-    print(f"- Nombre total de titres supprimés: {len(removed_titles)}")
-    print(f"- Nombre total de paragraphes supprimés: {len(removed_content)}")
-
-    if not removed_titles and not removed_content:
-        print("Aucun contenu n'a été supprimé lors du découpage.")
+    print(f"- Nombre total de titres supprimés: {len(missing_titles)}")
+    print(f"- Nombre total de lignes supprimées: {len(missing_content)}")
+    
+    if not missing_titles and not missing_content:
+        print("Aucune ligne n'a été supprimée lors du découpage.")
 
 
 def display_semantic_split_chunks(
@@ -344,10 +242,10 @@ def process_contract(filepath: str) -> List[Chunk]:
     1. First split by legal structure (articles, sections, subsections)
     2. Then apply semantic chunking for sections exceeding 800 tokens
     3. Preserve hierarchical metadata for traceability
+    4. Apply post-processing to restore important legal content that might have been lost
 
     Args:
         filepath: Path to the contract file
-        use_semantic_chunking: Whether to use pure semantic chunking instead of the hybrid approach
 
     Returns:
         List of Chunk objects with preserved legal structure and metadata
@@ -366,7 +264,7 @@ def process_contract(filepath: str) -> List[Chunk]:
     # First split by legal structure
     splitter = IntelligentSplitter(document_title=document_title)
     structure_chunks = splitter.split(text)
-
+    
     # Then apply semantic chunking for large sections
     semantic_manager = SemanticChunkManager(
         breakpoint_threshold_type="percentile",
@@ -375,7 +273,7 @@ def process_contract(filepath: str) -> List[Chunk]:
         chunk_size=800,  # Limite de ~800 tokens
         chunk_overlap=100,  # Chevauchement de 100 tokens
     )
-
+    
     chunks = []
     for chunk in structure_chunks:
         # If section is small enough, keep it as is
@@ -395,6 +293,10 @@ def process_contract(filepath: str) -> List[Chunk]:
                 sub_chunk.position = len(chunks)
                 sub_chunk.total_chunks = len(sub_chunks)
             chunks.extend(sub_chunks)
+
+    # 2.5 Post-traitement: restaurer le contenu juridique important qui aurait pu être perdu
+    print("\n🔄 Application du post-traitement pour restaurer le contenu juridique important...")
+    chunks = restore_important_content(text, chunks)
 
     # 3. Group chunks hierarchically
     print("\n🔍 Regroupement hiérarchique des chunks...")
@@ -450,7 +352,7 @@ Contenu:
     print(f"- Title: {document_title}")
     print(f"- Author: Unknown")
     print(f"- Pages: Unknown")
-
+    
     # Print processing time and statistics
     processing_time = time.time() - start_time
     print(f"\n⏱️ Temps total de traitement: {processing_time:.2f} secondes")
@@ -463,7 +365,7 @@ Contenu:
     # Display chunks details and removed content
     display_chunks_details(chunks)
     display_removed_content(text, chunks)
-
+    
     # Display semantic split chunks if in hybrid mode
     if structure_chunks:
         display_semantic_split_chunks(structure_chunks, chunks)
@@ -635,6 +537,265 @@ def preprocess_legal_text(text):
             processed_lines.append(line)
 
     return "\n".join(processed_lines)
+
+
+def restore_important_content(original_text: str, chunks: List[Chunk]) -> List[Chunk]:
+    """
+    Fonction de post-traitement qui identifie les lignes juridiques importantes
+    qui ont été supprimées et les réintègre dans les chunks appropriés.
+    NE restaure PAS les titres, mais restaure toutes les lignes de contenu juridique.
+    
+    Args:
+        original_text: Texte original du document
+        chunks: Liste des chunks après découpage initial
+        
+    Returns:
+        Liste des chunks avec le contenu important restauré
+    """
+    print("\n🔄 Post-traitement: recherche de contenu juridique important supprimé...")
+    
+    # Extraire toutes les lignes du texte original
+    original_lines = []
+    for line in original_text.split("\n"):
+        line = line.strip()
+        if line:  # Ignorer les lignes vides
+            original_lines.append(line)
+    
+    # Extraire toutes les lignes des chunks
+    chunk_lines = []
+    for chunk in chunks:
+        for line in chunk.content.split("\n"):
+            line = line.strip()
+            if line:  # Ignorer les lignes vides
+                chunk_lines.append(line)
+    
+    # Fonction pour normaliser les lignes avant comparaison
+    def normalize_line(text):
+        return re.sub(r"\s+", " ", text).strip()
+    
+    # Identifier les lignes manquantes
+    missing_lines = []
+    for line in original_lines:
+        normalized_line = normalize_line(line)
+        found = False
+        
+        for chunk_line in chunk_lines:
+            normalized_chunk = normalize_line(chunk_line)
+            if normalized_line == normalized_chunk:
+                found = True
+                break
+                
+        if not found:
+            missing_lines.append(line)
+    
+    # Fonction pour détecter si une ligne est un titre
+    def is_title(line):
+        # Patterns pour identifier les titres
+        title_patterns = [
+            # Titres markdown (# Titre)
+            r"^#+\s+\**[A-Za-z0-9]",
+            # Formats explicites de sections numérotées
+            r"^ARTICLE\s+[IVXLCDM]+\s*[:\.]",
+            r"^SECTION\s+[0-9]+\s*[:\.]",
+            r"^CHAPTER\s+[0-9]+\s*[:\.]",
+            r"^ANNEXE?\s+[A-Z]:",
+            r"^APPENDIX\s+[A-Z]:",
+            # Titres numérotés
+            r"^[0-9]+(\.[0-9]+)*\s+[A-Z]",
+            # Titres avec des caractères spéciaux
+            r"^\*\*[A-Z]",
+            r"^[A-Z][A-Z\s]+:$",
+            # Titres courts tout en majuscules
+            r"^[A-Z][A-Z\s]{1,30}$"
+        ]
+        
+        # Vérifier si la ligne correspond à un des patterns de titre
+        for pattern in title_patterns:
+            if re.match(pattern, line):
+                return True
+                
+        # Autres indices de titres
+        if line.isupper() and len(line.split()) <= 5:
+            return True
+            
+        return False
+    
+    # Critères pour identifier les lignes juridiques importantes - APPROCHE TRÈS PERMISSIVE
+    def is_important_legal_content(line):
+        # D'abord vérifier si c'est un titre - si oui, ce n'est pas du contenu juridique à restaurer
+        if is_title(line):
+            return False
+            
+        # Mots-clés juridiques importants (LISTE ÉTENDUE)
+        legal_keywords = [
+            # Termes juridiques standards
+            "notwithstanding", "shall be", "exclusive remedy", 
+            "sole and exclusive", "right to terminate", "limitation of liability",
+            "indemnify", "warranty", "warranties", "liabilities", "liability",
+            "remedies", "remedy", "disclaims", "disclaim", "claims", "claim",
+            "damages", "damage", "breach", "termination", "terminate",
+            "force majeure", "intellectual property", "confidential",
+            "liquidated damages", "penalties", "penalty", 
+            
+            # Termes contractuels additionnels
+            "shall", "obligation", "obligations", "responsibility", "responsibilities",
+            "rights", "right", "terms", "conditions", "provisions", "stipulations",
+            "agreement", "contract", "hereof", "herein", "thereof", "therein",
+            "delivery", "deliver", "payment", "pay", "price", "fee", "fees",
+            "delay", "delays", "timely", "schedule", "schedules", "deadline", 
+            "deadline", "milestones", "milestone", "completion", "complete",
+            "acceptance", "accepts", "accept", "approved", "approve", "approval",
+            "rejected", "reject", "rejection", "dispute", "disputes", "resolution",
+            "test", "testing", "inspection", "inspect", "audit", "review",
+            "pursuant", "accordance", "compliance", "comply", "applicable",
+            "indemnification", "indemnify", "indemnified", "indemnities",
+            "insurance", "insured", "coverage", "purchaser", "supplier", "parties"
+        ]
+        
+        # Expressions régulières pour clauses spécifiques
+        clause_references = [
+            r"clause\s+\d+(\.\d+)?", r"article\s+\d+(\.\d+)?",
+            r"section\s+\d+(\.\d+)?", r"pursuant to", r"in accordance with",
+            r"subject to", r"appendix [a-z]", r"annex [a-z]"
+        ]
+        
+        # Vérifier les mots-clés
+        line_lower = line.lower()
+        if any(keyword in line_lower for keyword in legal_keywords):
+            return True
+            
+        # Vérifier les références à des clauses
+        if any(re.search(pattern, line_lower) for pattern in clause_references):
+            return True
+            
+        # Reconnaître les clauses de limitation ou d'exclusion
+        exclusion_patterns = [
+            r"not be liable", r"no liability", r"shall not",
+            r"exclude[sd]?", r"except", r"exempted", r"limitation", 
+            r"limited to", r"restrict(ed|ion)", r"waive[sd]?", r"waiver"
+        ]
+        
+        if any(re.search(pattern, line_lower) for pattern in exclusion_patterns):
+            return True
+            
+        # Structure conditionnelle typique des clauses contractuelles
+        if re.search(r"if\s+.*\s+(shall|may|must|will|is|are)\s+", line_lower):
+            return True
+            
+        # Si la ligne contient des termes d'obligations, de conditions ou de conséquences
+        if re.search(r"(shall|may|must|will)\s+.*\s+(if|unless|until|provided that)", line_lower):
+            return True
+            
+        # Lignes qui commencent par des termes d'obligation contractuelle
+        if re.search(r"^(the\s+)?(purchaser|supplier|contractor|client|party|parties)\s+(shall|may|will|must)", line_lower):
+            return True
+            
+        # Lignes qui parlent de documents, livraisons, ou paiements
+        if re.search(r"(documents?|delivery|payment|invoice|fee|compensation|reimbursement)", line_lower):
+            return True
+            
+        return False
+    
+    # Identifier les lignes juridiques importantes parmi les lignes manquantes
+    important_lines = [line for line in missing_lines if is_important_legal_content(line)]
+    
+    if not important_lines:
+        print("✅ Aucun contenu juridique important n'a été supprimé.")
+        return chunks
+        
+    print(f"🔍 {len(important_lines)} lignes de contenu juridique important identifiées pour restauration.")
+    
+    # Fonction pour trouver le meilleur chunk pour restaurer une ligne
+    def find_best_chunk(line, chunks):
+        # Trouver le contexte de la ligne dans le texte original
+        line_index = original_lines.index(line)
+        context_before = original_lines[max(0, line_index-5):line_index]
+        context_after = original_lines[line_index+1:min(len(original_lines), line_index+6)]
+        
+        best_chunk = None
+        best_score = -1
+        
+        for chunk in chunks:
+            score = 0
+            chunk_content = chunk.content.lower()
+            
+            # Vérifier si des lignes du contexte sont dans ce chunk
+            for ctx_line in context_before + context_after:
+                if normalize_line(ctx_line.lower()) in normalize_line(chunk_content):
+                    score += 3  # Augmenter le poids du contexte
+            
+            # Vérifier si le chunk contient des mots-clés de la même section
+            line_words = set(line.lower().split())
+            chunk_words = set(chunk_content.split())
+            common_words = line_words.intersection(chunk_words)
+            score += len(common_words) * 0.2
+            
+            # Vérifier si le numéro de section correspond
+            if hasattr(chunk, 'section_number') and chunk.section_number:
+                # Extraire des numéros potentiels de section depuis la ligne
+                section_matches = re.findall(r"clause\s+(\d+(\.\d+)?)", line.lower())
+                if section_matches:
+                    for match in section_matches:
+                        if match[0] in chunk.section_number:
+                            score += 3
+            
+            if score > best_score:
+                best_score = score
+                best_chunk = chunk
+        
+        # Si aucun chunk n'a un bon score, prendre celui qui a la meilleure correspondance textuelle
+        if best_score <= 1:
+            highest_score = -1
+            best_matching_chunk = None
+            
+            for chunk in chunks:
+                chunk_content = chunk.content.lower()
+                
+                # Si la ligne fait partie d'une section numérotée, essayer de trouver cette section
+                section_match = re.search(r"\b(\d+(\.\d+)?)\b", line.lower())
+                if section_match and section_match.group(1) in chunk_content:
+                    return chunk
+                
+                # Sinon, utiliser la correspondance textuelle
+                line_words = set(line.lower().split())
+                chunk_words = set(chunk_content.split())
+                common_words = line_words.intersection(chunk_words)
+                
+                if len(line_words) > 0:
+                    score = len(common_words) / len(line_words)
+                    
+                    if score > highest_score:
+                        highest_score = score
+                        best_matching_chunk = chunk
+            
+            if best_matching_chunk:
+                return best_matching_chunk
+        
+        return best_chunk
+    
+    # Restaurer les lignes importantes dans les chunks appropriés
+    restored_chunks = list(chunks)  # Copie pour éviter de modifier l'original
+    for line in important_lines:
+        best_chunk = find_best_chunk(line, restored_chunks)
+        if best_chunk:
+            # Ajouter la ligne au chunk (à la fin)
+            best_chunk.content = best_chunk.content + "\n\n" + line
+            print(f"✅ Ligne restaurée dans un chunk approprié: {line[:60]}...")
+        else:
+            # Si aucun chunk approprié n'est trouvé, créer un nouveau chunk
+            print(f"⚠️ Création d'un nouveau chunk pour la ligne: {line[:60]}...")
+            new_chunk = Chunk(
+                content=line, 
+                section_number="unknown",
+                hierarchy=["restored_content"],
+                document_title=chunks[0].document_title if chunks else "unknown",
+                parent_section="Restored Content",
+                chapter_title="Restored Legal Content"
+            )
+            restored_chunks.append(new_chunk)
+    
+    print("✅ Post-traitement terminé. Contenu juridique important restauré.")
+    return restored_chunks
 
 
 if __name__ == "__main__":
