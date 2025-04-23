@@ -158,10 +158,10 @@ def patch_marker_models():
 
 
 # Appliquer les patches
-patch_posthog()
-patch_s3_download()
-patch_marker_models()
-patch_create_model_dict()
+#patch_posthog()
+#patch_s3_download()
+#patch_marker_models()
+#patch_create_model_dict()
 
 
 def correct_pdf_orientation(pdf_path):
@@ -470,14 +470,14 @@ def extract_text_contract(pdf_path):
     os.environ["OLLAMA_BASE_URL"] = "http://localhost:11434"
 
     # Setup model paths
-    model_paths = {
-        "layout": "offline_models/marker/layout",
-        "texify": "offline_models/marker/texify",
-        "text_recognition": "offline_models/marker/text_recognition",
-        "table_recognition": "offline_models/marker/table_recognition",
-        "text_detection": "offline_models/marker/text_detection",
-        "inline_math_detection": "offline_models/marker/inline_math_detection",
-    }
+    #model_paths = {
+    #    "layout": "offline_models/marker/layout",
+    #    "texify": "offline_models/marker/texify",
+    #    "text_recognition": "offline_models/marker/text_recognition",
+    #    "table_recognition": "offline_models/marker/table_recognition",
+    #    "text_detection": "offline_models/marker/text_detection",
+    #    "inline_math_detection": "offline_models/marker/inline_math_detection",
+    #}
 
     print("🔍 Configuration de Marker...")
     # Setup the configuration for Marker with enhanced options
@@ -496,7 +496,7 @@ def extract_text_contract(pdf_path):
         "clean_text": True,
         "remove_headers_footers": True,
         "detect_columns": True,
-        "model_paths": model_paths,
+        #"model_paths": model_paths,
         "max_workers": 1,
         "batch_size": 1,
         "disable_telemetry": True,

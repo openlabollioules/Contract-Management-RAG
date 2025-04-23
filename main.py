@@ -1,6 +1,8 @@
 import re
 import sys
 import time
+import networkx as nx
+import matplotlib.pyplot as plt
 from typing import List
 
 from rag.chroma_manager import ChromaDBManager
@@ -9,6 +11,7 @@ from rag.hierarchical_grouper import HierarchicalGrouper
 from rag.intelligent_splitter import Chunk, IntelligentSplitter
 from rag.pdf_loader import extract_text_contract
 from rag.semantic_chunker import SemanticChunkManager
+from rag.graph_rag import GraphRAG
 
 
 def display_chunks_details(chunks: List[Chunk]) -> None:
@@ -243,6 +246,7 @@ def process_contract(filepath: str) -> List[Chunk]:
     2. Then apply semantic chunking for sections exceeding 800 tokens
     3. Preserve hierarchical metadata for traceability
     4. Apply post-processing to restore important legal content that might have been lost
+    5. Build a document graph to enhance retrieval through structural relationships
 
     Args:
         filepath: Path to the contract file
@@ -347,6 +351,10 @@ Contenu:
     chroma_manager.add_documents(chroma_chunks)
     print("✅ Chunks ajoutés à ChromaDB")
 
+    # 7. Build the document graph
+    print("\n🔍 Construction du graphe du document...")
+    build_and_analyze_document_graph(chroma_manager, embeddings_manager)
+
     # Print document metadata
     print("\nDocument Metadata:")
     print(f"- Title: {document_title}")
@@ -373,64 +381,229 @@ Contenu:
     return chunks
 
 
-def search_contracts(query: str, n_results: int = 5) -> None:
+def build_and_analyze_document_graph(chroma_manager: ChromaDBManager, embeddings_manager: EmbeddingsManager) -> None:
+    """
+    Build and analyze the document graph, with detailed logging.
+    
+    Args:
+        chroma_manager: ChromaDB manager with document chunks
+        embeddings_manager: Embeddings manager for the graph
+    """
+    # Initialize GraphRAG
+    print("🔄 Initialisation de GraphRAG...")
+    graph_rag = GraphRAG(
+        embeddings_manager=embeddings_manager,
+        chroma_manager=chroma_manager
+    )
+    
+    # If no graph was built, log the issue
+    if not graph_rag.graph or len(graph_rag.graph.nodes) == 0:
+        print("⚠️ Aucun graphe n'a été construit. Vérification des métadonnées...")
+        
+        # Check document metadata to diagnose issues
+        results = chroma_manager.collection.get(include=["metadatas"])
+        if not results["metadatas"]:
+            print("❌ Aucun document n'a été trouvé dans ChromaDB.")
+            return
+            
+        # Check key metadata fields
+        section_numbers = [m.get("section_number") for m in results["metadatas"]]
+        hierarchies = [m.get("hierarchy") for m in results["metadatas"]]
+        
+        valid_sections = sum(1 for s in section_numbers if s and s != "unknown")
+        valid_hierarchies = sum(1 for h in hierarchies if h and h != ["unknown"])
+        
+        print(f"📊 Documents dans ChromaDB: {len(results['metadatas'])}")
+        print(f"📊 Documents avec section valide: {valid_sections} ({valid_sections/len(results['metadatas'])*100:.1f}%)")
+        print(f"📊 Documents avec hiérarchie valide: {valid_hierarchies} ({valid_hierarchies/len(results['metadatas'])*100:.1f}%)")
+        
+        # Show sample metadata for debugging
+        print("\n📋 Échantillon de métadonnées:")
+        for i, meta in enumerate(results["metadatas"][:3]):
+            print(f"\nDocument {i+1}:")
+            print(f"- Section: {meta.get('section_number', 'Non spécifié')}")
+            print(f"- Hiérarchie: {meta.get('hierarchy', 'Non spécifié')}")
+            print(f"- Document: {meta.get('document_title', 'Non spécifié')}")
+            print(f"- Section parente: {meta.get('parent_section', 'Non spécifié')}")
+        
+        print("\n⚠️ Recommandations pour améliorer le graphe:")
+        print("1. Vérifiez que votre document contient des numéros de section bien structurés")
+        print("2. Utilisez l'option --semantic-chunking pour préserver la structure hiérarchique")
+        print("3. Si nécessaire, modifiez IntelligentSplitter pour mieux détecter la structure du document")
+        return
+        
+    # Log graph information
+    print("\n📊 Analyse du graphe construit:")
+    print(f"- Nombre de nœuds: {len(graph_rag.graph.nodes)}")
+    print(f"- Nombre d'arêtes: {len(graph_rag.graph.edges)}")
+    
+    # Analyze graph structure
+    degree_centrality = nx.degree_centrality(graph_rag.graph)
+    if degree_centrality:
+        most_central = sorted(degree_centrality.items(), key=lambda x: x[1], reverse=True)[:5]
+        print("\n📊 Sections les plus centrales (avec le plus de connexions):")
+        for node, centrality in most_central:
+            print(f"- Section {node}: {centrality:.3f} ({graph_rag.graph.degree(node)} connexions)")
+    
+    # Check for isolated nodes
+    isolated_nodes = list(nx.isolates(graph_rag.graph))
+    if isolated_nodes:
+        print(f"\n⚠️ {len(isolated_nodes)} nœuds isolés (sans connexions)")
+        print(f"Exemples: {isolated_nodes[:5]}")
+    
+    # Count edge types
+    relation_counts = {}
+    for _, _, data in graph_rag.graph.edges(data=True):
+        relation = data.get("relation", "unknown")
+        relation_counts[relation] = relation_counts.get(relation, 0) + 1
+    
+    print("\n📊 Types de relations dans le graphe:")
+    for relation, count in relation_counts.items():
+        print(f"- {relation}: {count} arêtes")
+    
+    # Overall graph quality assessment
+    density = nx.density(graph_rag.graph)
+    print(f"\n📊 Densité du graphe: {density:.4f}")
+    
+    if density < 0.01:
+        print("⚠️ Graphe très peu dense. Les relations entre sections pourraient être insuffisantes.")
+    elif density > 0.5:
+        print("⚠️ Graphe extrêmement dense. Pourrait indiquer de nombreuses connexions non pertinentes.")
+    else:
+        print("✅ Densité du graphe dans une plage raisonnable.")
+    
+    print("\n✅ Construction et analyse du graphe terminées.")
+    
+    # Optionally save graph visualization
+    try:
+        print("\n🔄 Génération de la visualisation du graphe...")
+        plt.figure(figsize=(12, 10))
+        
+        # Create a simplified graph for visualization if needed
+        G = graph_rag.graph
+        if len(G.nodes) > 50:
+            print(f"⚠️ Le graphe est trop grand ({len(G.nodes)} nœuds). Affichage limité à 50 nœuds.")
+            top_nodes = sorted(degree_centrality.items(), key=lambda x: x[1], reverse=True)[:50]
+            nodes_to_show = [node for node, _ in top_nodes]
+            G = G.subgraph(nodes_to_show)
+        
+        # Use different colors for different types of edges
+        edge_colors = []
+        edge_labels = {}
+        
+        for u, v, data in G.edges(data=True):
+            relation = data.get("relation", "unknown")
+            if relation == "next":
+                edge_colors.append("blue")
+            elif relation == "previous":
+                edge_colors.append("green")
+            elif relation == "references":
+                edge_colors.append("red")
+                edge_labels[(u, v)] = "ref"
+            else:
+                edge_colors.append("gray")
+        
+        # Position nodes using a hierarchical layout
+        pos = nx.spring_layout(G, seed=42)
+        
+        # Draw nodes with size based on centrality
+        node_sizes = [300 + 1000 * degree_centrality.get(node, 0) for node in G.nodes()]
+        nx.draw_networkx_nodes(G, pos, node_size=node_sizes, node_color="lightblue", alpha=0.8)
+        
+        # Draw edges
+        nx.draw_networkx_edges(G, pos, width=1.0, alpha=0.5, edge_color=edge_colors, 
+                              arrowsize=15, connectionstyle="arc3,rad=0.1")
+        
+        # Draw labels
+        nx.draw_networkx_labels(G, pos, font_size=8, font_family="sans-serif")
+        
+        # Draw edge labels for references
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=7)
+        
+        plt.title("Structure du graphe du document")
+        plt.axis("off")
+        plt.tight_layout()
+        plt.savefig("document_graph.png", dpi=300, bbox_inches="tight")
+        print("✅ Visualisation du graphe sauvegardée dans 'document_graph.png'")
+    except Exception as e:
+        print(f"⚠️ Erreur lors de la génération de la visualisation: {str(e)}")
+
+
+def search_contracts(query: str, n_results: int = 5, use_graph: bool = False, max_hop: int = 2) -> None:
     """
     Search in the contract database
 
     Args:
         query: Search query
         n_results: Number of results to return
+        use_graph: Whether to use GraphRAG for enhanced retrieval
+        max_hop: Maximum number of hops in graph traversal (only used with GraphRAG)
     """
     print(f"\n🔍 Recherche: {query}")
 
-    # Initialize managers
-    embeddings_manager = EmbeddingsManager()
-    chroma_manager = ChromaDBManager(embeddings_manager)
-
-    # Search
-    results = chroma_manager.search(query, n_results=n_results)
+    if use_graph:
+        print("📊 Utilisation de GraphRAG pour la recherche...")
+        graph_rag = GraphRAG()
+        results = graph_rag.retrieve(query, n_results=n_results, max_hop=max_hop)
+    else:
+        # Initialize managers
+        embeddings_manager = EmbeddingsManager()
+        chroma_manager = ChromaDBManager(embeddings_manager)
+        # Search
+        results = chroma_manager.search(query, n_results=n_results)
 
     # Display results
     print(f"\n📊 Résultats ({len(results)} trouvés):")
     for i, result in enumerate(results, 1):
         print(f"\n--- Résultat {i} ---")
-        print(f"Section: {result['metadata']['section']}")
-        print(f"Hiérarchie: {result['metadata']['hierarchy']}")
-        print(f"Document: {result['metadata']['document_title']}")
+        print(f"Section: {result['metadata'].get('section_number', 'Non spécifié')}")
+        print(f"Hiérarchie: {result['metadata'].get('hierarchy', 'Non spécifié')}")
+        print(f"Document: {result['metadata'].get('document_title', 'Non spécifié')}")
         print(f"Contenu: {result['document'][:200]}...")
-        print(f"Distance: {result['distance']:.4f}")
+        print(f"Distance: {result.get('distance', 1.0):.4f}")
+        if 'source' in result and result['source'] == 'graph':
+            print(f"Source: Découvert via l'analyse graphique")
 
 
-def chat_with_contract(query: str, n_context: int = 3) -> None:
+def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = False, max_hop: int = 2) -> None:
     """
     Chat with the contract using embeddings for context and Ollama for generation
 
     Args:
         query: User's question
         n_context: Number of relevant chunks to use as context
+        use_graph: Whether to use GraphRAG for enhanced retrieval
+        max_hop: Maximum number of hops in graph traversal (only used with GraphRAG)
     """
     print(f"\n💬 Chat: {query}")
 
-    # Initialize managers
-    embeddings_manager = EmbeddingsManager()
-    chroma_manager = ChromaDBManager(embeddings_manager)
+    if use_graph:
+        print("📊 Utilisation de GraphRAG pour le chat...")
+        graph_rag = GraphRAG()
+        result_obj = graph_rag.chat_with_graph(query, n_context=n_context, max_hop=max_hop)
+        response = result_obj["response"]
+        results = result_obj["sources"]
+    else:
+        # Initialize managers
+        embeddings_manager = EmbeddingsManager()
+        chroma_manager = ChromaDBManager(embeddings_manager)
 
-    # Search for relevant context
-    results = chroma_manager.search(query, n_results=n_context)
+        # Search for relevant context
+        results = chroma_manager.search(query, n_results=n_context)
 
-    # Prepare context for the prompt
-    context = "\n\n".join(
-        [
-            f"Document: {result['metadata'].get('document_title', 'Non spécifié')}\n"
-            f"Section: {result['metadata'].get('section_number', 'Non spécifié')}\n"
-            f"Chapter: {result['metadata'].get('chapter_title', 'Non spécifié')}\n"
-            f"Content: {result['document']}"
-            for result in results
-        ]
-    )
+        # Prepare context for the prompt
+        context = "\n\n".join(
+            [
+                f"Document: {result['metadata'].get('document_title', 'Non spécifié')}\n"
+                f"Section: {result['metadata'].get('section_number', 'Non spécifié')}\n"
+                f"Chapter: {result['metadata'].get('chapter_title', 'Non spécifié')}\n"
+                f"Content: {result['document']}"
+                for result in results
+            ]
+        )
 
-    # Create the prompt with context
-    prompt = f"""Tu es un assistant spécialisé dans l'analyse de contrats. 
+        # Create the prompt with context
+        prompt = f"""Tu es un assistant spécialisé dans l'analyse de contrats. 
 Voici le contexte pertinent extrait des documents :
 
 {context}
@@ -440,10 +613,11 @@ Question de l'utilisateur : {query}
 Réponds de manière précise en te basant uniquement sur le contexte fourni. 
 Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
 
-    # Get response from Ollama
-    from rag.ollama_chat import ask_ollama
+        # Get response from Ollama
+        from rag.ollama_chat import ask_ollama
 
-    response = ask_ollama(prompt)
+        response = ask_ollama(prompt)
+
     print("\n🤖 Réponse :")
     print(response)
 
@@ -455,7 +629,9 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
         print(f"\nSource {i}/{len(results)}")
         print("-" * 40)
 
-        print(f"Distance: {result['distance']:.4f}")
+        print(f"Distance: {result.get('distance', 1.0):.4f}")
+        if 'source' in result and result['source'] == 'graph':
+            print(f"Source: Découvert via l'analyse graphique")
 
         # Afficher le contenu
         print(result["metadata"].get("content", result["document"])[:200] + "...")
@@ -802,24 +978,49 @@ if __name__ == "__main__":
     # Check command line arguments
     if len(sys.argv) < 2:
         print(
-            "Usage: python main.py <contract_file> [search_query|--chat]"
+            "Usage: python main.py <contract_file> [--semantic-chunking] [search_query|--chat|--graphchat]"
         )
         sys.exit(1)
 
     filepath = sys.argv[1]
+    
+    # Check for semantic chunking flag
+    use_semantic_chunking = "--semantic-chunking" in sys.argv
+    if use_semantic_chunking:
+        sys.argv.remove("--semantic-chunking")
 
     # If --chat is provided, enter chat mode
-    if len(sys.argv) > 2 and sys.argv[2] == "--chat":
+    if "--chat" in sys.argv:
         print("\n💬 Mode chat activé. Tapez 'exit' pour quitter.")
         while True:
             query = input("\nVotre question : ")
             if query.lower() == "exit":
                 break
-            chat_with_contract(query)
+            chat_with_contract(query, use_graph=False)
+    # If --graphchat is provided, enter graph-enhanced chat mode
+    elif "--graphchat" in sys.argv:
+        print("\n📊 Mode GraphRAG chat activé. Tapez 'exit' pour quitter.")
+        max_hop = 2  # Default value
+        for i, arg in enumerate(sys.argv):
+            if arg == "--max-hop" and i + 1 < len(sys.argv):
+                try:
+                    max_hop = int(sys.argv[i + 1])
+                except ValueError:
+                    pass
+        
+        while True:
+            query = input("\nVotre question : ")
+            if query.lower() == "exit":
+                break
+            chat_with_contract(query, use_graph=True, max_hop=max_hop)
     # If search query is provided, perform search
     elif len(sys.argv) > 2:
+        use_graph = "--graph" in sys.argv
+        if use_graph and "--graph" in sys.argv:
+            sys.argv.remove("--graph")
+        
         search_query = " ".join(sys.argv[2:])
-        search_contracts(search_query)
+        search_contracts(search_query, use_graph=use_graph)
     else:
         # Process the contract
         chunks = process_contract(filepath)

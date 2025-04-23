@@ -38,6 +38,7 @@ Contract Management RAG est un système intelligent conçu pour extraire, traite
 - **Stockage vectoriel** : Utilisation de ChromaDB pour un stockage et une recherche efficaces
 - **Chat avec les contrats** : Interface de chat permettant d'interroger les contrats en langage naturel
 - **Mode hors-ligne** : Possibilité de fonctionner sans connexion internet avec des modèles locaux
+- **GraphRAG** : Recherche améliorée basée sur la structure graphique du document pour une contextualisation plus riche
 
 ## 🏗️ Architecture
 
@@ -48,6 +49,8 @@ Le système est composé de plusieurs modules clés:
 - **hierarchical_grouper.py** : Regroupement des chunks selon leur hiérarchie
 - **embeddings_manager.py** : Génération et gestion des embeddings vectoriels
 - **chroma_manager.py** : Interface avec la base de données vectorielle ChromaDB
+- **graph_builder.py** : Construction du graphe de document avec relations structurelles et référentielles
+- **graph_rag.py** : Recherche contextuelle améliorée utilisant le graphe du document
 - **ollama_chat.py** : Intégration avec Ollama pour les capacités de génération de texte
 - **main.py** : Point d'entrée principal avec les fonctions de traitement et d'interrogation
 
@@ -109,7 +112,25 @@ python main.py chemin/vers/votre/contrat.pdf "votre requête de recherche"
 ### Mode chat avec le contrat
 
 ```bash
-python main.py chemin/vers/votre/contrat.pdf --chat
+python main.py data/exemple_contrat.pdf --chat
+```
+
+### Mode chat amélioré avec GraphRAG
+
+```bash
+python main.py data/exemple_contrat.pdf --graphchat
+```
+
+### Recherche avec GraphRAG
+
+```bash
+python main.py data/exemple_contrat.pdf --graph "votre requête de recherche"
+```
+
+### Visualisation du graphe du document
+
+```bash
+python examples/graph_rag_example.py data/exemple_contrat.pdf
 ```
 
 ## 📊 Exemples
@@ -194,6 +215,24 @@ Selon le contrat, le prestataire a plusieurs obligations, notamment:
 [Sources listées avec leurs métadonnées]
 ```
 
+### Mode chat amélioré avec GraphRAG
+
+```bash
+python main.py data/exemple_contrat.pdf --graphchat
+```
+
+### Recherche avec GraphRAG
+
+```bash
+python main.py data/exemple_contrat.pdf --graph "votre requête de recherche"
+```
+
+### Visualisation du graphe du document
+
+```bash
+python examples/graph_rag_example.py data/exemple_contrat.pdf
+```
+
 ## 🔍 Comment ça marche
 
 1. **Extraction du texte**: Le texte est extrait du PDF avec suppression intelligente des en-têtes, pieds de page, et éléments non pertinents.
@@ -202,13 +241,15 @@ Selon le contrat, le prestataire a plusieurs obligations, notamment:
 
 3. **Regroupement hiérarchique**: Les chunks sont organisés selon leur position dans la hiérarchie du document.
 
-4. **Vectorisation**: Chaque chunk est transformé en vecteur d'embedding représentant son contenu sémantique.
+4. **Construction du graphe**: Un graphe dirigé est créé représentant les relations entre les sections (hiérarchie, séquence, références croisées).
 
-5. **Stockage vectoriel**: Les embeddings et métadonnées sont stockés dans ChromaDB pour une recherche efficace.
+5. **Vectorisation**: Chaque chunk est transformé en vecteur d'embedding représentant son contenu sémantique.
 
-6. **Recherche sémantique**: Les requêtes sont transformées en embeddings et comparées aux chunks stockés pour trouver les plus pertinents.
+6. **Stockage vectoriel**: Les embeddings et métadonnées sont stockés dans ChromaDB pour une recherche efficace.
 
-7. **Génération de réponses**: En mode chat, les chunks les plus pertinents sont utilisés comme contexte pour générer une réponse précise.
+7. **Recherche sémantique et graphique**: Les requêtes sont traitées via une combinaison de similarité vectorielle et de traversée de graphe pour trouver le contenu le plus pertinent.
+
+8. **Génération de réponses**: Les chunks les plus pertinents sont utilisés comme contexte pour générer une réponse précise.
 
 ## ⚙️ Personnalisation
 
