@@ -77,11 +77,16 @@ Le système est composé de plusieurs modules clés:
    pip install -r requirements.txt
    ```
 
-4. Installer Ollama pour le chat avec les contrats:
+4. Installer les dépendances pour la lecture des documents:
+   ```bash
+   pip install opencv-python langchain-experimental
+   ```
+
+5. Installer Ollama pour le chat avec les contrats:
    - Suivez les instructions sur [ollama.ai](https://ollama.ai) pour installer Ollama
    - Téléchargez le modèle mistral-small3.1: `ollama pull mistral-small3.1`
 
-5. Télécharger les modèles offline (facultatif):
+6. Télécharger les modèles offline:
    ```bash
    mkdir -p offline_models
    # Les modèles seront téléchargés automatiquement lors de la première utilisation

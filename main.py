@@ -802,7 +802,7 @@ if __name__ == "__main__":
     # Check command line arguments
     if len(sys.argv) < 2:
         print(
-            "Usage: python main.py <contract_file> [--semantic-chunking] [search_query|--chat]"
+            "Usage: python main.py <contract_file> [search_query|--chat]"
         )
         sys.exit(1)
 
