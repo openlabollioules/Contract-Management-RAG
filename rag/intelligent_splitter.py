@@ -6,21 +6,26 @@ from typing import List, Optional, Tuple
 
 import torch
 
+from utils.logger import setup_logger
+
+# Configurer le logger pour ce module
+logger = setup_logger(__file__)
+
 # Détection de l'architecture
 is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
 if is_apple_silicon:
-    print("🍎 Détection d'un processeur Apple Silicon")
+    logger.info("🍎 Détection d'un processeur Apple Silicon")
     if torch.backends.mps.is_available():
-        print("🎮 GPU MPS disponible")
+        logger.info("🎮 GPU MPS disponible")
         device = torch.device("mps")
     else:
-        print("⚠️ GPU MPS non disponible, utilisation du CPU")
+        logger.warning("⚠️ GPU MPS non disponible, utilisation du CPU")
         device = torch.device("cpu")
 else:
-    print("💻 Architecture non Apple Silicon")
+    logger.info("💻 Architecture non Apple Silicon")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-print(f"⚙️ Utilisation du device: {device}")
+logger.info(f"⚙️ Utilisation du device: {device}")
 
 
 @dataclass
@@ -39,14 +44,19 @@ class IntelligentSplitter:
         self.chunk_count = 0
         self.section_hierarchy = {}  # Pour stocker la hiérarchie des sections
         self.section_titles = {}  # Stocke les titres des chapitres (ex: "3": "Work")
+        logger.info(
+            f"Initialisation de IntelligentSplitter pour le document: {document_title}"
+        )
 
     def _normalize_section_number(self, section_number: str) -> str:
         """Normalise un numéro de section en ajoutant un point entre les chiffres séparés par un espace."""
         if not section_number:
+            logger.debug("Tentative de normalisation d'un numéro de section vide")
             return section_number
 
         # Nettoyer le numéro de section
         section_number = section_number.strip()
+        logger.debug(f"Normalisation du numéro de section: '{section_number}'")
 
         # Si le numéro contient des espaces, les remplacer par des points
         if " " in section_number:
@@ -56,8 +66,10 @@ class IntelligentSplitter:
             normalized = re.sub(r"\.+", ".", normalized)
             # Supprimer les points en début et fin
             normalized = normalized.strip(".")
+            logger.debug(f"Numéro normalisé: '{normalized}' (contenait des espaces)")
             return normalized
 
+        logger.debug(f"Numéro déjà normalisé: '{section_number}'")
         return section_number
 
     def _is_chapter_title(self, line: str) -> Optional[Tuple[str, str]]:
@@ -65,7 +77,10 @@ class IntelligentSplitter:
         pattern = r"^(\d+)\.\s+(.*?)$"
         match = re.match(pattern, line.strip())
         if match:
-            return match.group(1), match.group(2).strip()
+            chapter_num = match.group(1)
+            title = match.group(2).strip()
+            logger.debug(f"Titre de chapitre détecté: '{chapter_num}. {title}'")
+            return chapter_num, title
         return None
 
     def _is_subsection(self, line: str) -> Optional[str]:
@@ -73,7 +88,9 @@ class IntelligentSplitter:
         pattern = r"^(\d+(?:\.\d+)+)\s*(.*?)$"
         match = re.match(pattern, line.strip())
         if match:
-            return match.group(1)
+            subsection = match.group(1)
+            logger.debug(f"Sous-section détectée: '{subsection}'")
+            return subsection
         return None
 
     def _is_section_start(self, line: str) -> Optional[str]:
@@ -81,16 +98,20 @@ class IntelligentSplitter:
         original_line = line
         line = line.strip()
 
+        logger.debug(f"Analyse de ligne pour détection de section: '{line[:50]}...'")
+
         # Exclure les lignes de pagination et de version
         if re.match(
             r"^(?:Page|Version|Document|File|Date|Time|Author|Status|Confidential|Proprietary|Copyright|All rights reserved|©|\(c\)|\(C\)|\[|\]|\||\+|=|_|\s*$)",
             line,
             re.IGNORECASE,
         ):
+            logger.debug("Ligne exclue (pagination/version)")
             return None
 
         # Vérifier d'abord si la ligne contient un numéro
         if not re.search(r"\d+", line):
+            logger.debug("Ligne sans numéro, ignorée")
             return None
 
         # SUPER PATTERN pour les cas critiques comme "### **10.2** MISSION MINISTERIELLE PME/PMI"
@@ -101,6 +122,9 @@ class IntelligentSplitter:
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Section critique détectée: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Pattern spécifique pour le cas "**4.9** DELAI D'ETABLISSEMENT..."
@@ -109,6 +133,9 @@ class IntelligentSplitter:
             title = line.split("**", 2)[2].strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Section bold détectée: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Pattern pour les sous-sections avec tiret (ex: "- 3.1 The Work")
@@ -118,6 +145,9 @@ class IntelligentSplitter:
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Sous-section avec tiret détectée: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Pattern pour les titres de chapitre avec marqueurs de formatage
@@ -128,6 +158,9 @@ class IntelligentSplitter:
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Chapitre formaté détecté: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Pattern pour les titres de chapitre avec formatage Markdown
@@ -138,6 +171,9 @@ class IntelligentSplitter:
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Chapitre Markdown détecté: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Nouveau pattern pour les sous-sections avec formatage Markdown
@@ -148,6 +184,9 @@ class IntelligentSplitter:
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Sous-section Markdown détectée: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Pattern pour les titres de chapitre avec formatage spécial
@@ -162,6 +201,9 @@ class IntelligentSplitter:
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Chapitre spécial détecté: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Pattern pour les titres de chapitre avec format "### FORCE MAJEURE 11."
@@ -172,6 +214,9 @@ class IntelligentSplitter:
             title = match.group(1).strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Chapitre titre-numéro détecté: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Pattern pour les titres de chapitre avec format "### 11. FORCE MAJEURE"
@@ -182,6 +227,9 @@ class IntelligentSplitter:
             title = match.group(2).strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Chapitre numéro-titre détecté: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Pattern pour les titres de chapitre avec numéro collé à la fin
@@ -192,6 +240,9 @@ class IntelligentSplitter:
             title = match.group(1).strip()
             if title:
                 self.section_titles[section_number] = title
+                logger.debug(
+                    f"Chapitre titre-numéro-collé détecté: '{section_number}' avec titre '{title}'"
+                )
             return section_number
 
         # Pattern pour les titres avec numéro de section en gras suivi d'un titre normal

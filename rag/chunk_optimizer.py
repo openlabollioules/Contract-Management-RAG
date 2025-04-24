@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 
+from utils.logger import setup_logger
+
 from .embeddings_manager import EmbeddingsManager
 from .intelligent_splitter import ChunkMetadata, ChunkType
+
+# Configurer le logger pour ce module
+logger = setup_logger(__file__)
 
 
 @dataclass
@@ -21,6 +26,10 @@ class ChunkOptimizer:
     def __init__(self, similarity_threshold: float = 0.85):
         self.similarity_threshold = similarity_threshold
         self.embeddings_manager = EmbeddingsManager()
+        logger.info(
+            f"ChunkOptimizer initialisé avec similarity_threshold={similarity_threshold}"
+        )
+        logger.debug("EmbeddingsManager créé pour ChunkOptimizer")
 
     """def optimize_chunks(self, chunks: List[Chunk]) -> List[Chunk]:
         print("\n🔍 Optimisation des chunks...")

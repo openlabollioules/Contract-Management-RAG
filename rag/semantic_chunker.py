@@ -5,7 +5,12 @@ import numpy as np
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_experimental.text_splitter import SemanticChunker
 
+from utils.logger import setup_logger
+
 from .intelligent_splitter import Chunk, IntelligentSplitter
+
+# Configurer le logger pour ce module
+logger = setup_logger(__file__)
 
 
 class SemanticChunkManager:
@@ -40,15 +45,29 @@ class SemanticChunkManager:
             chunk_size: Taille maximale des chunks générés
             chunk_overlap: Chevauchement entre chunks consécutifs
         """
+        logger.info(
+            f"Initialisation du SemanticChunkManager avec le modèle {embedding_model_name}"
+        )
+        logger.debug(
+            f"Paramètres - breakpoint_threshold_type: {breakpoint_threshold_type}, buffer_size: {buffer_size}, number_of_chunks: {number_of_chunks}"
+        )
+
         # Initialiser les embeddings HuggingFace pour le chunker
+        logger.debug(
+            f"Initialisation du modèle d'embeddings HuggingFace: {embedding_model_name}"
+        )
         self.embedding_model = HuggingFaceEmbeddings(model_name=embedding_model_name)
 
         # Stocker les paramètres de chunking
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.embedding_function = self.embedding_model.embed_query
+        logger.debug(
+            f"Paramètres chunking - chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}"
+        )
 
         # Initialiser le chunker sémantique avec les paramètres corrects
+        logger.debug("Initialisation du chunker sémantique de langchain")
         self.semantic_chunker = SemanticChunker(
             embeddings=self.embedding_model,
             buffer_size=buffer_size,
@@ -59,6 +78,7 @@ class SemanticChunkManager:
 
         # Paramètres juridiques
         self.preserve_legal_structure = preserve_legal_structure
+        logger.debug(f"Préservation de structure juridique: {preserve_legal_structure}")
 
         # Patterns juridiques avancés
         self.legal_patterns = [
@@ -71,6 +91,7 @@ class SemanticChunkManager:
             r"WHEREAS",  # Préambules
             r"NOW, THEREFORE",  # Clauses d'entrée
         ]
+        logger.debug(f"Nombre de patterns juridiques: {len(self.legal_patterns)}")
 
         # Patterns de références croisées
         self.cross_ref_patterns = [
@@ -78,6 +99,10 @@ class SemanticChunkManager:
             r"as defined in (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
             r"in accordance with (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
         ]
+        logger.debug(
+            f"Nombre de patterns de références croisées: {len(self.cross_ref_patterns)}"
+        )
+        logger.info("SemanticChunkManager initialization complete")
 
     def _preprocess_text_with_section_markers(self, text: str) -> str:
         """
@@ -90,20 +115,29 @@ class SemanticChunkManager:
         Returns:
             Texte prétraité avec marqueurs de section
         """
+        logger.debug(
+            f"Prétraitement du texte avec marqueurs de section (taille: {len(text)})"
+        )
         # Ajouter des marqueurs spéciaux pour les patterns de section X., X.Y., X.Y.Z.
         # Ces marqueurs aideront le semantic chunker à respecter ces frontières
         lines = text.split("\n")
         processed_lines = []
+
+        clause_starts = 0
+        cross_refs = 0
+        section_breaks = 0
 
         for line in lines:
             # Détecter les numéros de section comme X., X.Y., X.Y.Z. et les structures juridiques
             if any(re.search(pattern, line) for pattern in self.legal_patterns):
                 # Ajouter un marqueur spécial pour indiquer un début de clause ou section
                 processed_lines.append("[CLAUSE_START]" + line)
+                clause_starts += 1
             # Détecter les références croisées pour enrichissement contextuel
             elif any(re.search(pattern, line) for pattern in self.cross_ref_patterns):
                 # Marquer les références pour un traitement spécial
                 processed_lines.append("[CROSS_REF]" + line)
+                cross_refs += 1
             # Patterns génériques de section comme dans la version précédente
             elif any(
                 pattern in line
@@ -115,9 +149,13 @@ class SemanticChunkManager:
             ):
                 # Ajouter un marqueur spécial pour indiquer un début de section important
                 processed_lines.append("[SECTION_BREAK]" + line)
+                section_breaks += 1
             else:
                 processed_lines.append(line)
 
+        logger.info(
+            f"Marqueurs ajoutés - Clauses: {clause_starts}, Références croisées: {cross_refs}, Sections: {section_breaks}"
+        )
         return "\n".join(processed_lines)
 
     def _convert_to_chunks(
@@ -133,6 +171,9 @@ class SemanticChunkManager:
         Returns:
             Liste d'objets Chunk avec métadonnées
         """
+        logger.info(
+            f"Conversion de {len(semantic_chunks)} chunks sémantiques en objets Chunk"
+        )
         chunks = []
 
         for i, chunk_text in enumerate(semantic_chunks):
@@ -156,6 +197,9 @@ class SemanticChunkManager:
                 match = re.search(r"^(\d+(?:\.\d+)*)", line)
                 if match:
                     section_number = match.group(1)
+                    logger.debug(
+                        f"Numéro de section détecté dans le chunk {i}: {section_number}"
+                    )
                     break
 
             # Créer un objet Chunk avec métadonnées juridiques enrichies
@@ -184,8 +228,12 @@ class SemanticChunkManager:
             chunk.metadata["has_cross_references"] = "[CROSS_REF]" in chunk_text
             chunk.metadata["chunk_index"] = i
 
+            logger.debug(
+                f"Chunk {i} créé - Section: {section_number}, Type: {clause_type}, Taille: {len(cleaned_text)}"
+            )
             chunks.append(chunk)
 
+        logger.info(f"Conversion terminée: {len(chunks)} objets Chunk créés")
         return chunks
 
     def _detect_clause_type(self, text: str) -> str:

@@ -61,3 +61,6 @@ scripts/
 .ipynb_checkpoints 
 
 test*
+
+Logs/
+

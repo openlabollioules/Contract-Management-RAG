@@ -9,6 +9,10 @@ from rag.hierarchical_grouper import HierarchicalGrouper
 from rag.intelligent_splitter import Chunk, IntelligentSplitter
 from rag.pdf_loader import extract_text_contract
 from rag.semantic_chunker import SemanticChunkManager
+from utils.logger import setup_logger
+
+# Configurer le logger pour ce module
+logger = setup_logger(__file__)
 
 
 def display_chunks_details(chunks: List[Chunk]) -> None:
@@ -18,45 +22,45 @@ def display_chunks_details(chunks: List[Chunk]) -> None:
     Args:
         chunks: Liste des chunks à afficher
     """
-    print("\n📋 Détails des chunks:")
-    print("=" * 80)
+    logger.info("📋 Détails des chunks:")
+    logger.debug("=" * 80)
 
     for i, chunk in enumerate(chunks, 1):
-        print(f"\nChunk {i}/{len(chunks)}")
-        print("-" * 40)
-        print(f"Section: {chunk.section_number}")
-        print(f"Hiérarchie: {' -> '.join(chunk.hierarchy)}")
-        print(f"Document: {chunk.document_title}")
-        print(f"Chapitre: {chunk.chapter_title}")
-        print(f"Section parente: {chunk.parent_section}")
-        print(
+        logger.debug(f"\nChunk {i}/{len(chunks)}")
+        logger.debug("-" * 40)
+        logger.debug(f"Section: {chunk.section_number}")
+        logger.debug(f"Hiérarchie: {' -> '.join(chunk.hierarchy)}")
+        logger.debug(f"Document: {chunk.document_title}")
+        logger.debug(f"Chapitre: {chunk.chapter_title}")
+        logger.debug(f"Section parente: {chunk.parent_section}")
+        logger.debug(
             f"Position: {getattr(chunk, 'position', 'N/A')}/{getattr(chunk, 'total_chunks', 'N/A')}"
         )
-        print(f"Taille (mots): {len(chunk.content.split())}")
-        print("\nContenu:")
-        print(chunk.content)
-        print("-" * 40)
+        logger.debug(f"Taille (mots): {len(chunk.content.split())}")
+        logger.debug("\nContenu:")
+        logger.debug(chunk.content)
+        logger.debug("-" * 40)
 
 
 def display_removed_content(original_text: str, chunks: List[Chunk]) -> None:
     """
     Affiche TOUTES les lignes du texte original qui ne sont pas présentes dans les chunks.
     Utilise une comparaison ligne par ligne stricte.
-    
+
     Args:
         original_text: Texte original du document
         chunks: Liste des chunks après découpage
     """
-    print("\n🗑️ Contenu supprimé lors du découpage:")
-    print("=" * 80)
-    
+    logger.info("🗑️ Contenu supprimé lors du découpage:")
+    logger.debug("=" * 80)
+
     # Extraire toutes les lignes du texte original, avec normalisation minimale
     original_lines = []
     for line in original_text.split("\n"):
         line = line.strip()
         if line:  # Ignorer les lignes vides
             original_lines.append(line)
-    
+
     # Extraire toutes les lignes des chunks
     chunk_lines = []
     for chunk in chunks:
@@ -64,7 +68,7 @@ def display_removed_content(original_text: str, chunks: List[Chunk]) -> None:
             line = line.strip()
             if line:  # Ignorer les lignes vides
                 chunk_lines.append(line)
-    
+
     # Liste très restrictive de patterns qui correspondent uniquement à des titres
     # Ces patterns doivent être strictement limités aux formats de titres courants dans les contrats
     strict_title_patterns = [
@@ -84,18 +88,22 @@ def display_removed_content(original_text: str, chunks: List[Chunk]) -> None:
         r"^\*\*[A-Z][A-Z\s]+\*\*$",  # **TITLE**
         r"^[A-Z][A-Z\s]+:$",  # TITLE:
     ]
-    
+
+    logger.debug(f"Nombre de patterns de titre: {len(strict_title_patterns)}")
+
     # Fonction pour vérifier si une ligne est un titre
     def is_strict_title(line):
         # Vérifier les patterns explicites de titre
         for pattern in strict_title_patterns:
             if re.match(pattern, line):
+                logger.debug(f"Titre trouvé avec pattern {pattern}: {line}")
                 return True
-                
+
         # Vérifier le cas spécial pour "# N. TITLE"
         if re.match(r"^#+\s+\**[0-9]+\.\s+[A-Z][A-Z\s]+\**$", line):
+            logger.debug(f"Titre spécial trouvé: {line}")
             return True
-            
+
         # Si le texte est court (<5 mots), tout en majuscules et pas de ponctuation finale,
         # c'est probablement un titre
         words = line.split()
@@ -104,10 +112,11 @@ def display_removed_content(original_text: str, chunks: List[Chunk]) -> None:
             and line.isupper()
             and not line.endswith((".", "!", "?", ",", ";", ":", ")", "]"))
         ):
+            logger.debug(f"Titre court en majuscules trouvé: {line}")
             return True
-            
+
         return False
-    
+
     # Comparer chaque ligne originale avec les lignes des chunks
     # Une ligne est considérée présente si elle est exactement dans les chunks (ou très légèrement différente)
     def is_line_present(line, chunk_lines):
@@ -115,42 +124,45 @@ def display_removed_content(original_text: str, chunks: List[Chunk]) -> None:
         def normalize_for_comparison(text):
             # Supprime juste les espaces en début/fin et réduit les espaces multiples
             return re.sub(r"\s+", " ", text).strip()
-        
+
         normalized_line = normalize_for_comparison(line)
-        
+
         # Vérification exacte
         for chunk_line in chunk_lines:
             normalized_chunk_line = normalize_for_comparison(chunk_line)
             if normalized_line == normalized_chunk_line:
                 return True
-            
+
             # Vérification avec légère tolérance pour les espaces/tirets/points
             # Remplacer les caractères spéciaux par des espaces et comparer
             clean_line = re.sub(r"[-_.,;:()]", " ", normalized_line)
             clean_line = re.sub(r"\s+", " ", clean_line).strip()
-            
+
             clean_chunk = re.sub(r"[-_.,;:()]", " ", normalized_chunk_line)
             clean_chunk = re.sub(r"\s+", " ", clean_chunk).strip()
-            
+
             if clean_line == clean_chunk:
                 return True
-                
+
         return False
-    
+
     # Trouver les lignes qui ne sont pas dans les chunks
     missing_titles = []
     missing_content = []
-    
+
+    logger.debug(f"Nombre de lignes originales: {len(original_lines)}")
+    logger.debug(f"Nombre de lignes dans les chunks: {len(chunk_lines)}")
+
     for i, line in enumerate(original_lines):
         if not is_line_present(line, chunk_lines):
             # Collecter le contexte (ligne précédente et suivante)
             context = []
             if i > 0:
                 context.append(f"Ligne précédente: {original_lines[i-1]}")
-            
+
             if i < len(original_lines) - 1:
                 context.append(f"Ligne suivante: {original_lines[i+1]}")
-            
+
             # Vérifier si c'est un titre
             if is_strict_title(line):
                 context.append(f"TITRE supprimé: {line}")
@@ -158,33 +170,34 @@ def display_removed_content(original_text: str, chunks: List[Chunk]) -> None:
             else:
                 context.append(f"LIGNE supprimée: {line}")
                 missing_content.append((context, line))
-    
+
     # Afficher les titres supprimés
     if missing_titles:
-        print("\n📑 Titres supprimés:")
-        print("-" * 40)
+        logger.warning(f"Nombre de titres supprimés: {len(missing_titles)}")
+        logger.debug("\n📑 Titres supprimés:")
+        logger.debug("-" * 40)
         for context, title in missing_titles:
             for line in context:
-                print(f"- {line}")
-            print("-" * 40)
-    
+                logger.debug(f"- {line}")
+            logger.debug("-" * 40)
+
     # Afficher les lignes de contenu supprimées
     if missing_content:
-        print(f"\n📄 {len(missing_content)} lignes supprimées")
-        print("\n⚠️ Détail des lignes supprimées:")
-        print("-" * 40)
+        logger.warning(f"\n📄 {len(missing_content)} lignes supprimées")
+        logger.debug("\n⚠️ Détail des lignes supprimées:")
+        logger.debug("-" * 40)
         for context, content in missing_content:
             for line in context:
-                print(f"- {line}")
-            print("-" * 40)
-    
+                logger.debug(f"- {line}")
+            logger.debug("-" * 40)
+
     # Statistiques
-    print(f"\n📊 Statistiques du traitement:")
-    print(f"- Nombre total de titres supprimés: {len(missing_titles)}")
-    print(f"- Nombre total de lignes supprimées: {len(missing_content)}")
-    
+    logger.info(f"\n📊 Statistiques du traitement:")
+    logger.info(f"- Nombre total de titres supprimés: {len(missing_titles)}")
+    logger.info(f"- Nombre total de lignes supprimées: {len(missing_content)}")
+
     if not missing_titles and not missing_content:
-        print("Aucune ligne n'a été supprimée lors du découpage.")
+        logger.info("Aucune ligne n'a été supprimée lors du découpage.")
 
 
 def display_semantic_split_chunks(
@@ -197,8 +210,8 @@ def display_semantic_split_chunks(
         structure_chunks: Chunks initiaux après découpage structurel
         final_chunks: Chunks finaux après découpage sémantique
     """
-    print("\n🔍 Chunks ayant subi un découpage sémantique:")
-    print("=" * 80)
+    logger.info("\n🔍 Chunks ayant subi un découpage sémantique:")
+    logger.debug("=" * 80)
 
     # Identifier les chunks originaux qui ont été découpés
     split_chunks = []
@@ -211,29 +224,29 @@ def display_semantic_split_chunks(
             split_chunks.append((original_chunk, sub_chunks))
 
     if not split_chunks:
-        print("Aucun chunk n'a subi de découpage sémantique.")
+        logger.info("Aucun chunk n'a subi de découpage sémantique.")
         return
 
-    print(f"Nombre de chunks découpés sémantiquement: {len(split_chunks)}")
+    logger.info(f"Nombre de chunks découpés sémantiquement: {len(split_chunks)}")
 
     for original_chunk, sub_chunks in split_chunks:
-        print("\n" + "=" * 40)
-        print(f"Chunk original:")
-        print(f"Section: {original_chunk.section_number}")
-        print(f"Hiérarchie: {' -> '.join(original_chunk.hierarchy)}")
-        print(f"Taille originale: {len(original_chunk.content.split())} mots")
-        print("\nDécoupé en {len(sub_chunks)} sous-chunks:")
+        logger.debug("\n" + "=" * 40)
+        logger.debug(f"Chunk original:")
+        logger.debug(f"Section: {original_chunk.section_number}")
+        logger.debug(f"Hiérarchie: {' -> '.join(original_chunk.hierarchy)}")
+        logger.debug(f"Taille originale: {len(original_chunk.content.split())} mots")
+        logger.debug("\nDécoupé en {len(sub_chunks)} sous-chunks:")
 
         for i, sub_chunk in enumerate(sub_chunks, 1):
-            print(f"\nSous-chunk {i}/{len(sub_chunks)}:")
-            print(
+            logger.debug(f"\nSous-chunk {i}/{len(sub_chunks)}:")
+            logger.debug(
                 f"Position: {getattr(sub_chunk, 'position', 'N/A')}/{getattr(sub_chunk, 'total_chunks', 'N/A')}"
             )
-            print(f"Taille: {len(sub_chunk.content.split())} mots")
-            print(
+            logger.debug(f"Taille: {len(sub_chunk.content.split())} mots")
+            logger.debug(
                 f"Contenu: {sub_chunk.content[:200]}..."
             )  # Afficher les 200 premiers caractères
-        print("=" * 40)
+        logger.debug("=" * 40)
 
 
 def process_contract(filepath: str) -> List[Chunk]:
@@ -250,21 +263,23 @@ def process_contract(filepath: str) -> List[Chunk]:
     Returns:
         List of Chunk objects with preserved legal structure and metadata
     """
-    print("\n🔄 Début du traitement du document...")
+    logger.info("\n🔄 Début du traitement du document...")
     start_time = time.time()
 
     # 1. Load and extract text from PDF
-    print(
+    logger.info(
         "📄 Extraction du texte du PDF (avec détection des en-têtes/pieds de page et suppression des références d'images)..."
     )
     text, document_title = extract_text_contract(filepath)
-    print(f"✅ Texte extrait ({len(text.split())} mots)")
+    logger.info(f"✅ Texte extrait ({len(text.split())} mots)")
 
-    print("\n🔄 Découpage du texte avec approche hybride (structure + sémantique)...")
+    logger.info(
+        "\n🔄 Découpage du texte avec approche hybride (structure + sémantique)..."
+    )
     # First split by legal structure
     splitter = IntelligentSplitter(document_title=document_title)
     structure_chunks = splitter.split(text)
-    
+
     # Then apply semantic chunking for large sections
     semantic_manager = SemanticChunkManager(
         breakpoint_threshold_type="percentile",
@@ -273,7 +288,7 @@ def process_contract(filepath: str) -> List[Chunk]:
         chunk_size=800,  # Limite de ~800 tokens
         chunk_overlap=100,  # Chevauchement de 100 tokens
     )
-    
+
     chunks = []
     for chunk in structure_chunks:
         # If section is small enough, keep it as is
@@ -295,21 +310,23 @@ def process_contract(filepath: str) -> List[Chunk]:
             chunks.extend(sub_chunks)
 
     # 2.5 Post-traitement: restaurer le contenu juridique important qui aurait pu être perdu
-    print("\n🔄 Application du post-traitement pour restaurer le contenu juridique important...")
+    logger.info(
+        "\n🔄 Application du post-traitement pour restaurer le contenu juridique important..."
+    )
     chunks = restore_important_content(text, chunks)
 
     # 3. Group chunks hierarchically
-    print("\n🔍 Regroupement hiérarchique des chunks...")
+    logger.info("\n🔍 Regroupement hiérarchique des chunks...")
     grouper = HierarchicalGrouper()
     hierarchical_groups = grouper.group_chunks(chunks)
 
     # 4. Initialize embeddings and ChromaDB
-    print("\n🔍 Initialisation des embeddings et de ChromaDB...")
+    logger.info("\n🔍 Initialisation des embeddings et de ChromaDB...")
     embeddings_manager = EmbeddingsManager()
     chroma_manager = ChromaDBManager(embeddings_manager)
 
     # 5. Prepare chunks for ChromaDB with enhanced metadata
-    print("\n📦 Préparation des chunks pour ChromaDB...")
+    logger.info("\n📦 Préparation des chunks pour ChromaDB...")
     chroma_chunks = []
     for chunk in chunks:
         # Enhanced metadata structure
@@ -343,29 +360,29 @@ Contenu:
         chroma_chunks.append({"content": content, "metadata": metadata})
 
     # 6. Add chunks to ChromaDB
-    print("\n💾 Ajout des chunks à ChromaDB...")
+    logger.info("\n�� Ajout des chunks à ChromaDB...")
     chroma_manager.add_documents(chroma_chunks)
-    print("✅ Chunks ajoutés à ChromaDB")
+    logger.info("✅ Chunks ajoutés à ChromaDB")
 
     # Print document metadata
-    print("\nDocument Metadata:")
-    print(f"- Title: {document_title}")
-    print(f"- Author: Unknown")
-    print(f"- Pages: Unknown")
-    
+    logger.info("\nDocument Metadata:")
+    logger.info(f"- Title: {document_title}")
+    logger.info(f"- Author: Unknown")
+    logger.info(f"- Pages: Unknown")
+
     # Print processing time and statistics
     processing_time = time.time() - start_time
-    print(f"\n⏱️ Temps total de traitement: {processing_time:.2f} secondes")
+    logger.info(f"\n⏱️ Temps total de traitement: {processing_time:.2f} secondes")
 
-    print(f"📊 Nombre de chunks créés: {len(chunks)}")
-    print(
+    logger.info(f"📊 Nombre de chunks créés: {len(chunks)}")
+    logger.info(
         f"📊 Taille moyenne des chunks: {sum(len(c.content.split()) for c in chunks) / len(chunks):.1f} tokens"
     )
 
     # Display chunks details and removed content
     display_chunks_details(chunks)
     display_removed_content(text, chunks)
-    
+
     # Display semantic split chunks if in hybrid mode
     if structure_chunks:
         display_semantic_split_chunks(structure_chunks, chunks)
@@ -381,7 +398,7 @@ def search_contracts(query: str, n_results: int = 5) -> None:
         query: Search query
         n_results: Number of results to return
     """
-    print(f"\n🔍 Recherche: {query}")
+    logger.info(f"\n🔍 Recherche: {query}")
 
     # Initialize managers
     embeddings_manager = EmbeddingsManager()
@@ -391,14 +408,14 @@ def search_contracts(query: str, n_results: int = 5) -> None:
     results = chroma_manager.search(query, n_results=n_results)
 
     # Display results
-    print(f"\n📊 Résultats ({len(results)} trouvés):")
+    logger.info(f"\n📊 Résultats ({len(results)} trouvés):")
     for i, result in enumerate(results, 1):
-        print(f"\n--- Résultat {i} ---")
-        print(f"Section: {result['metadata']['section']}")
-        print(f"Hiérarchie: {result['metadata']['hierarchy']}")
-        print(f"Document: {result['metadata']['document_title']}")
-        print(f"Contenu: {result['document'][:200]}...")
-        print(f"Distance: {result['distance']:.4f}")
+        logger.info(f"\n--- Résultat {i} ---")
+        logger.info(f"Section: {result['metadata']['section']}")
+        logger.info(f"Hiérarchie: {result['metadata']['hierarchy']}")
+        logger.info(f"Document: {result['metadata']['document_title']}")
+        logger.info(f"Contenu: {result['document'][:200]}...")
+        logger.info(f"Distance: {result['distance']:.4f}")
 
 
 def chat_with_contract(query: str, n_context: int = 3) -> None:
@@ -409,7 +426,7 @@ def chat_with_contract(query: str, n_context: int = 3) -> None:
         query: User's question
         n_context: Number of relevant chunks to use as context
     """
-    print(f"\n💬 Chat: {query}")
+    logger.info(f"\n💬 Chat: {query}")
 
     # Initialize managers
     embeddings_manager = EmbeddingsManager()
@@ -444,24 +461,24 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
     from rag.ollama_chat import ask_ollama
 
     response = ask_ollama(prompt)
-    print("\n🤖 Réponse :")
-    print(response)
+    logger.info("\n🤖 Réponse :")
+    logger.info(response)
 
     # Display sources with metadata
-    print("\n📚 Sources :")
-    print("=" * 80)
+    logger.info("\n📚 Sources :")
+    logger.info("=" * 80)
     for i, result in enumerate(results, 1):
-        print("\n" + "-" * 40)
-        print(f"\nSource {i}/{len(results)}")
-        print("-" * 40)
+        logger.info("\n" + "-" * 40)
+        logger.info(f"\nSource {i}/{len(results)}")
+        logger.info("-" * 40)
 
-        print(f"Distance: {result['distance']:.4f}")
+        logger.info(f"Distance: {result['distance']:.4f}")
 
         # Afficher le contenu
-        print(result["metadata"].get("content", result["document"])[:200] + "...")
-        print("-" * 40)
+        logger.info(result["metadata"].get("content", result["document"])[:200] + "...")
+        logger.info("-" * 40)
 
-    print(f"\n📊 Nombre total de sources: {len(results)}")
+    logger.info(f"\n📊 Nombre total de sources: {len(results)}")
 
 
 def hybrid_chunk_text(text, document_title):
@@ -544,23 +561,25 @@ def restore_important_content(original_text: str, chunks: List[Chunk]) -> List[C
     Fonction de post-traitement qui identifie les lignes juridiques importantes
     qui ont été supprimées et les réintègre dans les chunks appropriés.
     NE restaure PAS les titres, mais restaure toutes les lignes de contenu juridique.
-    
+
     Args:
         original_text: Texte original du document
         chunks: Liste des chunks après découpage initial
-        
+
     Returns:
         Liste des chunks avec le contenu important restauré
     """
-    print("\n🔄 Post-traitement: recherche de contenu juridique important supprimé...")
-    
+    logger.info(
+        "\n🔄 Post-traitement: recherche de contenu juridique important supprimé..."
+    )
+
     # Extraire toutes les lignes du texte original
     original_lines = []
     for line in original_text.split("\n"):
         line = line.strip()
         if line:  # Ignorer les lignes vides
             original_lines.append(line)
-    
+
     # Extraire toutes les lignes des chunks
     chunk_lines = []
     for chunk in chunks:
@@ -568,26 +587,26 @@ def restore_important_content(original_text: str, chunks: List[Chunk]) -> List[C
             line = line.strip()
             if line:  # Ignorer les lignes vides
                 chunk_lines.append(line)
-    
+
     # Fonction pour normaliser les lignes avant comparaison
     def normalize_line(text):
         return re.sub(r"\s+", " ", text).strip()
-    
+
     # Identifier les lignes manquantes
     missing_lines = []
     for line in original_lines:
         normalized_line = normalize_line(line)
         found = False
-        
+
         for chunk_line in chunk_lines:
             normalized_chunk = normalize_line(chunk_line)
             if normalized_line == normalized_chunk:
                 found = True
                 break
-                
+
         if not found:
             missing_lines.append(line)
-    
+
     # Fonction pour détecter si une ligne est un titre
     def is_title(line):
         # Patterns pour identifier les titres
@@ -606,173 +625,276 @@ def restore_important_content(original_text: str, chunks: List[Chunk]) -> List[C
             r"^\*\*[A-Z]",
             r"^[A-Z][A-Z\s]+:$",
             # Titres courts tout en majuscules
-            r"^[A-Z][A-Z\s]{1,30}$"
+            r"^[A-Z][A-Z\s]{1,30}$",
         ]
-        
+
         # Vérifier si la ligne correspond à un des patterns de titre
         for pattern in title_patterns:
             if re.match(pattern, line):
                 return True
-                
+
         # Autres indices de titres
         if line.isupper() and len(line.split()) <= 5:
             return True
-            
+
         return False
-    
+
     # Critères pour identifier les lignes juridiques importantes - APPROCHE TRÈS PERMISSIVE
     def is_important_legal_content(line):
         # D'abord vérifier si c'est un titre - si oui, ce n'est pas du contenu juridique à restaurer
         if is_title(line):
             return False
-            
+
         # Mots-clés juridiques importants (LISTE ÉTENDUE)
         legal_keywords = [
             # Termes juridiques standards
-            "notwithstanding", "shall be", "exclusive remedy", 
-            "sole and exclusive", "right to terminate", "limitation of liability",
-            "indemnify", "warranty", "warranties", "liabilities", "liability",
-            "remedies", "remedy", "disclaims", "disclaim", "claims", "claim",
-            "damages", "damage", "breach", "termination", "terminate",
-            "force majeure", "intellectual property", "confidential",
-            "liquidated damages", "penalties", "penalty", 
-            
+            "notwithstanding",
+            "shall be",
+            "exclusive remedy",
+            "sole and exclusive",
+            "right to terminate",
+            "limitation of liability",
+            "indemnify",
+            "warranty",
+            "warranties",
+            "liabilities",
+            "liability",
+            "remedies",
+            "remedy",
+            "disclaims",
+            "disclaim",
+            "claims",
+            "claim",
+            "damages",
+            "damage",
+            "breach",
+            "termination",
+            "terminate",
+            "force majeure",
+            "intellectual property",
+            "confidential",
+            "liquidated damages",
+            "penalties",
+            "penalty",
             # Termes contractuels additionnels
-            "shall", "obligation", "obligations", "responsibility", "responsibilities",
-            "rights", "right", "terms", "conditions", "provisions", "stipulations",
-            "agreement", "contract", "hereof", "herein", "thereof", "therein",
-            "delivery", "deliver", "payment", "pay", "price", "fee", "fees",
-            "delay", "delays", "timely", "schedule", "schedules", "deadline", 
-            "deadline", "milestones", "milestone", "completion", "complete",
-            "acceptance", "accepts", "accept", "approved", "approve", "approval",
-            "rejected", "reject", "rejection", "dispute", "disputes", "resolution",
-            "test", "testing", "inspection", "inspect", "audit", "review",
-            "pursuant", "accordance", "compliance", "comply", "applicable",
-            "indemnification", "indemnify", "indemnified", "indemnities",
-            "insurance", "insured", "coverage", "purchaser", "supplier", "parties"
+            "shall",
+            "obligation",
+            "obligations",
+            "responsibility",
+            "responsibilities",
+            "rights",
+            "right",
+            "terms",
+            "conditions",
+            "provisions",
+            "stipulations",
+            "agreement",
+            "contract",
+            "hereof",
+            "herein",
+            "thereof",
+            "therein",
+            "delivery",
+            "deliver",
+            "payment",
+            "pay",
+            "price",
+            "fee",
+            "fees",
+            "delay",
+            "delays",
+            "timely",
+            "schedule",
+            "schedules",
+            "deadline",
+            "deadline",
+            "milestones",
+            "milestone",
+            "completion",
+            "complete",
+            "acceptance",
+            "accepts",
+            "accept",
+            "approved",
+            "approve",
+            "approval",
+            "rejected",
+            "reject",
+            "rejection",
+            "dispute",
+            "disputes",
+            "resolution",
+            "test",
+            "testing",
+            "inspection",
+            "inspect",
+            "audit",
+            "review",
+            "pursuant",
+            "accordance",
+            "compliance",
+            "comply",
+            "applicable",
+            "indemnification",
+            "indemnify",
+            "indemnified",
+            "indemnities",
+            "insurance",
+            "insured",
+            "coverage",
+            "purchaser",
+            "supplier",
+            "parties",
         ]
-        
+
         # Expressions régulières pour clauses spécifiques
         clause_references = [
-            r"clause\s+\d+(\.\d+)?", r"article\s+\d+(\.\d+)?",
-            r"section\s+\d+(\.\d+)?", r"pursuant to", r"in accordance with",
-            r"subject to", r"appendix [a-z]", r"annex [a-z]"
+            r"clause\s+\d+(\.\d+)?",
+            r"article\s+\d+(\.\d+)?",
+            r"section\s+\d+(\.\d+)?",
+            r"pursuant to",
+            r"in accordance with",
+            r"subject to",
+            r"appendix [a-z]",
+            r"annex [a-z]",
         ]
-        
+
         # Vérifier les mots-clés
         line_lower = line.lower()
         if any(keyword in line_lower for keyword in legal_keywords):
             return True
-            
+
         # Vérifier les références à des clauses
         if any(re.search(pattern, line_lower) for pattern in clause_references):
             return True
-            
+
         # Reconnaître les clauses de limitation ou d'exclusion
         exclusion_patterns = [
-            r"not be liable", r"no liability", r"shall not",
-            r"exclude[sd]?", r"except", r"exempted", r"limitation", 
-            r"limited to", r"restrict(ed|ion)", r"waive[sd]?", r"waiver"
+            r"not be liable",
+            r"no liability",
+            r"shall not",
+            r"exclude[sd]?",
+            r"except",
+            r"exempted",
+            r"limitation",
+            r"limited to",
+            r"restrict(ed|ion)",
+            r"waive[sd]?",
+            r"waiver",
         ]
-        
+
         if any(re.search(pattern, line_lower) for pattern in exclusion_patterns):
             return True
-            
+
         # Structure conditionnelle typique des clauses contractuelles
         if re.search(r"if\s+.*\s+(shall|may|must|will|is|are)\s+", line_lower):
             return True
-            
+
         # Si la ligne contient des termes d'obligations, de conditions ou de conséquences
-        if re.search(r"(shall|may|must|will)\s+.*\s+(if|unless|until|provided that)", line_lower):
+        if re.search(
+            r"(shall|may|must|will)\s+.*\s+(if|unless|until|provided that)", line_lower
+        ):
             return True
-            
+
         # Lignes qui commencent par des termes d'obligation contractuelle
-        if re.search(r"^(the\s+)?(purchaser|supplier|contractor|client|party|parties)\s+(shall|may|will|must)", line_lower):
+        if re.search(
+            r"^(the\s+)?(purchaser|supplier|contractor|client|party|parties)\s+(shall|may|will|must)",
+            line_lower,
+        ):
             return True
-            
+
         # Lignes qui parlent de documents, livraisons, ou paiements
-        if re.search(r"(documents?|delivery|payment|invoice|fee|compensation|reimbursement)", line_lower):
+        if re.search(
+            r"(documents?|delivery|payment|invoice|fee|compensation|reimbursement)",
+            line_lower,
+        ):
             return True
-            
+
         return False
-    
+
     # Identifier les lignes juridiques importantes parmi les lignes manquantes
-    important_lines = [line for line in missing_lines if is_important_legal_content(line)]
-    
+    important_lines = [
+        line for line in missing_lines if is_important_legal_content(line)
+    ]
+
     if not important_lines:
-        print("✅ Aucun contenu juridique important n'a été supprimé.")
+        logger.info("✅ Aucun contenu juridique important n'a été supprimé.")
         return chunks
-        
-    print(f"🔍 {len(important_lines)} lignes de contenu juridique important identifiées pour restauration.")
-    
+
+    logger.info(
+        f"🔍 {len(important_lines)} lignes de contenu juridique important identifiées pour restauration."
+    )
+
     # Fonction pour trouver le meilleur chunk pour restaurer une ligne
     def find_best_chunk(line, chunks):
         # Trouver le contexte de la ligne dans le texte original
         line_index = original_lines.index(line)
-        context_before = original_lines[max(0, line_index-5):line_index]
-        context_after = original_lines[line_index+1:min(len(original_lines), line_index+6)]
-        
+        context_before = original_lines[max(0, line_index - 5) : line_index]
+        context_after = original_lines[
+            line_index + 1 : min(len(original_lines), line_index + 6)
+        ]
+
         best_chunk = None
         best_score = -1
-        
+
         for chunk in chunks:
             score = 0
             chunk_content = chunk.content.lower()
-            
+
             # Vérifier si des lignes du contexte sont dans ce chunk
             for ctx_line in context_before + context_after:
                 if normalize_line(ctx_line.lower()) in normalize_line(chunk_content):
                     score += 3  # Augmenter le poids du contexte
-            
+
             # Vérifier si le chunk contient des mots-clés de la même section
             line_words = set(line.lower().split())
             chunk_words = set(chunk_content.split())
             common_words = line_words.intersection(chunk_words)
             score += len(common_words) * 0.2
-            
+
             # Vérifier si le numéro de section correspond
-            if hasattr(chunk, 'section_number') and chunk.section_number:
+            if hasattr(chunk, "section_number") and chunk.section_number:
                 # Extraire des numéros potentiels de section depuis la ligne
                 section_matches = re.findall(r"clause\s+(\d+(\.\d+)?)", line.lower())
                 if section_matches:
                     for match in section_matches:
                         if match[0] in chunk.section_number:
                             score += 3
-            
+
             if score > best_score:
                 best_score = score
                 best_chunk = chunk
-        
+
         # Si aucun chunk n'a un bon score, prendre celui qui a la meilleure correspondance textuelle
         if best_score <= 1:
             highest_score = -1
             best_matching_chunk = None
-            
+
             for chunk in chunks:
                 chunk_content = chunk.content.lower()
-                
+
                 # Si la ligne fait partie d'une section numérotée, essayer de trouver cette section
                 section_match = re.search(r"\b(\d+(\.\d+)?)\b", line.lower())
                 if section_match and section_match.group(1) in chunk_content:
                     return chunk
-                
+
                 # Sinon, utiliser la correspondance textuelle
                 line_words = set(line.lower().split())
                 chunk_words = set(chunk_content.split())
                 common_words = line_words.intersection(chunk_words)
-                
+
                 if len(line_words) > 0:
                     score = len(common_words) / len(line_words)
-                    
+
                     if score > highest_score:
                         highest_score = score
                         best_matching_chunk = chunk
-            
+
             if best_matching_chunk:
                 return best_matching_chunk
-        
+
         return best_chunk
-    
+
     # Restaurer les lignes importantes dans les chunks appropriés
     restored_chunks = list(chunks)  # Copie pour éviter de modifier l'original
     for line in important_lines:
@@ -780,37 +902,37 @@ def restore_important_content(original_text: str, chunks: List[Chunk]) -> List[C
         if best_chunk:
             # Ajouter la ligne au chunk (à la fin)
             best_chunk.content = best_chunk.content + "\n\n" + line
-            print(f"✅ Ligne restaurée dans un chunk approprié: {line[:60]}...")
+            logger.info(f"✅ Ligne restaurée dans un chunk approprié: {line[:60]}...")
         else:
             # Si aucun chunk approprié n'est trouvé, créer un nouveau chunk
-            print(f"⚠️ Création d'un nouveau chunk pour la ligne: {line[:60]}...")
+            logger.warning(
+                f"⚠️ Création d'un nouveau chunk pour la ligne: {line[:60]}..."
+            )
             new_chunk = Chunk(
-                content=line, 
+                content=line,
                 section_number="unknown",
                 hierarchy=["restored_content"],
                 document_title=chunks[0].document_title if chunks else "unknown",
                 parent_section="Restored Content",
-                chapter_title="Restored Legal Content"
+                chapter_title="Restored Legal Content",
             )
             restored_chunks.append(new_chunk)
-    
-    print("✅ Post-traitement terminé. Contenu juridique important restauré.")
+
+    logger.info("✅ Post-traitement terminé. Contenu juridique important restauré.")
     return restored_chunks
 
 
 if __name__ == "__main__":
     # Check command line arguments
     if len(sys.argv) < 2:
-        print(
-            "Usage: python main.py <contract_file> [search_query|--chat]"
-        )
+        logger.info("Usage: python main.py <contract_file> [search_query|--chat]")
         sys.exit(1)
 
     filepath = sys.argv[1]
 
     # If --chat is provided, enter chat mode
     if len(sys.argv) > 2 and sys.argv[2] == "--chat":
-        print("\n💬 Mode chat activé. Tapez 'exit' pour quitter.")
+        logger.info("\n💬 Mode chat activé. Tapez 'exit' pour quitter.")
         while True:
             query = input("\nVotre question : ")
             if query.lower() == "exit":
