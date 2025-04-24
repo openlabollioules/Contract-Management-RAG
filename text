@@ -1,0 +1,45 @@
+# Manual Evaluation Form - GraphRAG vs Basic RAG
+
+Evaluator: ________________
+Date: ________________
+
+## Scoring System
+1: Poor
+2: Below Average
+3: Average
+4: Good
+5: Excellent
+
+## Factual Questions
+
+### Q1: What is the notice period for termination?
+
+Basic RAG:
+- Accuracy: ___/5
+- Completeness: ___/5
+- Relevance: ___/5
+- Coherence: ___/5
+- Comments: ________________________________________________
+
+GraphRAG:
+- Accuracy: ___/5
+- Completeness: ___/5
+- Relevance: ___/5
+- Coherence: ___/5
+- Comments: ________________________________________________
+
+[Continue for all questions in each category]
+
+## Overall Assessment
+
+Which approach performed better for each question type?
+
+- Factual questions: □ Basic RAG  □ GraphRAG  □ Equal
+- Relational questions: □ Basic RAG  □ GraphRAG  □ Equal
+- Complex questions: □ Basic RAG  □ GraphRAG  □ Equal
+- Cross-reference questions: □ Basic RAG  □ GraphRAG  □ Equal
+- Definition questions: □ Basic RAG  □ GraphRAG  □ Equal
+
+Final comments and observations:
+__________________________________________________________________
+__________________________________________________________________

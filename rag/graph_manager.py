@@ -78,7 +78,7 @@ class GraphManager:
         chroma_manager: ChromaDBManager, 
         embeddings_manager: EmbeddingsManager,
         llm_model: str = "mistral-small3.1:latest",
-        similarity_threshold: float = 0.75
+        similarity_threshold: float = 0.85
     ):
         self.chroma_manager = chroma_manager
         self.embeddings_manager = embeddings_manager
@@ -111,7 +111,7 @@ class GraphManager:
         return graph
     
     def _add_similarity_edges(self, graph: KnowledgeGraph) -> None:
-        """Add edges based on embedding similarity between nodes"""
+        """Add edges based on embedding similarity between nodes with filtering"""
         # Get all node contents and IDs
         node_ids = list(graph.nodes.keys())
         node_contents = [node.content for node in graph.nodes.values()]
@@ -119,22 +119,32 @@ class GraphManager:
         # Get embeddings for all nodes
         embeddings = self.embeddings_manager.get_embeddings(node_contents)
         
-        # Find similar nodes using pairwise similarity
+        # Create a priority queue of similarities
+        all_similarities = []
         for i, node_id in enumerate(node_ids):
+            # Only compare with nodes that have meaningful connections
+            # Avoid excessive connections by limiting to top matches
+            top_matches_per_node = 3  # Limit connections to most relevant matches
+            
+            node_similarities = []
             for j, other_id in enumerate(node_ids):
-                if i != j:  # Don't compare node to itself
+                if i != j:
                     similarity = self.embeddings_manager.compute_similarity(
                         embeddings[i], embeddings[j]
                     )
-                    
                     if similarity > self.similarity_threshold:
-                        edge = GraphEdge(
-                            source=node_id,
-                            target=other_id,
-                            relation_type="similar_to",
-                            weight=similarity
-                        )
-                        graph.add_edge(edge)
+                        node_similarities.append((similarity, other_id))
+            
+            # Sort by similarity descending and take only top matches
+            node_similarities.sort(reverse=True)
+            for similarity, other_id in node_similarities[:top_matches_per_node]:
+                edge = GraphEdge(
+                    source=node_id,
+                    target=other_id,
+                    relation_type="similar_to",
+                    weight=similarity
+                )
+                graph.add_edge(edge)
     
     def _add_llm_relationship_edges(self, graph: KnowledgeGraph) -> None:
         """Add edges based on LLM-generated relationships between nodes"""
@@ -171,10 +181,12 @@ class GraphManager:
                     graph.add_edge(edge)
     
     def _generate_relationship(self, source_node: GraphNode, target_node: GraphNode) -> Optional[str]:
-        """Generate relationship between two nodes using LLM"""
-        prompt = f"""Identify the most specific relationship between these two text passages from a legal document.
-Express the relationship as a concise predicate (e.g., "defines", "contradicts", "modifies", "references", "depends_on").
-If no clear relationship exists, respond with "no_relation".
+        """Generate relationship between two nodes using LLM with improved prompt"""
+        prompt = f"""Analyze the semantic relationship between these two text passages from a legal document.
+Only identify a relationship if there is a clear, meaningful connection between them.
+Express the relationship as a specific predicate (e.g., "defines", "contradicts", "elaborates", "references").
+Focus on identifying the strongest and most precise relationship.
+Respond only with "no_relation" if the connection is weak or tangential.
 
 PASSAGE 1:
 {source_node.content[:500]}
@@ -182,7 +194,8 @@ PASSAGE 1:
 PASSAGE 2:
 {target_node.content[:500]}
 
-Relationship (single word or short predicate only):"""
+What is the SINGLE most specific and meaningful relationship from Passage 1 to Passage 2?
+Relationship (single word or short phrase only):"""
 
         # Get relationship from LLM
         response = self.llm.generate(prompt)

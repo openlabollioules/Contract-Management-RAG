@@ -985,9 +985,42 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print(
             "Usage: python main.py <contract_file> [search_query|--chat|--graph-chat]"
+            "\n       python main.py --search <query>"
+            "\n       python main.py --chat"
+            "\n       python main.py --graph-chat"
         )
         sys.exit(1)
 
+    # If first argument is a command, handle it directly
+    if sys.argv[1].startswith('--'):
+        command = sys.argv[1]
+        
+        # Search mode
+        if command == "--search" and len(sys.argv) > 2:
+            search_query = " ".join(sys.argv[2:])
+            search_contracts(search_query)
+            sys.exit(0)
+        
+        # Chat modes without processing a document first
+        elif command == "--chat":
+            print("\n💬 Mode chat activé. Tapez 'exit' pour quitter.")
+            while True:
+                query = input("\nVotre question : ")
+                if query.lower() == "exit":
+                    break
+                chat_with_contract(query, use_graph=False)
+            sys.exit(0)
+            
+        elif command == "--graph-chat":
+            print("\n🔍 Mode chat augmenté par graphe de connaissances activé. Tapez 'exit' pour quitter.")
+            while True:
+                query = input("\nVotre question : ")
+                if query.lower() == "exit":
+                    break
+                chat_with_contract(query, use_graph=True)
+            sys.exit(0)
+
+    # Existing behavior for processing a contract
     filepath = sys.argv[1]
 
     # If --chat is provided, enter chat mode
