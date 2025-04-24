@@ -6,16 +6,16 @@ from chromadb.config import Settings
 
 from utils.logger import setup_logger
 
-from .embeddings_manager import EmbeddingsManager
+from .text_vectorizer import TextVectorizer
 
 # Configurer le logger pour ce module
 logger = setup_logger(__file__)
 
 
-class ChromaDBManager:
+class VectorDBInterface:
     def __init__(
         self,
-        embeddings_manager: EmbeddingsManager,
+        embeddings_manager: TextVectorizer,
         persist_directory: str = "chroma_db",
         collection_name: str = "contracts",
     ):
@@ -23,14 +23,14 @@ class ChromaDBManager:
         Initialize ChromaDB manager with an embeddings manager
 
         Args:
-            embeddings_manager: Instance of EmbeddingsManager for generating embeddings
+            embeddings_manager: Instance of TextVectorizer for generating embeddings
             persist_directory: Directory to persist ChromaDB data
             collection_name: Name of the collection to use
         """
         self.embeddings_manager = embeddings_manager
         self.persist_directory = persist_directory
         logger.info(
-            f"Initialisation de ChromaDBManager (persist_directory={persist_directory}, collection={collection_name})"
+            f"Initialisation de VectorDBInterface (persist_directory={persist_directory}, collection={collection_name})"
         )
 
         # Initialize ChromaDB client

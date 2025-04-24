@@ -7,13 +7,13 @@ from langchain_experimental.text_splitter import SemanticChunker
 
 from utils.logger import setup_logger
 
-from .intelligent_splitter import Chunk, IntelligentSplitter
+from .contract_splitter import Chunk, ContractSplitter
 
 # Configurer le logger pour ce module
 logger = setup_logger(__file__)
 
 
-class SemanticChunkManager:
+class TextChunker:
     """
     Gère le chunking sémantique des textes juridiques, en respectant les structures hiérarchiques des contrats.
 
@@ -46,7 +46,7 @@ class SemanticChunkManager:
             chunk_overlap: Chevauchement entre chunks consécutifs
         """
         logger.info(
-            f"Initialisation du SemanticChunkManager avec le modèle {embedding_model_name}"
+            f"Initialisation du TextChunker avec le modèle {embedding_model_name}"
         )
         logger.debug(
             f"Paramètres - breakpoint_threshold_type: {breakpoint_threshold_type}, buffer_size: {buffer_size}, number_of_chunks: {number_of_chunks}"
@@ -102,7 +102,7 @@ class SemanticChunkManager:
         logger.debug(
             f"Nombre de patterns de références croisées: {len(self.cross_ref_patterns)}"
         )
-        logger.info("SemanticChunkManager initialization complete")
+        logger.info("TextChunker initialization complete")
 
     def _preprocess_text_with_section_markers(self, text: str) -> str:
         """
@@ -557,7 +557,7 @@ class SemanticChunkManager:
             Liste de chunks avec métadonnées enrichies
         """
         # 1. Découpage structurel initial
-        structure_splitter = IntelligentSplitter(document_title=document_title)
+        structure_splitter = ContractSplitter(document_title=document_title)
         initial_chunks = structure_splitter.split(text)
 
         final_chunks = []

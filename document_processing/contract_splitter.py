@@ -38,14 +38,14 @@ class Chunk:
     chapter_title: Optional[str] = None  # Titre du chapitre
 
 
-class IntelligentSplitter:
+class ContractSplitter:
     def __init__(self, document_title: Optional[str] = None):
         self.document_title = document_title
         self.chunk_count = 0
         self.section_hierarchy = {}  # Pour stocker la hiérarchie des sections
         self.section_titles = {}  # Stocke les titres des chapitres (ex: "3": "Work")
         logger.info(
-            f"Initialisation de IntelligentSplitter pour le document: {document_title}"
+            f"Initialisation de ContractSplitter pour le document: {document_title}"
         )
 
     def _normalize_section_number(self, section_number: str) -> str:

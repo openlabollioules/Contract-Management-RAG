@@ -1,30 +1,65 @@
 from typing import Optional
-
+import os
+import platform
 import ollama
+import torch
+from dotenv import load_dotenv
 
 from utils.logger import setup_logger
 
 # Configurer le logger pour ce module
 logger = setup_logger(__file__)
 
+# Load environment variables
+load_dotenv("config.env")
 
-class OllamaChat:
+# Configuration pour Ollama
+os.environ["OLLAMA_BASE_URL"] = os.getenv("OLLAMA_URL", "http://localhost:11434").split("/api")[0]
+logger.info(f"OLLAMA_BASE_URL configuré à {os.environ['OLLAMA_BASE_URL']}")
+
+# Configuration pour les modèles offline
+USE_OFFLINE_MODELS = os.getenv("USE_OFFLINE_MODELS", "true").lower() == "true"
+if USE_OFFLINE_MODELS:
+    logger.info("Mode hors ligne activé, utilisation des modèles locaux")
+    # Configurer les variables d'environnement pour le mode hors ligne
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
+    
+# Détection du matériel (pour optimisations)
+is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
+if is_apple_silicon and torch.backends.mps.is_available():
+    device = "mps"
+    logger.info("🎮 Using MPS (Metal Performance Shaders) for LLM")
+elif torch.cuda.is_available():
+    device = "cuda"
+    logger.info("🚀 Using CUDA for LLM")
+else:
+    device = "cpu"
+    logger.info("💻 Using CPU for LLM")
+
+
+class LLMChat:
     def __init__(
         self,
-        model: str = "mistral-small3.1:latest",
+        model: str = None,
         system_prompt: Optional[str] = None,
     ):
         """
         Initialize Ollama chat with a specific model and system prompt
 
         Args:
-            model: The model to use (default: mistral-small3.1:latest)
+            model: The model to use (default is taken from environment variable)
             system_prompt: Optional system prompt to set the behavior of the model
         """
-        self.model = model
+        # Get model name from environment variables or use default
+        if model is None:
+            self.model = os.getenv("LLM_MODEL", "mistral-small3.1:latest")
+        else:
+            self.model = model
+            
         self.system_prompt = system_prompt
         self.messages = []
-        logger.info(f"OllamaChat initialisé avec le modèle {model}")
+        logger.info(f"LLMChat initialisé avec le modèle {self.model}")
 
         if system_prompt:
             logger.debug(f"System prompt défini: {system_prompt[:50]}...")
@@ -104,7 +139,7 @@ class OllamaChat:
 
 
 # Global instance for backward compatibility
-_ollama_chat = OllamaChat()
+_ollama_chat = LLMChat()
 logger.debug("Instance globale _ollama_chat créée")
 
 

@@ -20,24 +20,34 @@ from PyPDF2 import PdfReader, PdfWriter
 from pytesseract import Output
 from transformers import (SegformerForSemanticSegmentation,
                           SegformerImageProcessor)
+from dotenv import load_dotenv
+
+from utils.logger import setup_logger
+
+# Configurer le logger pour ce module
+logger = setup_logger(__file__)
+
+# Load environment variables
+load_dotenv("config.env")
 
 # Détection de l'architecture
 is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
-if is_apple_silicon:
-    print("🍎 Détection d'un processeur Apple Silicon")
-    if torch.backends.mps.is_available():
-        print("🎮 GPU MPS disponible")
-        device = torch.device("mps")
-    else:
-        print("⚠️ GPU MPS non disponible, utilisation du CPU")
-        device = torch.device("cpu")
+use_mps = os.getenv("USE_MPS", "true").lower() == "true"
+
+if is_apple_silicon and torch.backends.mps.is_available() and use_mps:
+    logger.info("🍎 Détection d'un processeur Apple Silicon avec MPS disponible")
+    device = torch.device("mps")
+    logger.info("🎮 GPU MPS activé pour les modèles Marker")
+elif torch.cuda.is_available():
+    logger.info("🚀 GPU CUDA disponible")
+    device = torch.device("cuda")
 else:
-    print("💻 Architecture non Apple Silicon")
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    logger.info("💻 Utilisation du CPU (pas de GPU disponible)")
+    device = torch.device("cpu")
 
-print(f"⚙️ Utilisation du device: {device}")
+logger.info(f"⚙️ Utilisation du device: {device}")
 
-# Désactiver les logs de PostHog
+# Désactiver les logs de PostHog et autres télémetries
 logging.getLogger("posthog").setLevel(logging.CRITICAL)
 logging.getLogger("backoff").setLevel(logging.CRITICAL)
 logging.getLogger("urllib3").setLevel(logging.CRITICAL)
@@ -53,6 +63,8 @@ os.environ["NO_PROXY"] = "*"  # Désactiver les proxies
 os.environ["http_proxy"] = ""  # Désactiver les proxies HTTP
 os.environ["https_proxy"] = ""  # Désactiver les proxies HTTPS
 
+# Configurer les chemins de modèles
+MARKER_DIR = os.getenv("MARKER_DIR", "offline_models/marker")
 
 # Patch pour désactiver PostHog
 def patch_posthog():
@@ -95,38 +107,108 @@ def patch_create_model_dict():
     original_create_model_dict = marker_models.create_model_dict
 
     def patched_create_model_dict():
-        print("Using patched create_model_dict")
+        logger.info("🔧 Utilisation de patched_create_model_dict pour charger les modèles locaux")
         model_dict = {}
 
-        # Charger les modèles locaux
+        # Obtenir le chemin du dossier marker depuis config.env
+        marker_dir = os.getenv("MARKER_DIR", "offline_models/marker")
+        logger.info(f"📂 Utilisation du dossier de modèles Marker: {marker_dir}")
+        
+        # Modèles Marker avec les noms de répertoires corrects selon Hugging Face
+        # Les modèles principaux de Marker sont maintenant dans VikParuchuri/marker_layout_segmenter et VikParuchuri/marker_texify
         model_paths = {
-            "layout_model": "offline_models/marker/layout/model.safetensors",
-            "texify_model": "offline_models/marker/texify/model.safetensors",
-            "recognition_model": "offline_models/marker/recognition_model/model.pkl",
-            "table_rec_model": "offline_models/marker/table_rec_model/model.pkl",
-            "detection_model": "offline_models/marker/detection_model/model.pkl",
-            "inline_detection_model": "offline_models/marker/inline_detection_model/model.pkl",
+            # Modèles principaux avec les noms de répertoires corrects
+            "layout": f"{marker_dir}/layout",  # VikParuchuri/marker_layout_segmenter
+            "texify": f"{marker_dir}/texify",  # VikParuchuri/marker_texify
+            
+            # Les autres modèles (reconnaissance) sont intégrés au package Marker/Surya
+            "text_recognition": f"{marker_dir}/text_recognition",
+            "table_recognition": f"{marker_dir}/table_recognition", 
+            "text_detection": f"{marker_dir}/text_detection",
+            "inline_math_detection": f"{marker_dir}/inline_math_detection",
+            
+            # Noms alternatifs de modèles (utilisés dans certaines parties du code)
+            "layout_model": f"{marker_dir}/layout",
+            "texify_model": f"{marker_dir}/texify",
+            "recognition_model": f"{marker_dir}/text_recognition",
+            "table_rec_model": f"{marker_dir}/table_recognition",
+            "detection_model": f"{marker_dir}/text_detection",
+            "inline_detection_model": f"{marker_dir}/inline_math_detection",
+            "ocr_error_model": f"{marker_dir}/ocr_error",
         }
-
-        for model_name, model_path in model_paths.items():
-            try:
+        
+        # Extensions de fichiers possibles pour les modèles
+        model_extensions = [
+            "/model.safetensors",
+            "/model.pkl",
+            "/model.bin", 
+            "/pytorch_model.bin",
+            "/config.json"  # Certains modèles ont besoin de config.json
+        ]
+        
+        # Charger chaque modèle avec gestion d'erreurs approfondie
+        for model_name, model_base_path in model_paths.items():
+            if model_name in model_dict:
+                logger.debug(f"✅ Modèle {model_name} déjà chargé, ignoré")
+                continue
+                
+            logger.debug(f"🔍 Tentative de chargement du modèle {model_name} depuis {model_base_path}")
+            
+            # Essayer chaque extension possible
+            loaded = False
+            for ext in model_extensions:
+                model_path = f"{model_base_path}{ext}"
+                
                 if os.path.exists(model_path):
-                    if model_path.endswith(".safetensors"):
-                        from safetensors.torch import load_file
+                    try:
+                        if ext == "/model.safetensors":
+                            from safetensors.torch import load_file
+                            model_dict[model_name] = load_file(model_path)
+                        elif ext == "/config.json":
+                            # Ne pas charger config.json comme un modèle, mais juste vérifier s'il existe
+                            continue
+                        else:
+                            model_dict[model_name] = torch.load(model_path, map_location=device)
+                            
+                        logger.info(f"✅ Modèle {model_name} chargé avec succès depuis {model_path}")
+                        loaded = True
+                        break
+                    except Exception as e:
+                        logger.warning(f"⚠️ Échec du chargement de {model_path}: {str(e)}")
+            
+            # Si le modèle n'a pas été chargé, essayer des chemins alternatifs
+            if not loaded:
+                # Essayer le sous-dossier avec le nom du modèle
+                alt_base_path = f"{marker_dir}/{model_name.replace('_model', '')}"
+                
+                for ext in model_extensions:
+                    alt_path = f"{alt_base_path}{ext}"
+                    
+                    if os.path.exists(alt_path):
+                        try:
+                            if ext == "/model.safetensors":
+                                from safetensors.torch import load_file
+                                model_dict[model_name] = load_file(alt_path)
+                            elif ext == "/config.json":
+                                continue
+                            else:
+                                model_dict[model_name] = torch.load(alt_path, map_location=device)
+                                
+                            logger.info(f"✅ Modèle {model_name} chargé depuis chemin alternatif {alt_path}")
+                            loaded = True
+                            break
+                        except Exception as e:
+                            logger.warning(f"⚠️ Échec du chargement alternatif {alt_path}: {str(e)}")
+            
+            # Rapporter si le modèle n'a pas pu être chargé
+            if not loaded:
+                logger.warning(f"⚠️ Impossible de charger le modèle {model_name}. Il sera téléchargé automatiquement si nécessaire.")
 
-                        model_dict[model_name] = load_file(model_path)
-                    else:
-                        model_dict[model_name] = torch.load(model_path)
-                    print(f"Loaded local model for {model_name}")
-                else:
-                    print(f"Local model not found for {model_name}")
-            except Exception as e:
-                print(f"Warning: Could not load local model {model_name}: {str(e)}")
-
+        # Remplacer la fonction originale
+        marker_models.create_model_dict = patched_create_model_dict
+        logger.info("✅ Patch create_model_dict appliqué avec succès")
+        
         return model_dict
-
-    # Remplacer la fonction originale
-    marker_models.create_model_dict = patched_create_model_dict
 
 
 # Patch pour désactiver les téléchargements S3 dans marker.models
@@ -162,7 +244,6 @@ patch_posthog()
 patch_s3_download()
 patch_marker_models()
 patch_create_model_dict()
-
 
 def correct_pdf_orientation(pdf_path):
     """
@@ -455,38 +536,60 @@ def remove_headers_footers_by_similarity(
     return cleaned_text
 
 
-def extract_text_contract(pdf_path):
-    print("📄 Chargement des modèles...")
+def extract_pdf_text(pdf_path):
+    logger.info("📄 Chargement des modèles...")
     start_time = time.time()
 
     # Nettoyer le PDF (masquer signatures et tampons)
     # pdf_path = clean_pdf(pdf_path)
 
     # Corriger l'orientation du PDF si nécessaire
-    print("🔄 Vérification de l'orientation des pages...")
+    logger.info("🔄 Vérification de l'orientation des pages...")
     pdf_path = correct_pdf_orientation(pdf_path)
 
     # Configure Ollama service (local mode)
-    os.environ["OLLAMA_BASE_URL"] = "http://localhost:11434"
+    os.environ["OLLAMA_BASE_URL"] = os.getenv("OLLAMA_URL", "http://localhost:11434").split("/api")[0]
+    logger.debug(f"OLLAMA_BASE_URL configuré à {os.environ['OLLAMA_BASE_URL']}")
 
-    # Setup model paths
+    # S'assurer que tous les indicateurs de mode hors ligne sont activés
+    os.environ["HF_DATASETS_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1" 
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["S3_OFFLINE"] = "1"
+    os.environ["NO_PROXY"] = "*"
+    
+    # Setup model paths from config.env
+    marker_dir = os.getenv("MARKER_DIR", "offline_models/marker")
+    logger.info(f"📁 Utilisation du dossier Marker: {marker_dir}")
+    
+    # Vérifier si les répertoires existent
+    if not os.path.exists(marker_dir):
+        logger.warning(f"⚠️ Le répertoire Marker n'existe pas: {marker_dir}")
+        # Créer le répertoire si nécessaire
+        os.makedirs(marker_dir, exist_ok=True)
+    
+    # Chemins des modèles configurés à partir de config.env
     model_paths = {
-        "layout": "offline_models/marker/layout",
-        "texify": "offline_models/marker/texify",
-        "text_recognition": "offline_models/marker/text_recognition",
-        "table_recognition": "offline_models/marker/table_recognition",
-        "text_detection": "offline_models/marker/text_detection",
-        "inline_math_detection": "offline_models/marker/inline_math_detection",
+        "layout": f"{marker_dir}/layout",
+        "texify": f"{marker_dir}/texify",
+        "text_recognition": f"{marker_dir}/text_recognition",
+        "table_recognition": f"{marker_dir}/table_recognition",
+        "text_detection": f"{marker_dir}/text_detection",
+        "inline_math_detection": f"{marker_dir}/inline_math_detection",
     }
+    
+    # Vérifier les chemins des modèles
+    for model_name, model_path in model_paths.items():
+        if not os.path.exists(model_path):
+            logger.warning(f"⚠️ Chemin de modèle inexistant: {model_path}")
+        else:
+            logger.debug(f"✅ Modèle trouvé: {model_name} dans {model_path}")
 
-    print("🔍 Configuration de Marker...")
+    logger.info("🔍 Configuration de Marker...")
     # Setup the configuration for Marker with enhanced options
     config = {
         "converter_cls": "marker.converters.table.TableConverter",
         "output_format": "markdown",
-        # "use_llm": False,
-        # "llm_service": "marker.services.ollama.OllamaService",
-        # "ollama_model": "mistral-small3.1:latest",
         "ocr": True,
         "ocr_engine": "tesseract",
         "ocr_language": "fra+eng",
@@ -510,20 +613,30 @@ def extract_text_contract(pdf_path):
     }
 
     try:
-        print("🔄 Création des modèles...")
+        logger.info("🔄 Création des modèles...")
+        # Appliquer tous les patches avant de créer les modèles
+        patch_posthog()
+        patch_s3_download()
+        patch_marker_models()
+        patch_create_model_dict()
+        
+        # Créer le dictionnaire des modèles
         model_dict = create_model_dict()
 
         # Déplacer les modèles sur le device approprié
         for model_name, model in model_dict.items():
             if isinstance(model, torch.nn.Module):
                 model.to(device)
-                print(
-                    f"Loaded {model_name} on device {device} with dtype {model.dtype}"
-                )
+                # Use half precision for MPS/CUDA
+                use_half_precision = os.getenv("USE_HALF_PRECISION", "true").lower() == "true"
+                if use_half_precision and (device.type == "mps" or device.type == "cuda"):
+                    model.half()
+                    logger.info(f"Modèle {model_name} converti en FP16 pour {device}")
+                logger.info(f"✅ Modèle {model_name} chargé sur {device} avec dtype {model.dtype}")
 
         config_parser = ConfigParser(config)
 
-        print("📝 Conversion du PDF...")
+        logger.info("📝 Conversion du PDF...")
         # Convert PDF with Marker
         converter = PdfConverter(
             config=config_parser.generate_config_dict(),
@@ -538,13 +651,13 @@ def extract_text_contract(pdf_path):
         text, metadata, _ = text_from_rendered(rendered)
 
         # Apply header/footer removal by similarity
-        print(
+        logger.info(
             "🔍 Détection et suppression des en-têtes, pieds de page et références d'images..."
         )
         text = remove_headers_footers_by_similarity(
             text, similarity_threshold=0.8, occurrence_threshold=3
         )
-        print(
+        logger.info(
             "✅ Traitement des en-têtes, pieds de page et références d'images terminé"
         )
 
@@ -568,44 +681,175 @@ Content:
 {text}
 """
 
-        print(f"✅ PDF traité en {time.time() - start_time:.2f} secondes")
-        print(f"📊 Métriques:")
-        print(f"  - Pages: {metadata.get('pages', 'Unknown')}")
-        print(f"  - Mots: {len(text.split())}")
-        print(f"  - Device utilisé: {device}")
-        print(
-            f"  - Vitesse: {len(text.split())/(time.time() - start_time):.2f} mots/seconde"
-        )
+        # Calculate time taken and log
+        end_time = time.time()
+        logger.info(f"✅ Extraction terminée en {end_time - start_time:.2f} secondes")
 
         return text_with_metadata, document_title
 
     except Exception as e:
-        print(f"❌ Erreur lors du traitement avancé: {str(e)}")
-        # En cas d'erreur, essayer une approche plus simple
-        try:
-            print("🔄 Tentative de traitement basique...")
-            from pdfminer.high_level import extract_text
+        logger.error(f"Erreur lors de l'extraction du texte: {str(e)}")
+        # Fallback to simpler extraction if marker fails
+        logger.warning("⚠️ Échec de l'extraction avancée, utilisation de la méthode simple...")
+        return fallback_extract_text(pdf_path)
 
-            simple_text = extract_text(pdf_path)
 
-            # Apply header/footer removal to the simple extraction as well
-            print(
-                "🔍 Détection et suppression des en-têtes, pieds de page et références d'images (mode basique)..."
-            )
-            simple_text = remove_headers_footers_by_similarity(
-                simple_text, similarity_threshold=0.8, occurrence_threshold=3
-            )
-            print(
-                "✅ Traitement des en-têtes, pieds de page et références d'images terminé (mode basique)"
-            )
+def patch_marker_extract_text():
+    # Import marker avec gestion d'erreur
+    try:
+        import marker
+        from marker.extract_text import extract_text, load_and_extract_text
+        
+        # Sauvegarder les fonctions originales
+        original_extract_text = extract_text
+        original_load_and_extract_text = load_and_extract_text
+        
+        # Fonction modifiée extract_text
+        def patched_extract_text(file_path, **kwargs):
+            logger.info("🔧 Utilisation de patched_extract_text pour charger les modèles locaux")
+            
+            # S'assurer que tous les modèles sont chargés localement
+            kwargs["layout"] = kwargs.get("layout", True)
+            kwargs["texify"] = kwargs.get("texify", True)
+            kwargs["use_tables"] = kwargs.get("use_tables", False)  # Désactiver tables par défaut
+            kwargs["use_ocr_error_corruptor"] = kwargs.get("use_ocr_error_corruptor", False)  # Désactiver OCR error par défaut
+            kwargs["use_gpu"] = kwargs.get("use_gpu", torch.cuda.is_available())
+            kwargs["use_mps"] = kwargs.get("use_mps", torch.backends.mps.is_available())
+            kwargs["save_preprocessed"] = kwargs.get("save_preprocessed", False)
+            
+            # Force le mode offline
+            os.environ["HF_HUB_OFFLINE"] = "1"
+            os.environ["TRANSFORMERS_OFFLINE"] = "1"
+            
+            try:
+                return original_extract_text(file_path, **kwargs)
+            except Exception as e:
+                logger.error(f"❌ Erreur lors de l'extraction avec Marker: {str(e)}")
+                
+                # Tentative de repli avec options simplifiées
+                logger.info("🔄 Tentative d'extraction avec options simplifiées")
+                try:
+                    # Essayer sans mise en page (juste OCR)
+                    kwargs["layout"] = False
+                    kwargs["texify"] = False
+                    return original_extract_text(file_path, **kwargs)
+                except Exception as e2:
+                    logger.error(f"❌ Deuxième erreur d'extraction avec Marker: {str(e2)}")
+                    raise ValueError(f"Échec de l'extraction Marker avec toutes les options: {str(e)}, puis: {str(e2)}")
+        
+        # Fonction modifiée load_and_extract_text
+        def patched_load_and_extract_text(file_path, **kwargs):
+            logger.info("🔧 Utilisation de patched_load_and_extract_text pour charger les modèles locaux")
+            
+            # Force le mode offline
+            os.environ["HF_HUB_OFFLINE"] = "1"
+            os.environ["TRANSFORMERS_OFFLINE"] = "1"
+            
+            try:
+                return original_load_and_extract_text(file_path, **kwargs)
+            except Exception as e:
+                logger.error(f"❌ Erreur lors de load_and_extract_text: {str(e)}")
+                
+                # Tentative de repli avec options simplifiées
+                logger.info("🔄 Tentative d'extraction simplifiée")
+                try:
+                    # Essayer sans mise en page (juste OCR)
+                    kwargs["layout"] = False
+                    kwargs["texify"] = False
+                    kwargs["use_tables"] = False
+                    return original_load_and_extract_text(file_path, **kwargs)
+                except Exception as e2:
+                    logger.error(f"❌ Deuxième erreur avec load_and_extract_text: {str(e2)}")
+                    raise ValueError(f"Échec de load_and_extract_text avec toutes les options: {str(e)}, puis: {str(e2)}")
+                    
+        # Remplacer les fonctions originales
+        marker.extract_text.extract_text = patched_extract_text
+        marker.extract_text.load_and_extract_text = patched_load_and_extract_text
+        logger.info("✅ Patch marker.extract_text appliqué avec succès")
+        return True
+    except ImportError as e:
+        logger.warning(f"⚠️ Module marker.extract_text non disponible: {str(e)}")
+        return False
 
-            print("✅ Texte extrait avec succès (mode basique)")
-            # Utiliser le nom complet du fichier comme titre en cas d'erreur
-            document_title = os.path.basename(pdf_path)
-            return (
-                f"Error with advanced processing. Using basic text extraction:\n\n{simple_text}",
-                document_title,
-            )
-        except Exception as e2:
-            print(f"❌ Échec du traitement du PDF: {str(e2)}")
-            return f"Failed to process PDF: {str(e2)}", None
+
+def fallback_extract_text(pdf_path):
+    """
+    Méthode de secours pour extraire le texte d'un PDF en cas d'échec de Marker.
+    Utilise PyMuPDF (fitz) directement.
+    
+    Args:
+        pdf_path: Chemin vers le fichier PDF
+        
+    Returns:
+        tuple: (texte extrait, titre du document)
+    """
+    logger.warning("⚠️ Utilisation de la méthode de secours pour l'extraction de texte")
+    try:
+        # Ouvrir le PDF avec PyMuPDF
+        doc = fitz.open(pdf_path)
+        
+        # Extraire le texte de chaque page
+        text_content = []
+        for page_num, page in enumerate(doc):
+            logger.debug(f"Extraction du texte de la page {page_num+1}")
+            text = page.get_text()
+            text_content.append(text)
+        
+        # Joindre le texte de toutes les pages
+        full_text = "\n".join(text_content)
+        
+        # Appliquer la suppression des en-têtes/pieds de page
+        cleaned_text = remove_headers_footers_by_similarity(full_text)
+        
+        # Obtenir le titre du document
+        document_title = os.path.basename(pdf_path)
+        
+        logger.info(f"✅ Extraction de secours terminée: {len(cleaned_text.split())} mots extraits")
+        
+        # Créer un texte avec métadonnées
+        text_with_metadata = f"""
+Document Metadata:
+- Title: {document_title}
+- Author: Unknown
+- Pages: {len(doc)}
+
+Content:
+{cleaned_text}
+"""
+        
+        return text_with_metadata, document_title
+        
+    except Exception as e:
+        logger.error(f"❌ Erreur lors de l'extraction de secours: {str(e)}")
+        # En cas d'échec complet, retourner un texte vide
+        return f"Échec de l'extraction du texte: {str(e)}", os.path.basename(pdf_path)
+
+
+def init():
+    """Initialize the PDF extractor module. Must be called before using the module."""
+    logger.info("🔄 Initializing PDF extractor module")
+    
+    # Forcer les variables d'environnement de manière préventive
+    os.environ["HF_HUB_OFFLINE"] = "1"
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
+    
+    # Appliquer les patches pour utiliser les modèles en local
+    patch_create_model_dict()
+    patch_marker_extract_text()
+    
+    # Log info about parameters
+    logger.info(f"📋 MARKER_DIR: {os.environ.get('MARKER_DIR', 'offline_models/marker')}")
+    logger.info(f"📋 Using HF_HUB_OFFLINE: {os.environ.get('HF_HUB_OFFLINE')}")
+    logger.info(f"📋 Using TRANSFORMERS_OFFLINE: {os.environ.get('TRANSFORMERS_OFFLINE')}")
+    
+    # Check if torch is available with CUDA or MPS
+    if torch.cuda.is_available():
+        logger.info(f"🚀 Using CUDA for PDF extraction: {torch.cuda.get_device_name(0)}")
+    elif hasattr(torch, 'backends') and hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+        logger.info("🚀 Using MPS (Metal Performance Shaders) for PDF extraction")
+    else:
+        logger.info("⚠️ No GPU available, using CPU for PDF extraction")
+        
+    logger.info("✅ PDF extractor module initialized successfully")
+
+# Ne pas initialiser à l'import - laisser l'application appeler init()
