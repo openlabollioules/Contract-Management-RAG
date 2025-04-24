@@ -11,6 +11,7 @@ import numpy as np
 import onnxruntime as ort
 import pytesseract
 import torch
+from dotenv import load_dotenv
 from marker.config.parser import ConfigParser
 from marker.converters.pdf import PdfConverter
 from marker.models import create_model_dict
@@ -20,7 +21,6 @@ from PyPDF2 import PdfReader, PdfWriter
 from pytesseract import Output
 from transformers import (SegformerForSemanticSegmentation,
                           SegformerImageProcessor)
-from dotenv import load_dotenv
 
 from utils.logger import setup_logger
 
@@ -66,6 +66,7 @@ os.environ["https_proxy"] = ""  # Désactiver les proxies HTTPS
 # Configurer les chemins de modèles
 MARKER_DIR = os.getenv("MARKER_DIR", "offline_models/marker")
 
+
 # Patch pour désactiver PostHog
 def patch_posthog():
     try:
@@ -107,26 +108,26 @@ def patch_create_model_dict():
     original_create_model_dict = marker_models.create_model_dict
 
     def patched_create_model_dict():
-        logger.info("🔧 Utilisation de patched_create_model_dict pour charger les modèles locaux")
+        logger.info(
+            "🔧 Utilisation de patched_create_model_dict pour charger les modèles locaux"
+        )
         model_dict = {}
 
         # Obtenir le chemin du dossier marker depuis config.env
         marker_dir = os.getenv("MARKER_DIR", "offline_models/marker")
         logger.info(f"📂 Utilisation du dossier de modèles Marker: {marker_dir}")
-        
+
         # Modèles Marker avec les noms de répertoires corrects selon Hugging Face
         # Les modèles principaux de Marker sont maintenant dans VikParuchuri/marker_layout_segmenter et VikParuchuri/marker_texify
         model_paths = {
             # Modèles principaux avec les noms de répertoires corrects
             "layout": f"{marker_dir}/layout",  # VikParuchuri/marker_layout_segmenter
             "texify": f"{marker_dir}/texify",  # VikParuchuri/marker_texify
-            
             # Les autres modèles (reconnaissance) sont intégrés au package Marker/Surya
             "text_recognition": f"{marker_dir}/text_recognition",
-            "table_recognition": f"{marker_dir}/table_recognition", 
+            "table_recognition": f"{marker_dir}/table_recognition",
             "text_detection": f"{marker_dir}/text_detection",
             "inline_math_detection": f"{marker_dir}/inline_math_detection",
-            
             # Noms alternatifs de modèles (utilisés dans certaines parties du code)
             "layout_model": f"{marker_dir}/layout",
             "texify_model": f"{marker_dir}/texify",
@@ -136,78 +137,96 @@ def patch_create_model_dict():
             "inline_detection_model": f"{marker_dir}/inline_math_detection",
             "ocr_error_model": f"{marker_dir}/ocr_error",
         }
-        
+
         # Extensions de fichiers possibles pour les modèles
         model_extensions = [
             "/model.safetensors",
             "/model.pkl",
-            "/model.bin", 
+            "/model.bin",
             "/pytorch_model.bin",
-            "/config.json"  # Certains modèles ont besoin de config.json
+            "/config.json",  # Certains modèles ont besoin de config.json
         ]
-        
+
         # Charger chaque modèle avec gestion d'erreurs approfondie
         for model_name, model_base_path in model_paths.items():
             if model_name in model_dict:
                 logger.debug(f"✅ Modèle {model_name} déjà chargé, ignoré")
                 continue
-                
-            logger.debug(f"🔍 Tentative de chargement du modèle {model_name} depuis {model_base_path}")
-            
+
+            logger.debug(
+                f"🔍 Tentative de chargement du modèle {model_name} depuis {model_base_path}"
+            )
+
             # Essayer chaque extension possible
             loaded = False
             for ext in model_extensions:
                 model_path = f"{model_base_path}{ext}"
-                
+
                 if os.path.exists(model_path):
                     try:
                         if ext == "/model.safetensors":
                             from safetensors.torch import load_file
+
                             model_dict[model_name] = load_file(model_path)
                         elif ext == "/config.json":
                             # Ne pas charger config.json comme un modèle, mais juste vérifier s'il existe
                             continue
                         else:
-                            model_dict[model_name] = torch.load(model_path, map_location=device)
-                            
-                        logger.info(f"✅ Modèle {model_name} chargé avec succès depuis {model_path}")
+                            model_dict[model_name] = torch.load(
+                                model_path, map_location=device
+                            )
+
+                        logger.info(
+                            f"✅ Modèle {model_name} chargé avec succès depuis {model_path}"
+                        )
                         loaded = True
                         break
                     except Exception as e:
-                        logger.warning(f"⚠️ Échec du chargement de {model_path}: {str(e)}")
-            
+                        logger.warning(
+                            f"⚠️ Échec du chargement de {model_path}: {str(e)}"
+                        )
+
             # Si le modèle n'a pas été chargé, essayer des chemins alternatifs
             if not loaded:
                 # Essayer le sous-dossier avec le nom du modèle
                 alt_base_path = f"{marker_dir}/{model_name.replace('_model', '')}"
-                
+
                 for ext in model_extensions:
                     alt_path = f"{alt_base_path}{ext}"
-                    
+
                     if os.path.exists(alt_path):
                         try:
                             if ext == "/model.safetensors":
                                 from safetensors.torch import load_file
+
                                 model_dict[model_name] = load_file(alt_path)
                             elif ext == "/config.json":
                                 continue
                             else:
-                                model_dict[model_name] = torch.load(alt_path, map_location=device)
-                                
-                            logger.info(f"✅ Modèle {model_name} chargé depuis chemin alternatif {alt_path}")
+                                model_dict[model_name] = torch.load(
+                                    alt_path, map_location=device
+                                )
+
+                            logger.info(
+                                f"✅ Modèle {model_name} chargé depuis chemin alternatif {alt_path}"
+                            )
                             loaded = True
                             break
                         except Exception as e:
-                            logger.warning(f"⚠️ Échec du chargement alternatif {alt_path}: {str(e)}")
-            
+                            logger.warning(
+                                f"⚠️ Échec du chargement alternatif {alt_path}: {str(e)}"
+                            )
+
             # Rapporter si le modèle n'a pas pu être chargé
             if not loaded:
-                logger.warning(f"⚠️ Impossible de charger le modèle {model_name}. Il sera téléchargé automatiquement si nécessaire.")
+                logger.warning(
+                    f"⚠️ Impossible de charger le modèle {model_name}. Il sera téléchargé automatiquement si nécessaire."
+                )
 
         # Remplacer la fonction originale
         marker_models.create_model_dict = patched_create_model_dict
         logger.info("✅ Patch create_model_dict appliqué avec succès")
-        
+
         return model_dict
 
 
@@ -244,6 +263,7 @@ patch_posthog()
 patch_s3_download()
 patch_marker_models()
 patch_create_model_dict()
+
 
 def correct_pdf_orientation(pdf_path):
     """
@@ -548,26 +568,28 @@ def extract_pdf_text(pdf_path):
     pdf_path = correct_pdf_orientation(pdf_path)
 
     # Configure Ollama service (local mode)
-    os.environ["OLLAMA_BASE_URL"] = os.getenv("OLLAMA_URL", "http://localhost:11434").split("/api")[0]
+    os.environ["OLLAMA_BASE_URL"] = os.getenv(
+        "OLLAMA_URL", "http://localhost:11434"
+    ).split("/api")[0]
     logger.debug(f"OLLAMA_BASE_URL configuré à {os.environ['OLLAMA_BASE_URL']}")
 
     # S'assurer que tous les indicateurs de mode hors ligne sont activés
     os.environ["HF_DATASETS_OFFLINE"] = "1"
-    os.environ["TRANSFORMERS_OFFLINE"] = "1" 
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
     os.environ["HF_HUB_OFFLINE"] = "1"
     os.environ["S3_OFFLINE"] = "1"
     os.environ["NO_PROXY"] = "*"
-    
+
     # Setup model paths from config.env
     marker_dir = os.getenv("MARKER_DIR", "offline_models/marker")
     logger.info(f"📁 Utilisation du dossier Marker: {marker_dir}")
-    
+
     # Vérifier si les répertoires existent
     if not os.path.exists(marker_dir):
         logger.warning(f"⚠️ Le répertoire Marker n'existe pas: {marker_dir}")
         # Créer le répertoire si nécessaire
         os.makedirs(marker_dir, exist_ok=True)
-    
+
     # Chemins des modèles configurés à partir de config.env
     model_paths = {
         "layout": f"{marker_dir}/layout",
@@ -577,7 +599,7 @@ def extract_pdf_text(pdf_path):
         "text_detection": f"{marker_dir}/text_detection",
         "inline_math_detection": f"{marker_dir}/inline_math_detection",
     }
-    
+
     # Vérifier les chemins des modèles
     for model_name, model_path in model_paths.items():
         if not os.path.exists(model_path):
@@ -619,7 +641,7 @@ def extract_pdf_text(pdf_path):
         patch_s3_download()
         patch_marker_models()
         patch_create_model_dict()
-        
+
         # Créer le dictionnaire des modèles
         model_dict = create_model_dict()
 
@@ -628,11 +650,17 @@ def extract_pdf_text(pdf_path):
             if isinstance(model, torch.nn.Module):
                 model.to(device)
                 # Use half precision for MPS/CUDA
-                use_half_precision = os.getenv("USE_HALF_PRECISION", "true").lower() == "true"
-                if use_half_precision and (device.type == "mps" or device.type == "cuda"):
+                use_half_precision = (
+                    os.getenv("USE_HALF_PRECISION", "true").lower() == "true"
+                )
+                if use_half_precision and (
+                    device.type == "mps" or device.type == "cuda"
+                ):
                     model.half()
                     logger.info(f"Modèle {model_name} converti en FP16 pour {device}")
-                logger.info(f"✅ Modèle {model_name} chargé sur {device} avec dtype {model.dtype}")
+                logger.info(
+                    f"✅ Modèle {model_name} chargé sur {device} avec dtype {model.dtype}"
+                )
 
         config_parser = ConfigParser(config)
 
@@ -661,8 +689,43 @@ def extract_pdf_text(pdf_path):
             "✅ Traitement des en-têtes, pieds de page et références d'images terminé"
         )
 
-        # Utiliser le nom complet du fichier (avec extension) comme titre du document
-        document_title = os.path.basename(pdf_path)
+        # Extraire le nom complet du fichier (avec extension) comme titre du document
+        filename = os.path.basename(pdf_path)
+        logger.info(f"📄 Nom de fichier extrait comme titre de document: {filename}")
+
+        # Extraire un titre lisible à partir du contenu du PDF ou utiliser le nom de fichier
+        document_title = ""
+        try:
+            # Essayer d'extraire un titre des premières lignes du texte
+            lines = text.strip().split("\n")
+            for i in range(min(10, len(lines))):
+                if lines[i] and len(lines[i]) > 10 and lines[i].upper() == lines[i]:
+                    document_title = lines[i].strip()
+                    break
+
+            # Si aucun titre n'a été trouvé, chercher des lignes avec "contrat", "accord", etc.
+            if not document_title:
+                title_keywords = [
+                    "contrat",
+                    "accord",
+                    "convention",
+                    "attestation",
+                    "avenant",
+                ]
+                for i in range(min(20, len(lines))):
+                    if any(keyword in lines[i].lower() for keyword in title_keywords):
+                        document_title = lines[i].strip()
+                        break
+        except Exception as e:
+            logger.warning(f"⚠️ Erreur lors de l'extraction du titre: {str(e)}")
+
+        # Si aucun titre n'est extrait, utiliser le nom de fichier
+        if not document_title:
+            document_title = os.path.splitext(filename)[0]
+
+        # Ajouter toujours le nom de fichier au titre pour assurer la traçabilité
+        full_document_title = f"{document_title} ({filename})"
+        logger.info(f"📄 Titre final du document: {full_document_title}")
 
         # S'assurer que metadata est un dictionnaire
         if metadata is None:
@@ -670,10 +733,15 @@ def extract_pdf_text(pdf_path):
         elif not isinstance(metadata, dict):
             metadata = {"raw_metadata": str(metadata)}
 
+        # Ajouter le nom de fichier et le titre aux métadonnées
+        metadata["filename"] = filename
+        metadata["document_title"] = full_document_title
+
         # Add metadata to the text in a safe way
         text_with_metadata = f"""
 Document Metadata:
-- Title: {document_title}
+- Title: {full_document_title}
+- Filename: {filename}
 - Author: {metadata.get('author', 'Unknown')}
 - Pages: {metadata.get('pages', 'Unknown')}
 
@@ -685,12 +753,14 @@ Content:
         end_time = time.time()
         logger.info(f"✅ Extraction terminée en {end_time - start_time:.2f} secondes")
 
-        return text_with_metadata, document_title
+        return text_with_metadata, full_document_title
 
     except Exception as e:
         logger.error(f"Erreur lors de l'extraction du texte: {str(e)}")
         # Fallback to simpler extraction if marker fails
-        logger.warning("⚠️ Échec de l'extraction avancée, utilisation de la méthode simple...")
+        logger.warning(
+            "⚠️ Échec de l'extraction avancée, utilisation de la méthode simple..."
+        )
         return fallback_extract_text(pdf_path)
 
 
@@ -699,33 +769,39 @@ def patch_marker_extract_text():
     try:
         import marker
         from marker.extract_text import extract_text, load_and_extract_text
-        
+
         # Sauvegarder les fonctions originales
         original_extract_text = extract_text
         original_load_and_extract_text = load_and_extract_text
-        
+
         # Fonction modifiée extract_text
         def patched_extract_text(file_path, **kwargs):
-            logger.info("🔧 Utilisation de patched_extract_text pour charger les modèles locaux")
-            
+            logger.info(
+                "🔧 Utilisation de patched_extract_text pour charger les modèles locaux"
+            )
+
             # S'assurer que tous les modèles sont chargés localement
             kwargs["layout"] = kwargs.get("layout", True)
             kwargs["texify"] = kwargs.get("texify", True)
-            kwargs["use_tables"] = kwargs.get("use_tables", False)  # Désactiver tables par défaut
-            kwargs["use_ocr_error_corruptor"] = kwargs.get("use_ocr_error_corruptor", False)  # Désactiver OCR error par défaut
+            kwargs["use_tables"] = kwargs.get(
+                "use_tables", False
+            )  # Désactiver tables par défaut
+            kwargs["use_ocr_error_corruptor"] = kwargs.get(
+                "use_ocr_error_corruptor", False
+            )  # Désactiver OCR error par défaut
             kwargs["use_gpu"] = kwargs.get("use_gpu", torch.cuda.is_available())
             kwargs["use_mps"] = kwargs.get("use_mps", torch.backends.mps.is_available())
             kwargs["save_preprocessed"] = kwargs.get("save_preprocessed", False)
-            
+
             # Force le mode offline
             os.environ["HF_HUB_OFFLINE"] = "1"
             os.environ["TRANSFORMERS_OFFLINE"] = "1"
-            
+
             try:
                 return original_extract_text(file_path, **kwargs)
             except Exception as e:
                 logger.error(f"❌ Erreur lors de l'extraction avec Marker: {str(e)}")
-                
+
                 # Tentative de repli avec options simplifiées
                 logger.info("🔄 Tentative d'extraction avec options simplifiées")
                 try:
@@ -734,22 +810,28 @@ def patch_marker_extract_text():
                     kwargs["texify"] = False
                     return original_extract_text(file_path, **kwargs)
                 except Exception as e2:
-                    logger.error(f"❌ Deuxième erreur d'extraction avec Marker: {str(e2)}")
-                    raise ValueError(f"Échec de l'extraction Marker avec toutes les options: {str(e)}, puis: {str(e2)}")
-        
+                    logger.error(
+                        f"❌ Deuxième erreur d'extraction avec Marker: {str(e2)}"
+                    )
+                    raise ValueError(
+                        f"Échec de l'extraction Marker avec toutes les options: {str(e)}, puis: {str(e2)}"
+                    )
+
         # Fonction modifiée load_and_extract_text
         def patched_load_and_extract_text(file_path, **kwargs):
-            logger.info("🔧 Utilisation de patched_load_and_extract_text pour charger les modèles locaux")
-            
+            logger.info(
+                "🔧 Utilisation de patched_load_and_extract_text pour charger les modèles locaux"
+            )
+
             # Force le mode offline
             os.environ["HF_HUB_OFFLINE"] = "1"
             os.environ["TRANSFORMERS_OFFLINE"] = "1"
-            
+
             try:
                 return original_load_and_extract_text(file_path, **kwargs)
             except Exception as e:
                 logger.error(f"❌ Erreur lors de load_and_extract_text: {str(e)}")
-                
+
                 # Tentative de repli avec options simplifiées
                 logger.info("🔄 Tentative d'extraction simplifiée")
                 try:
@@ -759,9 +841,13 @@ def patch_marker_extract_text():
                     kwargs["use_tables"] = False
                     return original_load_and_extract_text(file_path, **kwargs)
                 except Exception as e2:
-                    logger.error(f"❌ Deuxième erreur avec load_and_extract_text: {str(e2)}")
-                    raise ValueError(f"Échec de load_and_extract_text avec toutes les options: {str(e)}, puis: {str(e2)}")
-                    
+                    logger.error(
+                        f"❌ Deuxième erreur avec load_and_extract_text: {str(e2)}"
+                    )
+                    raise ValueError(
+                        f"Échec de load_and_extract_text avec toutes les options: {str(e)}, puis: {str(e2)}"
+                    )
+
         # Remplacer les fonctions originales
         marker.extract_text.extract_text = patched_extract_text
         marker.extract_text.load_and_extract_text = patched_load_and_extract_text
@@ -776,10 +862,10 @@ def fallback_extract_text(pdf_path):
     """
     Méthode de secours pour extraire le texte d'un PDF en cas d'échec de Marker.
     Utilise PyMuPDF (fitz) directement.
-    
+
     Args:
         pdf_path: Chemin vers le fichier PDF
-        
+
     Returns:
         tuple: (texte extrait, titre du document)
     """
@@ -787,69 +873,119 @@ def fallback_extract_text(pdf_path):
     try:
         # Ouvrir le PDF avec PyMuPDF
         doc = fitz.open(pdf_path)
-        
+
         # Extraire le texte de chaque page
         text_content = []
         for page_num, page in enumerate(doc):
             logger.debug(f"Extraction du texte de la page {page_num+1}")
             text = page.get_text()
             text_content.append(text)
-        
+
         # Joindre le texte de toutes les pages
         full_text = "\n".join(text_content)
-        
+
         # Appliquer la suppression des en-têtes/pieds de page
         cleaned_text = remove_headers_footers_by_similarity(full_text)
-        
-        # Obtenir le titre du document
-        document_title = os.path.basename(pdf_path)
-        
-        logger.info(f"✅ Extraction de secours terminée: {len(cleaned_text.split())} mots extraits")
-        
+
+        # Obtenir le nom du fichier comme base du titre
+        filename = os.path.basename(pdf_path)
+        logger.info(f"📄 Nom de fichier extrait: {filename}")
+
+        # Essayer d'extraire un titre significatif des premières lignes du document
+        document_title = ""
+        try:
+            # Extraire un titre des premières lignes du texte
+            lines = cleaned_text.strip().split("\n")
+            for i in range(min(10, len(lines))):
+                if lines[i] and len(lines[i]) > 10 and lines[i].upper() == lines[i]:
+                    document_title = lines[i].strip()
+                    break
+
+            # Si aucun titre n'a été trouvé, chercher des lignes avec "contrat", "accord", etc.
+            if not document_title:
+                title_keywords = [
+                    "contrat",
+                    "accord",
+                    "convention",
+                    "attestation",
+                    "avenant",
+                ]
+                for i in range(min(20, len(lines))):
+                    if any(keyword in lines[i].lower() for keyword in title_keywords):
+                        document_title = lines[i].strip()
+                        break
+        except Exception as e:
+            logger.warning(f"⚠️ Erreur lors de l'extraction du titre: {str(e)}")
+
+        # Si aucun titre n'est extrait, utiliser le nom de fichier sans extension
+        if not document_title:
+            document_title = os.path.splitext(filename)[0]
+
+        # Ajouter le nom de fichier au titre pour la traçabilité
+        full_document_title = f"{document_title} ({filename})"
+        logger.info(f"📄 Titre final du document (fallback): {full_document_title}")
+
+        logger.info(
+            f"✅ Extraction de secours terminée: {len(cleaned_text.split())} mots extraits"
+        )
+
         # Créer un texte avec métadonnées
         text_with_metadata = f"""
 Document Metadata:
-- Title: {document_title}
+- Title: {full_document_title}
+- Filename: {filename}
 - Author: Unknown
 - Pages: {len(doc)}
 
 Content:
 {cleaned_text}
 """
-        
-        return text_with_metadata, document_title
-        
+
+        return text_with_metadata, full_document_title
+
     except Exception as e:
         logger.error(f"❌ Erreur lors de l'extraction de secours: {str(e)}")
-        # En cas d'échec complet, retourner un texte vide
-        return f"Échec de l'extraction du texte: {str(e)}", os.path.basename(pdf_path)
+        # En cas d'échec complet, retourner un texte vide avec le nom du fichier
+        filename = os.path.basename(pdf_path)
+        return f"Échec de l'extraction du texte: {str(e)}", filename
 
 
 def init():
     """Initialize the PDF extractor module. Must be called before using the module."""
     logger.info("🔄 Initializing PDF extractor module")
-    
+
     # Forcer les variables d'environnement de manière préventive
     os.environ["HF_HUB_OFFLINE"] = "1"
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
-    
+
     # Appliquer les patches pour utiliser les modèles en local
     patch_create_model_dict()
     patch_marker_extract_text()
-    
+
     # Log info about parameters
-    logger.info(f"📋 MARKER_DIR: {os.environ.get('MARKER_DIR', 'offline_models/marker')}")
+    logger.info(
+        f"📋 MARKER_DIR: {os.environ.get('MARKER_DIR', 'offline_models/marker')}"
+    )
     logger.info(f"📋 Using HF_HUB_OFFLINE: {os.environ.get('HF_HUB_OFFLINE')}")
-    logger.info(f"📋 Using TRANSFORMERS_OFFLINE: {os.environ.get('TRANSFORMERS_OFFLINE')}")
-    
+    logger.info(
+        f"📋 Using TRANSFORMERS_OFFLINE: {os.environ.get('TRANSFORMERS_OFFLINE')}"
+    )
+
     # Check if torch is available with CUDA or MPS
     if torch.cuda.is_available():
-        logger.info(f"🚀 Using CUDA for PDF extraction: {torch.cuda.get_device_name(0)}")
-    elif hasattr(torch, 'backends') and hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+        logger.info(
+            f"🚀 Using CUDA for PDF extraction: {torch.cuda.get_device_name(0)}"
+        )
+    elif (
+        hasattr(torch, "backends")
+        and hasattr(torch.backends, "mps")
+        and torch.backends.mps.is_available()
+    ):
         logger.info("🚀 Using MPS (Metal Performance Shaders) for PDF extraction")
     else:
         logger.info("⚠️ No GPU available, using CPU for PDF extraction")
-        
+
     logger.info("✅ PDF extractor module initialized successfully")
+
 
 # Ne pas initialiser à l'import - laisser l'application appeler init()

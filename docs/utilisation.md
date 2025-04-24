@@ -1,6 +1,115 @@
 # Guide d'utilisation
 
-Ce guide détaille les différentes façons d'utiliser le système Contract Management RAG pour traiter, rechercher et interagir avec vos contrats.
+Ce document détaille les différentes façons d'utiliser l'application Contract Management RAG.
+
+## Prérequis
+
+- Python 3.9+
+- Dépendances installées : `pip install -r requirements.txt`
+- Ollama installé et lancé (pour le mode chat)
+
+## Modes d'utilisation
+
+L'application offre plusieurs modes d'utilisation :
+
+1. **Traitement de documents** - Analyse et indexation des contrats
+2. **Chat interactif** - Dialogue en langage naturel avec les contrats
+3. **Recherche** - Recherche sémantique dans les contrats
+4. **Suppression** - Suppression de documents de la base de données
+
+## Ligne de commande
+
+### Syntaxe générale
+
+```bash
+python main.py <fichiers_contrats> [options]
+```
+
+### Options disponibles
+
+- `--chat` : Mode chat interactif
+- `--search <requête>` : Recherche dans les contrats
+- `--force` : Force le retraitement même si les documents existent déjà
+- `--delete` : Supprime les documents spécifiés
+- `--debug` : Active les logs détaillés
+
+### Exemples d'utilisation
+
+#### Traitement d'un contrat
+
+```bash
+python main.py data/contrat.pdf
+```
+
+#### Traitement de plusieurs contrats
+
+```bash
+python main.py data/contrat1.pdf data/contrat2.pdf
+```
+
+#### Forcer le retraitement
+
+```bash
+python main.py data/contrat.pdf --force
+```
+
+#### Mode chat avec des contrats spécifiques
+
+```bash
+python main.py data/contrat1.pdf data/contrat2.pdf --chat
+```
+
+#### Mode chat avec tous les contrats disponibles
+
+```bash
+python main.py --chat
+```
+
+#### Recherche dans les contrats
+
+```bash
+python main.py data/contrat.pdf --search "modalités de paiement"
+```
+
+#### Suppression de documents
+
+```bash
+python main.py data/contrat_obsolete.pdf --delete
+```
+
+## Flux de travail typique
+
+1. **Indexer des contrats** : Ajoutez des contrats à la base de données
+   ```bash
+   python main.py data/contrat1.pdf data/contrat2.pdf
+   ```
+
+2. **Interagir en mode chat** : Posez des questions sur les contrats indexés
+   ```bash
+   python main.py --chat
+   ```
+
+3. **Rechercher des informations** : Effectuez des recherches spécifiques
+   ```bash
+   python main.py --search "clause de confidentialité"
+   ```
+
+## Gestion des erreurs
+
+- Si un document existe déjà, utilisez `--force` pour le réindexer
+- Si vous rencontrez des problèmes, utilisez `--debug` pour des logs détaillés
+- Pour nettoyer la base de données, vous pouvez supprimer les documents avec `--delete`
+
+## Architecture interne
+
+L'application est organisée de manière modulaire :
+
+- `main.py` : Point d'entrée principal
+- `core/` : Modules principaux (traitement, interaction, gestion)
+- `document_processing/` : Traitement des documents (extraction, vectorisation)
+- `utils/` : Utilitaires (logging, etc.)
+
+Pour plus de détails sur l'architecture, consultez [architecture.md](architecture.md).
 
 ## Commandes principales
 
@@ -47,18 +156,55 @@ Document Metadata:
 📊 Taille moyenne des chunks: 285.1 tokens
 ```
 
-### 2. Recherche dans un contrat
+### 2. Traitement de plusieurs contrats
+
+Vous pouvez traiter plusieurs contrats en une seule commande :
+
+```bash
+python main.py contrat1.pdf contrat2.pdf contrat3.pdf
+```
+
+Le système traitera chaque contrat séquentiellement. Si un document existe déjà dans la base de données, le programme s'arrêtera avec un message d'erreur :
+
+```
+❌ ERREUR : Les documents suivants existent déjà dans la base de données :
+   - contrat1.pdf
+   - contrat2.pdf
+
+Pour forcer le retraitement, utilisez l'option --force
+Pour supprimer ces documents, utilisez l'option --delete
+```
+
+Pour forcer le retraitement de documents déjà existants, utilisez l'option `--force` :
+
+```bash
+python main.py contrat1.pdf contrat2.pdf --force
+```
+
+### 3. Suppression de documents
+
+Pour supprimer des documents de la base de données :
+
+```bash
+python main.py contrat1.pdf contrat2.pdf --delete
+```
+
+Cette commande supprimera tous les chunks associés aux documents spécifiés.
+
+### 4. Recherche dans les contrats
 
 Pour effectuer une recherche dans les contrats déjà traités :
 
 ```bash
-python main.py chemin/vers/votre/contrat.pdf "votre requête de recherche"
+python main.py contrat1.pdf contrat2.pdf --search "votre requête de recherche"
 ```
 
 Exemple :
 ```bash
-python main.py data/contrat_prestation.pdf "quelles sont les modalités de résiliation?"
+python main.py data/contrat_prestation.pdf --search "quelles sont les modalités de résiliation?"
 ```
+
+Cette commande traitera d'abord les documents spécifiés s'ils ne sont pas déjà dans la base de données, puis effectuera la recherche. Si des documents existent déjà, le programme s'arrêtera avec un message d'erreur, sauf si l'option `--force` est utilisée.
 
 Sortie attendue :
 ```
@@ -88,20 +234,20 @@ Contenu: En cas de résiliation anticipée, le Client s'engage à régler les pr
 Distance: 0.1894
 ```
 
-### 3. Mode chat avec un contrat
+### 5. Mode chat avec les contrats
 
-Pour interagir en mode conversation avec un contrat :
+Pour interagir en mode conversation avec des contrats :
 
 ```bash
-python main.py chemin/vers/votre/contrat.pdf --chat
+python main.py contrat1.pdf contrat2.pdf --chat
 ```
 
 Exemple :
 ```bash
-python main.py data/contrat_prestation.pdf --chat
+python main.py data/contrat_prestation.pdf data/contrat_confidentialité.pdf --chat
 ```
 
-Cette commande entre dans un mode interactif où vous pouvez poser des questions en langage naturel :
+Cette commande traite d'abord les documents spécifiés s'ils ne sont pas déjà dans la base de données, puis entre dans un mode interactif où vous pouvez poser des questions en langage naturel pour interroger plusieurs contrats simultanément. Si des documents existent déjà, le programme s'arrêtera avec un message d'erreur, sauf si l'option `--force` est utilisée.
 
 ```
 💬 Mode chat activé. Tapez 'exit' pour quitter.
@@ -120,40 +266,27 @@ Votre question : Quels sont les délais de paiement prévus?
 
 Pour quitter le mode chat, tapez simplement `exit`.
 
-## Exemples d'utilisation avancée
+## Récapitulatif des options de ligne de commande
 
-### Traitement de plusieurs contrats
+```
+Usage: python main.py <contract_file1> [contract_file2 ...] [--chat|--search <search_query>] [--force] [--delete]
 
-Vous pouvez traiter plusieurs contrats en séquence :
-
-```bash
-for fichier in data/*.pdf; do
-    python main.py "$fichier"
-done
+Options:
+  --chat                 Mode chat interactif avec les contrats
+  --search <query>       Recherche dans les contrats
+  --force                Force le retraitement des documents même s'ils existent déjà
+  --delete               Supprime les documents spécifiés de la base de données
 ```
 
-### Extraction et recherche dans un workflow
+## Persistance des données
 
-Exemple de workflow complet :
+Le système utilise ChromaDB comme base de données vectorielle persistante. Cela signifie que :
 
-```bash
-# Traiter un nouveau contrat
-python main.py data/nouveau_contrat.pdf
+1. Les documents traités sont conservés entre les sessions
+2. Vous n'avez pas besoin de retraiter les mêmes documents à chaque utilisation
+3. Les modifications (ajouts/suppressions) sont permanentes et stockées sur disque
 
-# Rechercher des informations spécifiques
-python main.py data/nouveau_contrat.pdf "obligations du prestataire"
-
-# Entrer en mode chat pour des questions plus complexes
-python main.py data/nouveau_contrat.pdf --chat
-```
-
-### Optimisation du traitement des PDF numérisés
-
-Pour les PDF numérisés de mauvaise qualité, utilisez l'option d'optimisation OCR :
-
-```bash
-python main.py data/contrat_scanne.pdf --ocr-optimize
-```
+La base de données est stockée par défaut dans le dossier `chroma_db` à la racine du projet.
 
 ## Astuces et bonnes pratiques
 
@@ -181,6 +314,15 @@ Pour tirer le meilleur parti du mode chat :
 - Précisez progressivement vos questions en fonction des réponses reçues
 - Utilisez les numéros d'articles/sections mentionnés dans les réponses pour cibler vos questions
 - Si une réponse semble incomplète, reformulez votre question
+
+### 4. Gestion de la base de données
+
+Pour maintenir une base de données optimale :
+
+- Supprimez les documents obsolètes avec l'option `--delete` avant d'ajouter une version mise à jour
+- Utilisez l'option `--force` pour remplacer un document qui a été modifié
+- Évitez d'ajouter des documents avec des noms identiques pour prévenir les erreurs
+- Pour une réinitialisation complète, supprimez manuellement le dossier `chroma_db`
 
 ## Interprétation des résultats
 

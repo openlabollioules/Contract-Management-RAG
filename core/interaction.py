@@ -1,6 +1,6 @@
-from document_processing.vectordb_interface import VectorDBInterface
-from document_processing.text_vectorizer import TextVectorizer
 from document_processing.llm_chat import ask_ollama
+from document_processing.text_vectorizer import TextVectorizer
+from document_processing.vectordb_interface import VectorDBInterface
 from utils.logger import setup_logger
 
 # Configurer le logger pour ce module
@@ -28,9 +28,15 @@ def search_contracts(query: str, n_results: int = 5) -> None:
     logger.info(f"\n📊 Résultats ({len(results)} trouvés):")
     for i, result in enumerate(results, 1):
         logger.info(f"\n--- Résultat {i} ---")
-        logger.info(f"Section: {result['metadata']['section']}")
-        logger.info(f"Hiérarchie: {result['metadata']['hierarchy']}")
-        logger.info(f"Document: {result['metadata']['document_title']}")
+        logger.info(
+            f"Section: {result['metadata'].get('section_number', 'Non spécifié')}"
+        )
+        logger.info(
+            f"Hiérarchie: {result['metadata'].get('hierarchy', 'Non spécifié')}"
+        )
+        logger.info(
+            f"Document: {result['metadata'].get('document_title', 'Non spécifié')}"
+        )
         logger.info(f"Contenu: {result['document'][:200]}...")
         logger.info(f"Distance: {result['distance']:.4f}")
 

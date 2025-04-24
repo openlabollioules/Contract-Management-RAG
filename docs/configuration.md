@@ -94,6 +94,76 @@ LOG_TO_CONSOLE=true
 LOG_COLOR=true
 ```
 
+## Options de ligne de commande
+
+Le système propose plusieurs options de ligne de commande pour contrôler son comportement :
+
+```
+Usage: python main.py <contract_file1> [contract_file2 ...] [--chat|--search <search_query>] [--force] [--delete]
+
+Options:
+  --chat                 Mode chat interactif avec les contrats
+  --search <query>       Recherche dans les contrats
+  --force                Force le retraitement des documents même s'ils existent déjà
+  --delete               Supprime les documents spécifiés de la base de données
+```
+
+### Détails des options
+
+| Option | Description | Exemple d'utilisation |
+|--------|-------------|----------------------|
+| `--chat` | Active le mode chat interactif | `python main.py contrat.pdf --chat` |
+| `--search <query>` | Effectue une recherche avec la requête spécifiée | `python main.py contrat.pdf --search "pénalités de retard"` |
+| `--force` | Force le retraitement des documents déjà existants | `python main.py contrat.pdf --force` |
+| `--delete` | Supprime les documents spécifiés de la base de données | `python main.py contrat.pdf --delete` |
+
+### Comportement par défaut
+
+Par défaut, le système refuse de traiter un document qui existe déjà dans la base de données. Si un document existe déjà, le programme affichera un message d'erreur et s'arrêtera :
+
+```
+❌ ERREUR : Les documents suivants existent déjà dans la base de données :
+   - contrat1.pdf
+   - contrat2.pdf
+
+Pour forcer le retraitement, utilisez l'option --force
+Pour supprimer ces documents, utilisez l'option --delete
+```
+
+Ce comportement est conçu pour éviter le retraitement accidentel de documents et prévenir les doublons dans la base de données.
+
+## Gestion de la persistance
+
+### Base de données ChromaDB
+
+Le système utilise ChromaDB comme base de données vectorielle persistante pour stocker les embeddings et les métadonnées des documents traités. La configuration de cette persistance est contrôlée par les paramètres suivants :
+
+1. `CHROMA_DB_DIR` : Le répertoire où sont stockées les données de ChromaDB
+2. `CHROMA_COLLECTION_NAME` : Le nom de la collection dans laquelle sont stockés les documents
+
+Par défaut, les données sont stockées dans le dossier `./chroma_db` à la racine du projet.
+
+### Fonctionnement de la persistance
+
+- Tous les documents traités sont automatiquement stockés dans ChromaDB
+- Le système détecte les documents déjà traités et évite de les retraiter (sauf avec `--force`)
+- Les modifications de la base de données (ajouts, suppressions) sont permanentes
+- La base de données est préservée entre les redémarrages du programme
+
+### Sauvegarde et migration
+
+Pour sauvegarder votre base de données ChromaDB :
+
+```bash
+# Sauvegarde du dossier ChromaDB
+cp -r ./chroma_db ./chroma_db_backup_$(date +%Y%m%d)
+```
+
+Pour migrer la base de données vers un autre système :
+
+1. Copiez le dossier `chroma_db` vers le nouveau système
+2. Assurez-vous que les chemins configurés dans `config.env` correspondent à l'emplacement sur le nouveau système
+
 ## Personnalisation du comportement
 
 ### Paramètres clés et leur impact

@@ -1,8 +1,86 @@
-# Architecture du système
+# Architecture du projet
+
+Ce document décrit l'architecture générale du projet Contract Management RAG et la façon dont les différents modules interagissent.
 
 ## Vue d'ensemble
 
-Le système Contract Management RAG est conçu selon une architecture modulaire qui permet un traitement efficace des documents contractuels, depuis l'extraction du texte jusqu'à l'interaction via des requêtes en langage naturel. L'architecture est organisée autour de plusieurs composants clés qui travaillent ensemble pour offrir une expérience complète.
+Le projet est organisé en modules, chacun ayant une responsabilité spécifique :
+
+- `main.py` : Point d'entrée de l'application qui analyse les arguments de ligne de commande
+- `core/` : Contient les modules principaux de l'application
+- `document_processing/` : Contient les modules de traitement des documents
+- `utils/` : Contient des utilitaires partagés
+
+## Structure des modules
+
+### Core
+
+Le répertoire `core/` contient les modules principaux :
+
+- `contract_processor.py` : Traitement des contrats (extraction, découpage, etc.)
+- `interaction.py` : Fonctionnalités d'interaction (chat, recherche)
+- `document_manager.py` : Gestion des documents (vérification d'existence, suppression)
+- `cli_handler.py` : Gestion des arguments de ligne de commande
+
+### Document Processing
+
+Le répertoire `document_processing/` contient :
+
+- `vectordb_interface.py` : Interface avec ChromaDB
+- `text_vectorizer.py` : Gestion des embeddings
+- `pdf_extractor.py` : Extraction de texte à partir de PDF
+- `llm_chat.py` : Interface avec les modèles de langage
+
+### Utils
+
+Le répertoire `utils/` contient :
+
+- `logger.py` : Configuration du système de journalisation
+
+## Flux de données
+
+1. L'utilisateur exécute `main.py` avec des arguments
+2. `cli_handler.py` analyse les arguments et détermine le mode d'opération
+3. Selon le mode, les différentes fonctions sont appelées:
+   - Mode traitement: `process_contract()` dans `contract_processor.py`
+   - Mode chat: `chat_with_contract()` dans `interaction.py`
+   - Mode recherche: `search_contracts()` dans `interaction.py`
+   - Mode suppression: `delete_document()` dans `document_manager.py`
+
+## Architecture de la base de données
+
+- Nous utilisons ChromaDB comme base de données vectorielle
+- Les documents sont stockés sous forme de chunks avec leurs métadonnées
+- Chaque chunk est associé à un embedding vectoriel
+
+## Modularité et extensibilité
+
+L'architecture est conçue pour être modulaire et extensible :
+
+- Séparation claire des responsabilités
+- Interfaces bien définies entre les modules
+- Facile d'ajouter de nouvelles fonctionnalités sans modifier le code existant
+
+## Diagramme d'architecture
+
+```
+main.py
+  │
+  ├── core/
+  │    ├── cli_handler.py (Gestion des arguments CLI)
+  │    ├── document_manager.py (Gestion des documents)
+  │    ├── contract_processor.py (Traitement des contrats)
+  │    └── interaction.py (Chat et recherche)
+  │
+  ├── document_processing/
+  │    ├── vectordb_interface.py (Interface avec ChromaDB)
+  │    ├── text_vectorizer.py (Gestion des embeddings)
+  │    ├── pdf_extractor.py (Extraction de texte)
+  │    └── llm_chat.py (Interface avec LLMs)
+  │
+  └── utils/
+       └── logger.py (Configuration de logging)
+```
 
 ## Schéma général
 
@@ -82,16 +160,6 @@ Le point d'entrée du système qui coordonne l'ensemble des opérations et gère
 - Configuration centralisée de la journalisation
 - Formatage des messages pour une meilleure lisibilité
 - Support des différents niveaux de verbosité
-
-## Flux de données
-
-1. **Entrée** : Un document PDF est fourni au système via `main.py`
-2. **Extraction** : Le texte est extrait avec `pdf_extractor.py`
-3. **Découpage** : Le texte est analysé et découpé par `contract_splitter.py` et `text_chunker.py`
-4. **Vectorisation** : Chaque chunk est transformé en vecteur par `text_vectorizer.py`
-5. **Stockage** : Les vecteurs et métadonnées sont stockés dans ChromaDB via `vectordb_interface.py`
-6. **Recherche/Chat** : L'utilisateur interagit avec le système via `main.py` et `interaction.py`
-7. **Génération** : Les réponses sont générées grâce à `llm_chat.py` en utilisant le contexte pertinent
 
 ## Interactions entre composants
 

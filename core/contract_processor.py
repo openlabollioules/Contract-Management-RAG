@@ -5,11 +5,11 @@ from core.content_restoration import restore_important_content
 from core.display_utilities import (display_chunks_details,
                                     display_removed_content,
                                     display_semantic_split_chunks)
-from document_processing.vectordb_interface import VectorDBInterface
-from document_processing.text_vectorizer import TextVectorizer
 from document_processing.contract_splitter import Chunk, ContractSplitter
 from document_processing.pdf_extractor import extract_pdf_text
 from document_processing.text_chunker import TextChunker
+from document_processing.text_vectorizer import TextVectorizer
+from document_processing.vectordb_interface import VectorDBInterface
 from utils.logger import setup_logger
 
 # Configurer le logger pour ce module
@@ -91,28 +91,29 @@ def process_contract(filepath: str) -> List[Chunk]:
     logger.info("\n📦 Préparation des chunks pour ChromaDB...")
     chroma_chunks = []
     for chunk in chunks:
-        # Enhanced metadata structure
+        # Enhanced metadata structure with proper type conversion for ChromaDB
+        # Convert any list to string, as ChromaDB doesn't support lists
+        hierarchy_str = " -> ".join(chunk.hierarchy) if chunk.hierarchy else "unknown"
+
         metadata = {
-            "section_number": chunk.section_number or "unknown",
-            "hierarchy": chunk.hierarchy or ["unknown"],
-            "document_title": chunk.document_title or "unknown",
-            "parent_section": chunk.parent_section or "unknown",
-            "chapter_title": chunk.chapter_title or "unknown",
-            "title": document_title,
-            "content": chunk.content,
-            "chunk_type": (
-                str(chunk.chunk_type) if hasattr(chunk, "chunk_type") else "unknown"
-            ),
-            "position": getattr(chunk, "position", None),
-            "total_chunks": getattr(chunk, "total_chunks", None),
-            "chunk_size": len(chunk.content.split()),  # Approximate token count
-            "timestamp": time.time(),
+            "section_number": str(chunk.section_number or "unknown"),
+            "hierarchy": hierarchy_str,
+            "document_title": str(chunk.document_title or "unknown"),
+            "parent_section": str(chunk.parent_section or "unknown"),
+            "chapter_title": str(chunk.chapter_title or "unknown"),
+            "title": str(document_title),
+            "content": str(chunk.content),
+            "chunk_type": str(getattr(chunk, "chunk_type", "unknown")),
+            "position": str(getattr(chunk, "position", "0")),
+            "total_chunks": str(getattr(chunk, "total_chunks", "0")),
+            "chunk_size": str(len(chunk.content.split())),  # Approximate token count
+            "timestamp": str(time.time()),
         }
 
         # Enhanced content with metadata
         content = f"""
 Section: {metadata['section_number']}
-Hiérarchie complète: {' -> '.join(metadata['hierarchy'])}
+Hiérarchie complète: {hierarchy_str}
 Document: {metadata['document_title']}
 Position: {metadata['position']}/{metadata['total_chunks']}
 
