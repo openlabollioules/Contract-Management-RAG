@@ -52,7 +52,6 @@ data/
 Benchmark_LLM_Marker/
 Benchmark_OCR_LLM/
 Test_evolution/
-scripts/
 
 # Logs
 *.log
