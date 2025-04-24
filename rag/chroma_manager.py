@@ -118,3 +118,26 @@ class ChromaDBManager:
     def reset(self) -> None:
         """Reset the database"""
         self.client.reset()
+
+    def get_all_documents(self):
+        """
+        Get all documents from the ChromaDB collection
+        
+        Returns:
+            List of documents with their metadata
+        """
+        try:
+            results = self.collection.get()
+            documents = []
+            
+            for i, (doc, metadata) in enumerate(zip(results['documents'], results['metadatas'])):
+                documents.append({
+                    'content': doc,
+                    'metadata': metadata,
+                    'id': results['ids'][i] if 'ids' in results else f"doc_{i}"
+                })
+                
+            return documents
+        except Exception as e:
+            print(f"Error retrieving all documents: {str(e)}")
+            return []
