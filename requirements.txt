@@ -1,10 +1,11 @@
 # Base RAG
 chromadb==0.6.3
 faiss-cpu==1.10.0
-langchain==0.1.16
-langchain-community==0.0.38
-langchain-core==0.1.53
-langchain-ollama==0.3.0
+langchain>=0.1.28
+langchain-community>=0.0.44
+langchain-core>=0.3.47
+langchain-ollama>=0.3.0
+langchain-experimental
 ollama==0.4.7
 
 # Traitement de PDF
@@ -18,6 +19,7 @@ PyMuPDF==1.25.5  # fitz
 PyPDF2==3.0.1
 pytesseract==0.3.13
 reportlab==4.3.1
+
 
 # Embeddings et modèles
 onnxruntime==1.21.0

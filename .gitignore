@@ -69,3 +69,6 @@ py312_env/
 new/
 environment/
 \#
+
+graph_*
+*.png
