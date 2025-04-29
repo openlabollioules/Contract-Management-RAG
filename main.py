@@ -3,6 +3,7 @@ import sys
 import time
 from typing import List
 from pathlib import Path
+import datetime
 
 from rag.chroma_manager import ChromaDBManager
 from rag.embeddings_manager import EmbeddingsManager
@@ -238,83 +239,68 @@ def display_semantic_split_chunks(
         print("=" * 40)
 
 
+def log_step(step_name, start_time, last_time):
+    now = time.time()
+    print(f"[{datetime.datetime.now().strftime('%H:%M:%S')}] {step_name} took {now - last_time:.2f}s (total: {now - start_time:.2f}s)")
+    return now
+
 def process_contract(filepath: str) -> List[Chunk]:
-    """
-    Process a contract file and return intelligent chunks using a hybrid approach:
-    1. First split by legal structure (articles, sections, subsections)
-    2. Then apply semantic chunking for sections exceeding 800 tokens
-    3. Preserve hierarchical metadata for traceability
-    4. Apply post-processing to restore important legal content that might have been lost
-
-    Args:
-        filepath: Path to the contract file
-
-    Returns:
-        List of Chunk objects with preserved legal structure and metadata
-    """
-    print("\n🔄 Début du traitement du document...")
+    print("\n🔄 Starting document processing...")
     start_time = time.time()
+    last_time = start_time
 
     # 1. Load and extract text from PDF
-    print(
-        "📄 Extraction du texte du PDF (avec détection des en-têtes/pieds de page et suppression des références d'images)..."
-    )
+    print("📄 Extracting text from PDF...")
     text, document_title = extract_text_contract(filepath)
-    print(f"✅ Texte extrait ({len(text.split())} mots)")
+    last_time = log_step("Text extraction", start_time, last_time)
 
-    print("\n🔄 Découpage du texte avec approche hybride (structure + sémantique)...")
-    # First split by legal structure
+    # 2. Hybrid chunking (structure + semantic)
+    print("🔄 Splitting text (hybrid: structure + semantic)...")
     splitter = IntelligentSplitter(document_title=document_title)
     structure_chunks = splitter.split(text)
-    
-    # Then apply semantic chunking for large sections
+    last_time = log_step("Structure chunking", start_time, last_time)
+
     semantic_manager = SemanticChunkManager(
         breakpoint_threshold_type="percentile",
         breakpoint_threshold_amount=0.6,
         buffer_size=3,
-        chunk_size=800,  # Limite de ~800 tokens
-        chunk_overlap=100,  # Chevauchement de 100 tokens
+        chunk_size=800,
+        chunk_overlap=100,
     )
-    
     chunks = []
     for chunk in structure_chunks:
-        # If section is small enough, keep it as is
-        if len(chunk.content.split()) < 800:  # Approximate token count
+        if len(chunk.content.split()) < 800:
             chunks.append(chunk)
         else:
-            # For large sections, apply semantic chunking
             sub_chunks = semantic_manager.chunk_text(chunk.content)
-            # Preserve metadata in sub-chunks
             for sub_chunk in sub_chunks:
                 sub_chunk.section_number = chunk.section_number
                 sub_chunk.hierarchy = chunk.hierarchy
                 sub_chunk.document_title = chunk.document_title
                 sub_chunk.parent_section = chunk.parent_section
                 sub_chunk.chapter_title = chunk.chapter_title
-                # Add position metadata
                 sub_chunk.position = len(chunks)
                 sub_chunk.total_chunks = len(sub_chunks)
             chunks.extend(sub_chunks)
+    last_time = log_step("Semantic chunking", start_time, last_time)
 
-    # 2.5 Post-traitement: restaurer le contenu juridique important qui aurait pu être perdu
-    print("\n🔄 Application du post-traitement pour restaurer le contenu juridique important...")
+    print("🔄 Post-processing to restore important legal content...")
     chunks = restore_important_content(text, chunks)
+    last_time = log_step("Post-processing", start_time, last_time)
 
-    # 3. Group chunks hierarchically
-    print("\n🔍 Regroupement hiérarchique des chunks...")
+    print("🔍 Hierarchical grouping of chunks...")
     grouper = HierarchicalGrouper()
     hierarchical_groups = grouper.group_chunks(chunks)
+    last_time = log_step("Hierarchical grouping", start_time, last_time)
 
-    # 4. Initialize embeddings and ChromaDB
-    print("\n🔍 Initialisation des embeddings et de ChromaDB...")
+    print("🔍 Initializing embeddings and ChromaDB...")
     embeddings_manager = EmbeddingsManager()
     chroma_manager = ChromaDBManager(embeddings_manager)
+    last_time = log_step("Embeddings/ChromaDB init", start_time, last_time)
 
-    # 5. Prepare chunks for ChromaDB with enhanced metadata
-    print("\n📦 Préparation des chunks pour ChromaDB...")
+    print("📦 Preparing chunks for ChromaDB...")
     chroma_chunks = []
     for chunk in chunks:
-        # Enhanced metadata structure
         metadata = {
             "section_number": chunk.section_number or "unknown",
             "hierarchy": chunk.hierarchy or ["unknown"],
@@ -328,11 +314,9 @@ def process_contract(filepath: str) -> List[Chunk]:
             ),
             "position": getattr(chunk, "position", None),
             "total_chunks": getattr(chunk, "total_chunks", None),
-            "chunk_size": len(chunk.content.split()),  # Approximate token count
+            "chunk_size": len(chunk.content.split()),
             "timestamp": time.time(),
         }
-
-        # Enhanced content with metadata
         content = f"""
 Section: {metadata['section_number']}
 Hiérarchie complète: {' -> '.join(metadata['hierarchy'])}
@@ -343,48 +327,41 @@ Contenu:
 {chunk.content}
 """
         chroma_chunks.append({"content": content, "metadata": metadata})
+    last_time = log_step("Chunk preparation", start_time, last_time)
 
-    # 6. Add chunks to ChromaDB
-    print("\n💾 Ajout des chunks à ChromaDB...")
+    print("💾 Adding chunks to ChromaDB...")
     chroma_manager.add_documents(chroma_chunks)
-    print("✅ Chunks ajoutés à ChromaDB")
-    
-    # 7. Build knowledge graph from chunks
-    print("\n🔄 Construction du graphe de connaissances...")
+    last_time = log_step("ChromaDB add_documents", start_time, last_time)
+
+    print("🔄 Building knowledge graph...")
     graph_manager = GraphManager(chroma_manager, embeddings_manager)
     graph = graph_manager.build_graph(chroma_chunks)
-    print(f"✅ Graphe de connaissances créé avec {len(graph.nodes)} nœuds et {len(graph.edges)} relations")
-    
-    # Generate and save graph visualization
-    print("\n🎨 Génération de la visualisation du graphe...")
+    last_time = log_step("Graph build", start_time, last_time)
+
+    print("🎨 Generating graph visualization...")
     graph_output_path = f"graph_{Path(filepath).stem}.png"
     graph_manager.visualize_graph(graph, output_path=graph_output_path)
-    
-    # Export detailed graph information to text file
-    print("\n📝 Export des détails du graphe de connaissances...")
+    last_time = log_step("Graph visualization", start_time, last_time)
+
+    print("📝 Exporting graph details...")
     details_output_path = f"graph_details_{Path(filepath).stem}.txt"
     graph_manager.export_graph_details(graph, output_path=details_output_path)
+    last_time = log_step("Graph export", start_time, last_time)
 
-    # Print document metadata
     print("\nDocument Metadata:")
     print(f"- Title: {document_title}")
     print(f"- Author: Unknown")
     print(f"- Pages: Unknown")
-    
-    # Print processing time and statistics
-    processing_time = time.time() - start_time
-    print(f"\n⏱️ Temps total de traitement: {processing_time:.2f} secondes")
 
-    print(f"📊 Nombre de chunks créés: {len(chunks)}")
+    processing_time = time.time() - start_time
+    print(f"\n⏱️ Total processing time: {processing_time:.2f} seconds")
+    print(f"📊 Number of chunks created: {len(chunks)}")
     print(
-        f"📊 Taille moyenne des chunks: {sum(len(c.content.split()) for c in chunks) / len(chunks):.1f} tokens"
+        f"📊 Average chunk size: {sum(len(c.content.split()) for c in chunks) / len(chunks):.1f} tokens"
     )
 
-    # Display chunks details and removed content
     display_chunks_details(chunks)
     display_removed_content(text, chunks)
-    
-    # Display semantic split chunks if in hybrid mode
     if structure_chunks:
         display_semantic_split_chunks(structure_chunks, chunks)
 
@@ -465,6 +442,8 @@ def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = True) -
         ]
     )
 
+    print(f"Context: {context}")
+
     # Create the prompt with context
     prompt = f"""Tu es un assistant spécialisé dans l'analyse de contrats. 
 Voici le contexte pertinent extrait des documents :
@@ -473,7 +452,7 @@ Voici le contexte pertinent extrait des documents :
 
 Question de l'utilisateur : {query}
 
-Réponds de manière précise en te basant uniquement sur le contexte fourni. 
+Réponds de manière précise en anglais et en te basant uniquement sur le contexte fourni. 
 Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
 
     # Get response from Ollama

@@ -72,3 +72,9 @@ environment/
 
 graph_*
 *.png
+
+CUAD_V1/
+CUAD_V1.zip
+Stanford/
+
+*.pkl

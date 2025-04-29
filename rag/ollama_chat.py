@@ -1,4 +1,6 @@
 from typing import Optional
+import time
+import datetime
 
 import ollama
 
@@ -37,8 +39,11 @@ class OllamaChat:
         # Add user message to history
         self.messages.append({"role": "user", "content": prompt})
 
-        # Generate response
+        start_time = time.time()
+        print(f"\n[OllamaChat.chat] [{datetime.datetime.now().strftime('%H:%M:%S')}] Calling model '{self.model}' with prompt length {len(prompt)}")
         response = ollama.chat(model=self.model, messages=self.messages, stream=stream)
+        elapsed = time.time() - start_time
+        print(f"[OllamaChat.chat] [{datetime.datetime.now().strftime('%H:%M:%S')}] Model '{self.model}' responded in {elapsed:.2f}s.")
 
         # Add assistant response to history
         self.messages.append(
@@ -59,9 +64,13 @@ class OllamaChat:
         Returns:
             The generated response
         """
+        start_time = time.time()
+        print(f"\n[OllamaChat.generate] [{datetime.datetime.now().strftime('%H:%M:%S')}] Calling model '{self.model}' with prompt length {len(prompt)}")
         response = ollama.generate(
             model=self.model, prompt=prompt, stream=stream, **kwargs
         )
+        elapsed = time.time() - start_time
+        print(f"[OllamaChat.generate] [{datetime.datetime.now().strftime('%H:%M:%S')}] Model '{self.model}' responded in {elapsed:.2f}s.")
         return response["response"]
 
     def reset(self) -> None:

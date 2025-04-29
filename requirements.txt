@@ -39,3 +39,9 @@ watchdog==4.0.0
 
 # Détection d'objets
 ultralytics==8.3.109
+
+# Add these lines to requirements.txt
+python-igraph==0.10.8
+leidenalg==0.10.1
+spacy==3.7.2
+# Also download a language model with: python -m spacy download en_core_web_sm

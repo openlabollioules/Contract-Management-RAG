@@ -1,8 +1,16 @@
 import networkx as nx
+import numpy as np
 from typing import Dict, List, Optional, Tuple, Set
 from rag.ollama_chat import OllamaChat
 from rag.chroma_manager import ChromaDBManager
 from rag.embeddings_manager import EmbeddingsManager
+try:
+    import igraph as ig
+    import leidenalg as la
+    LEIDEN_AVAILABLE = True
+except ImportError:
+    LEIDEN_AVAILABLE = False
+    print("Warning: leidenalg or igraph not installed. Community detection will be limited.")
 
 
 class GraphNode:
@@ -10,6 +18,7 @@ class GraphNode:
         self.id = id
         self.content = content
         self.metadata = metadata
+        self.community = None  # Will store community ID when detected
         
     def __repr__(self):
         return f"Node({self.id})"
@@ -31,6 +40,8 @@ class KnowledgeGraph:
         self.graph = nx.DiGraph()
         self.nodes: Dict[str, GraphNode] = {}
         self.edges: List[GraphEdge] = []
+        self.communities: Dict[int, List[str]] = {}  # community_id -> list of node_ids
+        self.community_summaries: Dict[int, str] = {}  # community_id -> summary text
         
     def add_node(self, node: GraphNode) -> None:
         self.nodes[node.id] = node
@@ -38,7 +49,12 @@ class KnowledgeGraph:
         node_metadata = node.metadata.copy()
         if 'content' in node_metadata:
             del node_metadata['content']
-        self.graph.add_node(node.id, content=node.content, **node_metadata)
+        
+        # Add community info if available
+        if hasattr(node, 'community') and node.community is not None:
+            self.graph.add_node(node.id, content=node.content, community=node.community, **node_metadata)
+        else:
+            self.graph.add_node(node.id, content=node.content, **node_metadata)
         
     def add_edge(self, edge: GraphEdge) -> None:
         if edge.source in self.nodes and edge.target in self.nodes:
@@ -63,6 +79,25 @@ class KnowledgeGraph:
                 
         return related_nodes
     
+    def set_node_community(self, node_id: str, community_id: int) -> None:
+        """Set community for a node and update communities dict"""
+        if node_id in self.nodes:
+            self.nodes[node_id].community = community_id
+            
+            # Update graph node attribute
+            self.graph.nodes[node_id]['community'] = community_id
+            
+            # Update communities collection
+            if community_id not in self.communities:
+                self.communities[community_id] = []
+            
+            if node_id not in self.communities[community_id]:
+                self.communities[community_id].append(node_id)
+    
+    def set_community_summary(self, community_id: int, summary: str) -> None:
+        """Store summary for a community"""
+        self.community_summaries[community_id] = summary
+    
     @property
     def node_count(self) -> int:
         return len(self.nodes)
@@ -86,10 +121,40 @@ class GraphManager:
         self.similarity_threshold = similarity_threshold
         
     def build_graph(self, chunks: List[Dict]) -> KnowledgeGraph:
-        """Build a knowledge graph from the given chunks"""
+        """Build a knowledge graph from the given chunks with community detection"""
+        print("\nBuilding enhanced knowledge graph with community detection...")
+        
         graph = KnowledgeGraph()
         
         # 1. Add nodes for each chunk
+        print("1/6: Adding document chunks to graph...")
+        self._add_chunk_nodes(graph, chunks)
+        
+        # 2. Find semantic similarity edges between nodes
+        print("2/6: Identifying semantic similarities between chunks...")
+        self._add_similarity_edges(graph)
+        
+        # 3. Generate relationship edges using LLM
+        print("3/6: Generating semantic relationships between chunks...")
+        self._add_llm_relationship_edges(graph)
+        
+        # 4. Add hierarchical structure edges from metadata
+        print("4/6: Adding structural relationships from document hierarchy...")
+        self._add_hierarchical_edges(graph)
+        
+        # 5. Perform community detection using Leiden algorithm
+        print("5/6: Performing community detection with Leiden algorithm...")
+        self._detect_communities(graph)
+        
+        # 6. Generate summaries for each community
+        print("6/6: Generating summaries for each community...")
+        self._generate_community_summaries(graph)
+        
+        print(f"✅ Enhanced graph created with {graph.node_count} nodes, {graph.edge_count} edges, and {len(graph.communities)} communities")
+        return graph
+    
+    def _add_chunk_nodes(self, graph: KnowledgeGraph, chunks: List[Dict]) -> None:
+        """Add nodes for each chunk"""
         for i, chunk in enumerate(chunks):
             node_id = f"node_{i}"
             node = GraphNode(
@@ -98,17 +163,6 @@ class GraphManager:
                 metadata=chunk["metadata"]
             )
             graph.add_node(node)
-        
-        # 2. Find semantic similarity edges between nodes
-        self._add_similarity_edges(graph)
-        
-        # 3. Generate relationship edges using LLM
-        self._add_llm_relationship_edges(graph)
-        
-        # 4. Add hierarchical structure edges from metadata
-        self._add_hierarchical_edges(graph)
-        
-        return graph
     
     def _add_similarity_edges(self, graph: KnowledgeGraph) -> None:
         """Add edges based on embedding similarity between nodes with filtering"""
@@ -241,6 +295,95 @@ Relationship (single word or short phrase only):"""
                         )
                         graph.add_edge(edge)
 
+    def _detect_communities(self, graph: KnowledgeGraph) -> None:
+        """
+        Detect communities in the graph using the Leiden algorithm for graph clustering
+        This identifies groups of closely related nodes that form thematic clusters
+        """
+        if not LEIDEN_AVAILABLE:
+            print("Warning: Leiden algorithm not available. Skipping community detection.")
+            return
+        
+        if graph.node_count == 0:
+            print("Graph has no nodes. Skipping community detection.")
+            return
+        
+        try:
+            # Convert NetworkX graph to igraph for Leiden algorithm
+            # Use undirected version for community detection
+            nx_graph = nx.Graph(graph.graph)  # Convert to undirected
+            
+            # Create igraph from networkx
+            g = ig.Graph.from_networkx(nx_graph)
+            
+            # Get edge weights if available
+            weights = []
+            for edge in nx_graph.edges():
+                weight = nx_graph.edges[edge].get('weight', 1.0)
+                weights.append(weight)
+            
+            # Run Leiden algorithm
+            partition = la.find_partition(
+                g, 
+                la.ModularityVertexPartition, 
+                weights=weights,
+                resolution_parameter=1.0  # Adjust for granularity (higher = more communities)
+            )
+            
+            # Store detected communities
+            for community_id, members in enumerate(partition):
+                for node_idx in members:
+                    # Convert igraph vertex index to networkx node id
+                    node_id = list(graph.nodes.keys())[node_idx]
+                    graph.set_node_community(node_id, community_id)
+                    
+            print(f"✅ Detected {len(partition)} communities")
+            
+        except Exception as e:
+            print(f"Error during community detection: {str(e)}")
+    
+    def _generate_community_summaries(self, graph: KnowledgeGraph) -> None:
+        """
+        Generate summaries for each community using LLM
+        This helps understand the key themes in each detected community
+        """
+        if not graph.communities:
+            print("No communities detected. Skipping summary generation.")
+            return
+        
+        for community_id, node_ids in graph.communities.items():
+            # Skip if community is too small
+            if len(node_ids) < 2:
+                graph.set_community_summary(community_id, "Single node community - no summary required")
+                continue
+                
+            # Gather content from this community
+            community_content = []
+            for node_id in node_ids[:5]:  # Limit to 5 nodes to avoid huge prompts
+                node = graph.nodes[node_id]
+                # Get a preview of each node's content
+                content_preview = node.content.replace('\n', ' ')[:300]  # First 300 chars
+                community_content.append(content_preview)
+            
+            # Build prompt for summarization
+            prompt = f"""Summarize the main theme or topic of these related text passages from legal or contract documents.
+Create a concise, informative summary (1-2 sentences) that captures the key concept these passages share.
+
+RELATED PASSAGES:
+{' '.join(community_content)}
+
+SUMMARY:"""
+            
+            try:
+                # Generate summary
+                summary = self.llm.generate(prompt)
+                graph.set_community_summary(community_id, summary.strip())
+            except Exception as e:
+                print(f"Error generating summary for community {community_id}: {str(e)}")
+                graph.set_community_summary(community_id, "Summary generation failed")
+                
+        print(f"✅ Generated summaries for {len(graph.communities)} communities")
+
     def visualize_graph(self, graph: KnowledgeGraph, output_path: str = "knowledge_graph.png", 
                        max_nodes: int = 50, title: str = "Contract Knowledge Graph") -> None:
         """
@@ -283,8 +426,34 @@ Relationship (single word or short phrase only):"""
         plt.figure(figsize=(14, 10))
         plt.title(title, fontsize=16)
         
-        # Create a position layout
+        # Create a position layout that respects communities
         pos = nx.spring_layout(viz_graph, seed=42, k=0.5)
+        
+        # Get community information
+        node_colors = []
+        node_sizes = []
+        communities_present = False
+        
+        # Create colormap for communities
+        cmap = plt.cm.get_cmap('tab20', 20)  # 20 distinct colors
+        
+        for node in viz_graph.nodes():
+            # Check if we have community info
+            community = viz_graph.nodes[node].get('community')
+            if community is not None:
+                communities_present = True
+                color = cmap(community % 20)  # Wrap around for more than 20 communities
+                
+                # Node size based partly on community size
+                comm_size = len(graph.communities.get(community, []))
+                size = 300 + (comm_size * 5)
+                
+            else:
+                color = "skyblue"
+                size = 300
+                
+            node_colors.append(color)
+            node_sizes.append(size)
         
         # Define colors for different relation types
         relation_types = set()
@@ -292,7 +461,7 @@ Relationship (single word or short phrase only):"""
             relation_type = data.get('relation_type', 'unknown')
             relation_types.add(relation_type)
         
-        # Create a color map
+        # Create a color map for relations
         colors = list(mcolors.TABLEAU_COLORS.values())
         random.seed(42)  # For reproducibility
         relation_colors = {rel: colors[i % len(colors)] for i, rel in enumerate(relation_types)}
@@ -300,8 +469,8 @@ Relationship (single word or short phrase only):"""
         # Draw nodes
         nx.draw_networkx_nodes(
             viz_graph, pos, 
-            node_size=300,
-            node_color="skyblue",
+            node_size=node_sizes,
+            node_color=node_colors,
             alpha=0.7
         )
         
@@ -339,7 +508,16 @@ Relationship (single word or short phrase only):"""
         # Add a legend for relation types
         legend_elements = [plt.Line2D([0], [0], color=relation_colors[rel], lw=2, label=rel) 
                           for rel in relation_types]
-        plt.legend(handles=legend_elements, loc='upper right')
+        
+        # Add community info to legend if present
+        if communities_present:
+            # Add a title for communities section in legend
+            plt.legend(handles=legend_elements, loc='upper right', title="Relation Types")
+            
+            # Generate community summary report
+            self._generate_community_report(graph, output_path.replace('.png', '_communities.txt'))
+        else:
+            plt.legend(handles=legend_elements, loc='upper right')
         
         # Remove axis
         plt.axis('off')
@@ -352,6 +530,50 @@ Relationship (single word or short phrase only):"""
         print(f"✅ Graph visualization saved to {output_path}")
         
         return output_path
+
+    def _generate_community_report(self, graph: KnowledgeGraph, output_path: str) -> None:
+        """
+        Generate a report of communities with their summaries and key nodes
+        """
+        if not graph.communities:
+            return
+            
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write("# CONTRACT KNOWLEDGE GRAPH - COMMUNITY ANALYSIS\n\n")
+            
+            # Sort communities by size
+            communities = sorted(
+                graph.communities.items(), 
+                key=lambda x: len(x[1]), 
+                reverse=True
+            )
+            
+            for community_id, node_ids in communities:
+                f.write(f"## Community {community_id} ({len(node_ids)} nodes)\n\n")
+                
+                # Write summary
+                if community_id in graph.community_summaries:
+                    f.write(f"**Summary**: {graph.community_summaries[community_id]}\n\n")
+                
+                # List key nodes (limit to 5)
+                f.write("**Key Nodes**:\n\n")
+                for node_id in node_ids[:5]:
+                    node = graph.nodes[node_id]
+                    
+                    # Extract metadata
+                    section = node.metadata.get('section_number', 'N/A')
+                    doc_title = node.metadata.get('document_title', 'N/A')
+                    
+                    # Create content preview
+                    content = node.content.replace('\n', ' ')
+                    preview = content[:100] + '...' if len(content) > 100 else content
+                    
+                    f.write(f"- **Node {node_id}** (Section: {section}, Document: {doc_title})\n")
+                    f.write(f"  Preview: {preview}\n\n")
+                
+                f.write("\n")
+            
+        print(f"✅ Community report saved to {output_path}")
 
     def export_graph_details(self, graph: KnowledgeGraph, output_path: str = "graph_details.txt") -> None:
         """
@@ -367,10 +589,30 @@ Relationship (single word or short phrase only):"""
             f.write(f"Total Nodes: {graph.node_count}\n")
             f.write(f"Total Relations: {graph.edge_count}\n\n")
             
+            # Write community information if available
+            if graph.communities:
+                f.write("## COMMUNITIES\n\n")
+                f.write(f"Total Communities: {len(graph.communities)}\n\n")
+                
+                for community_id, node_ids in graph.communities.items():
+                    f.write(f"### Community {community_id}\n")
+                    f.write(f"Size: {len(node_ids)} nodes\n")
+                    
+                    # Write summary if available
+                    if community_id in graph.community_summaries:
+                        f.write(f"Summary: {graph.community_summaries[community_id]}\n")
+                    
+                    f.write("\n")
+            
             # Write node details
             f.write("## NODES\n\n")
             for i, (node_id, node) in enumerate(graph.nodes.items(), 1):
                 f.write(f"### Node {i}: {node_id}\n")
+                
+                # Write community if available
+                if hasattr(node, 'community') and node.community is not None:
+                    f.write(f"Community: {node.community}\n")
+                
                 f.write(f"Section: {node.metadata.get('section_number', 'N/A')}\n")
                 
                 # Write hierarchy if available
@@ -408,29 +650,53 @@ Relationship (single word or short phrase only):"""
                 f.write(f"### Relation Type: {relation_type}\n")
                 f.write(f"Count: {len(edges)}\n\n")
                 
-                for i, edge in enumerate(edges, 1):
+                for i, edge in enumerate(edges[:10], 1):  # Limit to 10 examples per type
                     source_node = graph.nodes[edge.source]
                     target_node = graph.nodes[edge.target]
                     
                     f.write(f"#### Relation {i}\n")
                     f.write(f"Source Node: {edge.source}\n")
+                    
+                    # Write community of source node if available
+                    if hasattr(source_node, 'community') and source_node.community is not None:
+                        f.write(f"  - Community: {source_node.community}\n")
+                        
                     f.write(f"  - Section: {source_node.metadata.get('section_number', 'N/A')}\n")
                     source_preview = source_node.content.replace('\n', ' ')[:100]
                     f.write(f"  - Content: {source_preview}...\n")
                     
                     f.write(f"Target Node: {edge.target}\n")
+                    
+                    # Write community of target node if available
+                    if hasattr(target_node, 'community') and target_node.community is not None:
+                        f.write(f"  - Community: {target_node.community}\n")
+                        
                     f.write(f"  - Section: {target_node.metadata.get('section_number', 'N/A')}\n")
                     target_preview = target_node.content.replace('\n', ' ')[:100]
                     f.write(f"  - Content: {target_preview}...\n")
                     
                     f.write(f"Weight: {edge.weight}\n\n")
                 
+                # If there are more edges than shown
+                if len(edges) > 10:
+                    f.write(f"... and {len(edges) - 10} more {relation_type} relations\n")
+                
                 f.write("\n")
             
-            # Write statistics about relations
-            f.write("## RELATION STATISTICS\n\n")
+            # Write statistics about communities and relations
+            f.write("## STATISTICS\n\n")
+            
+            if graph.communities:
+                f.write("### Community Statistics\n\n")
+                community_sizes = [len(nodes) for nodes in graph.communities.values()]
+                
+                f.write(f"Total Communities: {len(graph.communities)}\n")
+                f.write(f"Average Community Size: {sum(community_sizes)/len(community_sizes):.1f} nodes\n")
+                f.write(f"Largest Community: {max(community_sizes)} nodes\n")
+                f.write(f"Smallest Community: {min(community_sizes)} nodes\n\n")
+            
+            f.write("### Relation Statistics\n\n")
             for relation_type, edges in relation_groups.items():
                 f.write(f"{relation_type}: {len(edges)} relations\n")
         
         print(f"✅ Graph details exported to {output_path}")
-        return output_path
