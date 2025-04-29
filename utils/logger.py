@@ -49,27 +49,32 @@ def setup_logger(module_name: str):
     # Créer le logger
     logger = logging.getLogger(module_base_name)
 
-    # Ne configurer qu'une seule fois
-    if not logger.handlers:
-        logger.setLevel(log_level)
+    # Prevent log message propagation to the root logger
+    logger.propagate = False
 
-        # Format de log avec timestamp, niveau, nom du fichier, numéro de ligne et fonction
-        log_format = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s - %(message)s"
-        )
+    # Remove all handlers if any exist (to avoid duplicates)
+    if logger.hasHandlers():
+        logger.handlers.clear()
 
-        # Handler pour fichier (avec rotation à 5 Mo et garde 3 backups)
-        file_handler = RotatingFileHandler(
-            log_file, maxBytes=5 * 1024 * 1024, backupCount=3
-        )
-        file_handler.setFormatter(log_format)
+    logger.setLevel(log_level)
 
-        # Handler pour console
-        console_handler = logging.StreamHandler()
-        console_handler.setFormatter(log_format)
+    # Format de log avec timestamp, niveau, nom du fichier, numéro de ligne et fonction
+    log_format = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(funcName)s - %(message)s"
+    )
 
-        # Ajouter les handlers
-        logger.addHandler(file_handler)
-        logger.addHandler(console_handler)
+    # Handler pour fichier (avec rotation à 5 Mo et garde 3 backups)
+    file_handler = RotatingFileHandler(
+        log_file, maxBytes=5 * 1024 * 1024, backupCount=3
+    )
+    file_handler.setFormatter(log_format)
+
+    # Handler pour console
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(log_format)
+
+    # Ajouter les handlers
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
 
     return logger

@@ -137,7 +137,7 @@ def cleanup_flag_documents() -> None:
     """
     try:
         logger.info(
-            "🧹 Vérification des entrées incorrectes dans la base de données..."
+            "🧹 Vérification des entrées dans la base de données..."
         )
 
         # Initialiser les gestionnaires

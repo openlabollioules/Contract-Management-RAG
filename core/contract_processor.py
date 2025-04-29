@@ -1,5 +1,6 @@
 import time
 from typing import List
+from pathlib import Path
 
 from core.content_restoration import restore_important_content
 from core.display_utilities import (display_chunks_details,
@@ -10,6 +11,7 @@ from document_processing.pdf_extractor import extract_pdf_text
 from document_processing.text_chunker import TextChunker
 from document_processing.text_vectorizer import TextVectorizer
 from document_processing.vectordb_interface import VectorDBInterface
+from core.graph_manager import GraphManager
 from utils.logger import setup_logger
 
 # Configurer le logger pour ce module
@@ -126,6 +128,18 @@ Contenu:
     logger.info("\n📦 Ajout des chunks à ChromaDB...")
     chroma_manager.add_documents(chroma_chunks)
     logger.info("✅ Chunks ajoutés à ChromaDB")
+
+    logger.info("🔄 Building knowledge graph...")
+    graph_manager = GraphManager(chroma_manager, embeddings_manager)
+    graph = graph_manager.build_graph(chroma_chunks)
+
+    # logger.info("🎨 Generating graph visualization...")
+    # graph_output_path = f"graph_{Path(filepath).stem}.png"
+    # graph_manager.visualize_graph(graph, output_path=graph_output_path)
+
+    logger.info("📝 Exporting graph details...")
+    details_output_path = f"graph_details_{Path(filepath).stem}.txt"
+    graph_manager.export_graph_details(graph, output_path=details_output_path)
 
     # Print document metadata
     logger.info("\nDocument Metadata:")

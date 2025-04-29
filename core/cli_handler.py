@@ -59,6 +59,7 @@ def parse_arguments() -> Dict[str, Any]:
         "force": False,
         "delete": False,
         "chat": False,
+        "graph-chat": False,
         "search": False,
         "search_query": "",
         "filepaths": [],
@@ -83,6 +84,10 @@ def parse_arguments() -> Dict[str, Any]:
     if "--chat" in argv:
         args["chat"] = True
         argv.remove("--chat")
+
+    if "--graph-chat" in argv:
+        args["graph-chat"] = True
+        argv.remove("--graph-chat")
 
     if "--search" in argv and argv.index("--search") + 1 < len(argv):
         args["search"] = True
@@ -162,9 +167,46 @@ def handle_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        chat_with_contract(query)
+        chat_with_contract(query, use_graph=False)
 
+def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
+    """
+    Gère le mode chat interactif avec le graphe de connaissances
 
+    Args:
+        filepaths: Liste des chemins de fichiers à traiter avant le chat
+        force_reprocess: Si True, force le retraitement des documents
+    """
+    # Traiter les documents restants avant d'entrer en mode chat
+    if filepaths:
+        # Vérifier les documents existants
+        existing_docs = get_existing_documents(filepaths, force_reprocess)
+
+        # Si des documents existent déjà, afficher une erreur et quitter
+        if existing_docs:
+            logger.error(
+                "\n❌ ERREUR : Les documents suivants existent déjà dans la base de données :"
+            )
+            for doc in existing_docs:
+                logger.error(f"   - {doc}")
+            logger.error("\nPour forcer le retraitement, utilisez l'option --force")
+            logger.error("Pour supprimer ces documents, utilisez l'option --delete")
+            sys.exit(1)
+
+        # Sinon, traiter tous les documents (sauf les flags)
+        for filepath in filepaths:
+            if not filepath.startswith("--"):
+                logger.info(f"\n📄 Traitement du contrat: {filepath}")
+                process_contract(filepath)
+
+    # Entrer en mode chat interactif avec graphe
+    logger.info("\n🔍 Mode chat augmenté par graphe de connaissances activé. Tapez 'exit' pour quitter.")
+    while True:
+        query = input("\nVotre question : ")
+        if query.lower() == "exit":
+            break
+        chat_with_contract(query, use_graph=True)
+        
 def handle_search_mode(
     filepaths: List[str], search_query: str, force_reprocess: bool
 ) -> None:
@@ -253,6 +295,10 @@ def process_arguments(args: Dict[str, Any]) -> None:
     # Gestion du mode chat
     elif args["chat"]:
         handle_chat_mode(args["filepaths"], args["force"])
+        sys.exit(0)
+
+    elif args["graph-chat"]:
+        handle_graph_chat_mode(args["filepaths"], args["force"])
         sys.exit(0)
 
     # Gestion du mode recherche
