@@ -52,7 +52,6 @@ data/
 Benchmark_LLM_Marker/
 Benchmark_OCR_LLM/
 Test_evolution/
-scripts/
 
 # Logs
 *.log
@@ -78,3 +77,7 @@ CUAD_V1.zip
 Stanford/
 
 *.pkl
+
+Logs/
+
+scripts/.venv_new/
