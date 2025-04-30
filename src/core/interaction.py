@@ -260,6 +260,10 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
     response = ask_ollama(prompt)
     logger.info("\n🤖 Réponse :")
     logger.info(response)
+    print("\n🤖 Réponse :")
+    print(response)
+    print("\n📚 Sources :")
+    print("=" * 80)
 
     # Display sources with metadata
     logger.info("\n📚 Sources :")
@@ -270,8 +274,9 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
         if result.get("source_type") == "graph":
             logger.info("📊 Source obtenue via le graphe de connaissances")
             logger.info(f"Relation: {result.get('relation_type', 'Non spécifié')}")
-
         logger.info("-" * 40)
+        logger.info(f"Hierarchie: {result["metadata"].get("hierarchy")}")
+        logger.info(f"Document: {result["metadata"].get("document_title")}")
 
         logger.info(f"Distance: {result['distance']:.4f}")
 
