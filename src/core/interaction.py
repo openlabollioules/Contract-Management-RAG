@@ -277,6 +277,10 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
     response = ask_ollama(prompt)
     logger.info("\n🤖 Réponse :")
     logger.info(response)
+    print("\n🤖 Réponse :")
+    print(response)
+    print("\n📚 Sources :")
+    print("=" * 80)
 
     # Display sources with metadata
     logger.info("\n📚 Sources :")

@@ -82,3 +82,5 @@ Logs/
 
 scripts/.venv_new/
 visualize_test.py
+
+rag_reference.txt
