@@ -29,6 +29,7 @@ def print_usage() -> None:
         "  --delete               Supprime les documents spécifiés de la base de données"
     )
     print("  --debug                Active le mode debug avec logs détaillés")
+    print("  --summarize-chunks     Résume chaque chunk avant de l'ajouter à la base de données")
     print("Examples:")
     print("  Process one contract:           python main.py contract.pdf")
     print(
@@ -63,6 +64,7 @@ def parse_arguments() -> Dict[str, Any]:
         "search": False,
         "search_query": "",
         "filepaths": [],
+        "summarize_chunks": False,
     }
 
     # Copier les arguments sans le nom du script
@@ -88,6 +90,10 @@ def parse_arguments() -> Dict[str, Any]:
     if "--graph-chat" in argv:
         args["graph-chat"] = True
         argv.remove("--graph-chat")
+
+    if "--summarize-chunks" in argv:
+        args["summarize_chunks"] = True
+        argv.remove("--summarize-chunks")
 
     if "--search" in argv and argv.index("--search") + 1 < len(argv):
         args["search"] = True
@@ -246,13 +252,14 @@ def handle_search_mode(
         sys.exit(1)
 
 
-def handle_process_mode(filepaths: List[str], force_reprocess: bool) -> None:
+def handle_process_mode(filepaths: List[str], force_reprocess: bool, summarize_chunks: bool = False) -> None:
     """
-    Gère le mode de traitement des documents (mode par défaut)
+    Gère le mode de traitement des documents
 
     Args:
         filepaths: Liste des chemins de fichiers à traiter
         force_reprocess: Si True, force le retraitement des documents
+        summarize_chunks: Si True, résume chaque chunk avec Ollama
     """
     # Vérifier les documents existants
     existing_docs = get_existing_documents(filepaths, force_reprocess)
@@ -272,40 +279,40 @@ def handle_process_mode(filepaths: List[str], force_reprocess: bool) -> None:
     for filepath in filepaths:
         if not filepath.startswith("--"):
             logger.info(f"\n📄 Traitement du contrat: {filepath}")
-            process_contract(filepath)
+            process_contract(filepath, summarize_chunks=summarize_chunks)
 
 
 def process_arguments(args: Dict[str, Any]) -> None:
     """
-    Traite les arguments analysés selon le mode d'opération
+    Traite les arguments selon le mode d'opération
 
     Args:
-        args: Dictionnaire des arguments et options
+        args: Dictionnaire contenant les options et valeurs extraites des arguments
     """
-    # Configurer le mode debug si demandé
+    # Configurer le niveau de log si mode debug
     if args["debug"]:
-        logger.setLevel(logging.DEBUG)
-        logger.debug("🔍 Mode debug activé - affichage des logs détaillés")
+        logging.getLogger().setLevel(logging.DEBUG)
+        logger.debug("Mode debug activé")
 
-    # Gestion du mode de suppression
+    # Mode suppression
     if args["delete"]:
         handle_delete_mode(args["filepaths"])
-        sys.exit(0)
+        return
 
-    # Gestion du mode chat
-    elif args["chat"]:
+    # Mode chat
+    if args["chat"]:
         handle_chat_mode(args["filepaths"], args["force"])
-        sys.exit(0)
+        return
 
-    elif args["graph-chat"]:
+    # Mode graph-chat
+    if args["graph-chat"]:
         handle_graph_chat_mode(args["filepaths"], args["force"])
-        sys.exit(0)
+        return
 
-    # Gestion du mode recherche
-    elif args["search"]:
+    # Mode recherche
+    if args["search"]:
         handle_search_mode(args["filepaths"], args["search_query"], args["force"])
-        sys.exit(0)
+        return
 
-    # Mode par défaut: traitement des documents
-    else:
-        handle_process_mode(args["filepaths"], args["force"])
+    # Mode traitement par défaut
+    handle_process_mode(args["filepaths"], args["force"], args["summarize_chunks"])

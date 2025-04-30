@@ -276,7 +276,7 @@ class VectorDBInterface:
         self, query: str, n_results: int = 5, filter_metadata: Optional[Dict] = None
     ) -> List[Dict]:
         """
-        Search for similar documents
+        Search for similar documents. Handles both summarized and non-summarized chunks intelligently.
 
         Args:
             query: Search query
@@ -298,26 +298,55 @@ class VectorDBInterface:
         logger.debug(f"Requête dans la collection '{self.collection.name}'")
         results = self.collection.query(
             query_embeddings=[query_embedding],
-            n_results=n_results,
+            n_results=n_results * 2,  # On récupère plus de résultats pour le post-traitement
             where=filter_metadata,
         )
 
-        # Format results
+        # Format and process results
         logger.debug(
             f"Formatage des résultats ({len(results['ids'][0])} documents trouvés)"
         )
         formatted_results = []
+        seen_originals = set()  # Pour suivre les contenus originaux déjà vus
+
         for i in range(len(results["ids"][0])):
-            formatted_results.append(
-                {
+            metadata = results["metadatas"][0][i]
+            is_summary = metadata.get("is_summary", "false").lower() == "true"
+            original_content = metadata.get("original_content", "")
+
+            # Si c'est un résumé, on ajoute le contenu original aux métadonnées pour référence
+            if is_summary:
+                result = {
                     "id": results["ids"][0][i],
                     "document": results["documents"][0][i],
-                    "metadata": results["metadatas"][0][i],
+                    "metadata": metadata,
                     "distance": results["distances"][0][i],
+                    "is_summary": True,
+                    "original_content": original_content
                 }
-            )
+                formatted_results.append(result)
+                seen_originals.add(original_content)
+
+            # Si c'est un contenu original et qu'on n'a pas déjà son résumé
+            elif results["documents"][0][i] not in seen_originals:
+                result = {
+                    "id": results["ids"][0][i],
+                    "document": results["documents"][0][i],
+                    "metadata": metadata,
+                    "distance": results["distances"][0][i],
+                    "is_summary": False
+                }
+                formatted_results.append(result)
+
+        # Trier par score de similarité et limiter au nombre demandé
+        formatted_results.sort(key=lambda x: x["distance"])
+        formatted_results = formatted_results[:n_results]
 
         logger.info(f"Recherche terminée, {len(formatted_results)} résultats")
+        # Log des statistiques sur les résumés vs originaux
+        summaries = sum(1 for r in formatted_results if r.get("is_summary", False))
+        logger.info(f"Répartition : {summaries} résumés, {len(formatted_results) - summaries} originaux")
+        
         return formatted_results
 
     def delete_collection(self) -> None:

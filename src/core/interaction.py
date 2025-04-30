@@ -226,6 +226,7 @@ def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = False) 
         knowledge_graph = load_or_build_graph(chroma_manager, embeddings_manager)
 
     results = chroma_manager.search(query, n_results=n_context)
+    print(f"voila les résultats : {results}")
     
     if use_graph and knowledge_graph:
         graph_results = get_graph_augmented_results(knowledge_graph, results, n_additional=2)
@@ -235,25 +236,41 @@ def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = False) 
         combined_results = results
     
     # Prepare context for the prompt
-    context = "\n\n".join(
-        [
+    context_parts = []
+    for result in combined_results:
+        # En-tête avec les métadonnées
+        header = (
             f"Document: {result['metadata'].get('document_title', 'Non spécifié')}\n"
             f"Section: {result['metadata'].get('section_number', 'Non spécifié')}\n"
-            f"Chapter: {result['metadata'].get('chapter_title', 'Non spécifié')}\n"
-            f"Content: {result['document']}"
-            for result in results
-        ]
-    )
+            f"Hiérarchie: {result['metadata'].get('hierarchy', 'Non spécifié')}"
+        )
+
+        # Contenu adapté selon le type (résumé ou original)
+        if result.get("is_summary", False):
+            content = (
+                f"\nRésumé:\n{result['document']}\n"
+                f"Contenu détaillé si nécessaire:\n{result.get('original_content', 'Non disponible')}"
+            )
+        else:
+            content = f"\nContenu:\n{result['document']}"
+
+        # Ajouter la source au contexte
+        context_parts.append(f"{header}\n{content}")
+
+    # Joindre toutes les parties du contexte
+    context = "\n\n---\n\n".join(context_parts)
 
     # Create the prompt with context
     prompt = f"""Tu es un assistant spécialisé dans l'analyse de contrats. 
-Voici le contexte pertinent extrait des documents :
+Voici le contexte pertinent extrait des documents. Pour chaque section, tu as soit un résumé avec le contenu détaillé disponible, soit directement le contenu original.
+Utilise d'abord les résumés pour avoir une vue d'ensemble, puis consulte les contenus détaillés si nécessaire pour plus de précision.
 
 {context}
 
 Question de l'utilisateur : {query}
 
-Réponds de manière précise en te basant uniquement sur le contexte fourni. 
+Réponds de manière précise en te basant sur le contexte fourni.
+Si tu utilises un résumé, vérifie dans le contenu détaillé pour t'assurer de la précision de ta réponse.
 Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
 
     # Get response from Ollama
@@ -264,19 +281,46 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
     # Display sources with metadata
     logger.info("\n📚 Sources :")
     logger.info("=" * 80)
-    for i, result in enumerate(results, 1):
+    for i, result in enumerate(combined_results, 1):
         logger.info("\n" + "-" * 40)
-        logger.info(f"\nSource {i}/{len(results)}")
+        logger.info(f"\nSource {i}/{len(combined_results)}")
+        
+        # Afficher le type de source (résumé ou original)
         if result.get("source_type") == "graph":
             logger.info("📊 Source obtenue via le graphe de connaissances")
             logger.info(f"Relation: {result.get('relation_type', 'Non spécifié')}")
+        elif result.get("is_summary", False):
+            logger.info("📝 Résumé généré")
+        else:
+            logger.info("📄 Contenu original")
 
         logger.info("-" * 40)
 
+        # Afficher les métadonnées
+        logger.info(f"Document: {result['metadata'].get('document_title', 'Non spécifié')}")
+        logger.info(f"Section: {result['metadata'].get('section_number', 'Non spécifié')}")
+        logger.info(f"Chapitre: {result['metadata'].get('chapter_title', 'Non spécifié')}")
+        if result['metadata'].get('hierarchy'):
+            logger.info(f"Hiérarchie: {result['metadata'].get('hierarchy')}")
         logger.info(f"Distance: {result['distance']:.4f}")
 
         # Afficher le contenu
-        logger.info(result["metadata"].get("content", result["document"])[:200] + "...")
+        if result.get("is_summary", False):
+            logger.info("\nRésumé utilisé:")
+            logger.info(result["document"])
+            logger.info("\nContenu original:")
+            logger.info(result.get("original_content", "Non disponible")[:200] + "...")
+        else:
+            logger.info("\nContenu:")
+            logger.info(result["document"][:200] + "...")
+
         logger.info("-" * 40)
 
-    logger.info(f"\n📊 Nombre total de sources: {len(results)}")
+    # Afficher les statistiques
+    summaries = sum(1 for r in combined_results if r.get("is_summary", False))
+    graph_sources = sum(1 for r in combined_results if r.get("source_type") == "graph")
+    logger.info(f"\n📊 Statistiques des sources:")
+    logger.info(f"- Total: {len(combined_results)}")
+    logger.info(f"- Résumés: {summaries}")
+    logger.info(f"- Contenus originaux: {len(combined_results) - summaries - graph_sources}")
+    logger.info(f"- Sources du graphe: {graph_sources}")

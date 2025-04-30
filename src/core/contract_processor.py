@@ -12,22 +12,25 @@ from document_processing.text_chunker import TextChunker
 from document_processing.text_vectorizer import TextVectorizer
 from document_processing.vectordb_interface import VectorDBInterface
 from core.graph_manager import GraphManager
+from core.chunk_summarizer import ChunkSummarizer
 from utils.logger import setup_logger
 
 # Configurer le logger pour ce module
 logger = setup_logger(__file__)
 
 
-def process_contract(filepath: str) -> List[Chunk]:
+def process_contract(filepath: str, summarize_chunks: bool = False) -> List[Chunk]:
     """
     Process a contract file and return intelligent chunks using a hybrid approach:
     1. First split by legal structure (articles, sections, subsections)
     2. Then apply semantic chunking for sections exceeding 800 tokens
     3. Preserve hierarchical metadata for traceability
     4. Apply post-processing to restore important legal content that might have been lost
+    5. Optionally summarize chunks using Ollama
 
     Args:
         filepath: Path to the contract file
+        summarize_chunks: If True, summarize each chunk using Ollama before adding to the database
 
     Returns:
         List of Chunk objects with preserved legal structure and metadata
@@ -123,6 +126,13 @@ Contenu:
 {chunk.content}
 """
         chroma_chunks.append({"content": content, "metadata": metadata})
+
+    # 4.5 Optionally summarize chunks
+    if summarize_chunks:
+        logger.info("\n📝 Résumé des chunks avec Ollama...")
+        summarizer = ChunkSummarizer()
+        chroma_chunks = summarizer.summarize_chunks(chroma_chunks)
+        logger.info("✅ Chunks résumés")
 
     # 5. Add chunks to ChromaDB
     logger.info("\n📦 Ajout des chunks à ChromaDB...")
