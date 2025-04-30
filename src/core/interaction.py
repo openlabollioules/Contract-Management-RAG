@@ -293,19 +293,10 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
         if result.get("source_type") == "graph":
             logger.info("📊 Source obtenue via le graphe de connaissances")
             logger.info(f"Relation: {result.get('relation_type', 'Non spécifié')}")
-        elif result.get("is_summary", False):
-            logger.info("📝 Résumé généré")
-        else:
-            logger.info("📄 Contenu original")
-
         logger.info("-" * 40)
+        logger.info(f"Hierarchie: {result["metadata"].get("hierarchy")}")
+        logger.info(f"Document: {result["metadata"].get("document_title")}")
 
-        # Afficher les métadonnées
-        logger.info(f"Document: {result['metadata'].get('document_title', 'Non spécifié')}")
-        logger.info(f"Section: {result['metadata'].get('section_number', 'Non spécifié')}")
-        logger.info(f"Chapitre: {result['metadata'].get('chapter_title', 'Non spécifié')}")
-        if result['metadata'].get('hierarchy'):
-            logger.info(f"Hiérarchie: {result['metadata'].get('hierarchy')}")
         logger.info(f"Distance: {result['distance']:.4f}")
 
         # Afficher le contenu
