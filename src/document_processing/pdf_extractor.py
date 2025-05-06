@@ -4,6 +4,7 @@ import os
 import platform
 import re
 import time
+from pathlib import Path
 
 import cv2
 import fitz  # PyMuPDF
@@ -297,7 +298,8 @@ def correct_pdf_orientation(pdf_path):
             print(f"Page {page_num + 1}: rotation détectée = {rotation}°")
 
         # Sauvegarder le PDF corrigé
-        output_path = pdf_path.replace(".pdf", "_oriented.pdf")
+        output_path_str = str(pdf_path).replace(".pdf", "_oriented.pdf")
+        output_path = Path(output_path_str)
         with open(output_path, "wb") as output_file:
             writer.write(output_file)
 
@@ -559,82 +561,91 @@ def remove_headers_footers_by_similarity(
 def extract_pdf_text(pdf_path):
     logger.info("📄 Chargement des modèles...")
     start_time = time.time()
-
-    # Nettoyer le PDF (masquer signatures et tampons)
-    # pdf_path = clean_pdf(pdf_path)
-
-    # Corriger l'orientation du PDF si nécessaire
-    logger.info("🔄 Vérification de l'orientation des pages...")
-    pdf_path = correct_pdf_orientation(pdf_path)
-
-    # Configure Ollama service (local mode)
-    os.environ["OLLAMA_BASE_URL"] = os.getenv(
-        "OLLAMA_URL", "http://localhost:11434"
-    ).split("/api")[0]
-    logger.debug(f"OLLAMA_BASE_URL configuré à {os.environ['OLLAMA_BASE_URL']}")
-
-    # S'assurer que tous les indicateurs de mode hors ligne sont activés
-    os.environ["HF_DATASETS_OFFLINE"] = "1"
-    os.environ["TRANSFORMERS_OFFLINE"] = "1"
-    os.environ["HF_HUB_OFFLINE"] = "1"
-    os.environ["S3_OFFLINE"] = "1"
-    os.environ["NO_PROXY"] = "*"
-
-    # Setup model paths from config.env
-    marker_dir = os.getenv("MARKER_DIR", "offline_models/marker")
-    logger.info(f"📁 Utilisation du dossier Marker: {marker_dir}")
-
-    # Vérifier si les répertoires existent
-    if not os.path.exists(marker_dir):
-        logger.warning(f"⚠️ Le répertoire Marker n'existe pas: {marker_dir}")
-        # Créer le répertoire si nécessaire
-        os.makedirs(marker_dir, exist_ok=True)
-
-    # Chemins des modèles configurés à partir de config.env
-    model_paths = {
-        "layout": f"{marker_dir}/layout",
-        "texify": f"{marker_dir}/texify",
-        "text_recognition": f"{marker_dir}/text_recognition",
-        "table_recognition": f"{marker_dir}/table_recognition",
-        "text_detection": f"{marker_dir}/text_detection",
-        "inline_math_detection": f"{marker_dir}/inline_math_detection",
-    }
-
-    # Vérifier les chemins des modèles
-    for model_name, model_path in model_paths.items():
-        if not os.path.exists(model_path):
-            logger.warning(f"⚠️ Chemin de modèle inexistant: {model_path}")
-        else:
-            logger.debug(f"✅ Modèle trouvé: {model_name} dans {model_path}")
-
-    logger.info("🔍 Configuration de Marker...")
-    # Setup the configuration for Marker with enhanced options
-    config = {
-        "converter_cls": "marker.converters.table.TableConverter",
-        "output_format": "markdown",
-        "ocr": True,
-        "ocr_engine": "tesseract",
-        "ocr_language": "fra+eng",
-        "table_structure": True,
-        "preserve_layout": True,
-        "extract_images": True,
-        "clean_text": True,
-        "remove_headers_footers": True,
-        "detect_columns": True,
-        "model_paths": model_paths,
-        "max_workers": 1,
-        "batch_size": 1,
-        "disable_telemetry": True,
-        "offline_mode": True,
-        "force_offline": True,
-        "skip_download": True,
-        "s3_offline": True,
-        "no_proxy": True,
-        "device": str(device),
-        "debug": True,
-    }
+    
+    original_pdf_path = pdf_path  # Sauvegarde du chemin original
+    oriented_pdf_created = False  # Pour suivre si un fichier orienté a été créé
 
     try:
+        # Nettoyer le PDF (masquer signatures et tampons)
+        # pdf_path = clean_pdf(pdf_path)
+
+        # Corriger l'orientation du PDF si nécessaire
+        logger.info("🔄 Vérification de l'orientation des pages...")
+        oriented_pdf_path = correct_pdf_orientation(pdf_path)
+        
+        # Vérifier si un nouveau fichier orienté a été créé
+        if oriented_pdf_path != pdf_path:
+            pdf_path = oriented_pdf_path
+            oriented_pdf_created = True
+            logger.info(f"✅ Utilisation du PDF orienté: {pdf_path}")
+
+        # Configure Ollama service (local mode)
+        os.environ["OLLAMA_BASE_URL"] = os.getenv(
+            "OLLAMA_URL", "http://localhost:11434"
+        ).split("/api")[0]
+        logger.debug(f"OLLAMA_BASE_URL configuré à {os.environ['OLLAMA_BASE_URL']}")
+
+        # S'assurer que tous les indicateurs de mode hors ligne sont activés
+        os.environ["HF_DATASETS_OFFLINE"] = "1"
+        os.environ["TRANSFORMERS_OFFLINE"] = "1"
+        os.environ["HF_HUB_OFFLINE"] = "1"
+        os.environ["S3_OFFLINE"] = "1"
+        os.environ["NO_PROXY"] = "*"
+
+        # Setup model paths from config.env
+        marker_dir = os.getenv("MARKER_DIR", "offline_models/marker")
+        logger.info(f"📁 Utilisation du dossier Marker: {marker_dir}")
+
+        # Vérifier si les répertoires existent
+        if not os.path.exists(marker_dir):
+            logger.warning(f"⚠️ Le répertoire Marker n'existe pas: {marker_dir}")
+            # Créer le répertoire si nécessaire
+            os.makedirs(marker_dir, exist_ok=True)
+
+        # Chemins des modèles configurés à partir de config.env
+        model_paths = {
+            "layout": f"{marker_dir}/layout",
+            "texify": f"{marker_dir}/texify",
+            "text_recognition": f"{marker_dir}/text_recognition",
+            "table_recognition": f"{marker_dir}/table_recognition",
+            "text_detection": f"{marker_dir}/text_detection",
+            "inline_math_detection": f"{marker_dir}/inline_math_detection",
+        }
+
+        # Vérifier les chemins des modèles
+        for model_name, model_path in model_paths.items():
+            if not os.path.exists(model_path):
+                logger.warning(f"⚠️ Chemin de modèle inexistant: {model_path}")
+            else:
+                logger.debug(f"✅ Modèle trouvé: {model_name} dans {model_path}")
+
+        logger.info("🔍 Configuration de Marker...")
+        # Setup the configuration for Marker with enhanced options
+        config = {
+            "converter_cls": "marker.converters.table.TableConverter",
+            "output_format": "markdown",
+            "ocr": True,
+            "ocr_engine": "tesseract",
+            "ocr_language": "fra+eng",
+            "table_structure": True,
+            "preserve_layout": True,
+            "extract_images": True,
+            "clean_text": True,
+            "remove_headers_footers": True,
+            "detect_columns": True,
+            "model_paths": model_paths,
+            "max_workers": 1,
+            "batch_size": 1,
+            "disable_telemetry": True,
+            "offline_mode": True,
+            "force_offline": True,
+            "skip_download": True,
+            "s3_offline": True,
+            "no_proxy": True,
+            "device": str(device),
+            "debug": True,
+        }
+
         logger.info("🔄 Création des modèles...")
         # Appliquer tous les patches avant de créer les modèles
         patch_posthog()
@@ -675,7 +686,8 @@ def extract_pdf_text(pdf_path):
         )
 
         # Process the PDF and extract text
-        rendered = converter(pdf_path)
+        # Ensure pdf_path is a string for PdfConverter
+        rendered = converter(str(pdf_path))
         text, metadata, _ = text_from_rendered(rendered)
 
         # Apply header/footer removal by similarity
@@ -752,16 +764,33 @@ Content:
         # Calculate time taken and log
         end_time = time.time()
         logger.info(f"✅ Extraction terminée en {end_time - start_time:.2f} secondes")
+        
+        # Nettoyer le fichier temporaire d'orientation si créé
+        if oriented_pdf_created and os.path.exists(pdf_path):
+            try:
+                os.remove(pdf_path)
+                logger.info(f"🧹 Fichier temporaire supprimé: {pdf_path}")
+            except Exception as clean_e:
+                logger.warning(f"⚠️ Impossible de supprimer le fichier temporaire {pdf_path}: {str(clean_e)}")
 
         return text_with_metadata, full_document_title
 
     except Exception as e:
         logger.error(f"Erreur lors de l'extraction du texte: {str(e)}")
+        
+        # Nettoyer le fichier temporaire en cas d'erreur aussi
+        if oriented_pdf_created and pdf_path != original_pdf_path and os.path.exists(pdf_path):
+            try:
+                os.remove(pdf_path)
+                logger.info(f"🧹 Fichier temporaire supprimé après erreur: {pdf_path}")
+            except Exception as clean_e:
+                logger.warning(f"⚠️ Impossible de supprimer le fichier temporaire {pdf_path}: {str(clean_e)}")
+        
         # Fallback to simpler extraction if marker fails
         logger.warning(
             "⚠️ Échec de l'extraction avancée, utilisation de la méthode simple..."
         )
-        return fallback_extract_text(pdf_path)
+        return fallback_extract_text(original_pdf_path)
 
 
 def patch_marker_extract_text():

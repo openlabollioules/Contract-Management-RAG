@@ -1,5 +1,7 @@
 import uuid
 from typing import Dict, List, Optional
+from pathlib import Path
+import os
 
 import chromadb
 from chromadb.config import Settings
@@ -33,19 +35,41 @@ class VectorDBInterface:
             f"Initialisation de VectorDBInterface (persist_directory={persist_directory}, collection={collection_name})"
         )
 
-        # Initialize ChromaDB client
-        logger.debug(f"Création du client ChromaDB persistant")
-        self.client = chromadb.PersistentClient(
-            path=persist_directory,
-            settings=Settings(anonymized_telemetry=False, allow_reset=True),
-        )
+        # Ensure the persist directory exists with proper permissions
+        persist_path = Path(persist_directory)
+        if not persist_path.exists():
+            persist_path.mkdir(mode=0o777, parents=True, exist_ok=True)
+        
+        # Set permissions for all existing files and directories
+        for item in persist_path.rglob('*'):
+            try:
+                item.chmod(0o777)
+            except Exception as e:
+                logger.warning(f"Could not set permissions for {item}: {e}")
+        
+        # Set umask to ensure new files are created with proper permissions
+        old_umask = os.umask(0)
+        try:
+            # Initialize ChromaDB client with settings
+            logger.debug(f"Création du client ChromaDB persistant")
+            self.client = chromadb.PersistentClient(
+                path=persist_directory,
+                settings=Settings(
+                    anonymized_telemetry=False,
+                    allow_reset=True,
+                    is_persistent=True
+                ),
+            )
 
-        # Create or get collection
-        logger.debug(f"Récupération ou création de la collection '{collection_name}'")
-        self.collection = self.client.get_or_create_collection(
-            name=collection_name, metadata={"hnsw:space": "cosine"}
-        )
-        logger.info(f"Collection '{collection_name}' initialisée")
+            # Create or get collection
+            logger.debug(f"Récupération ou création de la collection '{collection_name}'")
+            self.collection = self.client.get_or_create_collection(
+                name=collection_name, metadata={"hnsw:space": "cosine"}
+            )
+            logger.info(f"Collection '{collection_name}' initialisée")
+        finally:
+            # Restore original umask
+            os.umask(old_umask)
 
     def document_exists(self, filename: str) -> bool:
         """
@@ -356,10 +380,28 @@ class VectorDBInterface:
         logger.info(f"Collection '{self.collection.name}' supprimée")
 
     def reset(self) -> None:
-        """Reset the database"""
+        """Reset the database and recreate the collection"""
         logger.warning("Réinitialisation complète de la base de données ChromaDB")
-        self.client.reset()
-        logger.info("Base de données réinitialisée")
+        try:
+            # Delete the collection if it exists
+            try:
+                self.client.delete_collection(self.collection.name)
+            except Exception as e:
+                logger.debug(f"Collection deletion failed (might not exist): {e}")
+            
+            # Recreate the collection
+            self.collection = self.client.create_collection(
+                name=self.collection.name,
+                metadata={"hnsw:space": "cosine"}
+            )
+            logger.info("Base de données réinitialisée et collection recréée")
+        except Exception as e:
+            logger.error(f"Error during reset: {e}")
+            # If something went wrong, try to ensure we have a valid collection
+            self.collection = self.client.get_or_create_collection(
+                name=self.collection.name,
+                metadata={"hnsw:space": "cosine"}
+            )
 
     def get_all_documents(self) -> Dict:
         """
