@@ -183,7 +183,7 @@ TEST_CASES = [
 class RAGBenchmark:
     def __init__(self):
         # Test configurations
-        self.models = ["llama3.2:latest"]  # Your current Ollama models
+        self.models = ["llama3.3:latest", "mistral-small3.1:latest", "qwen2.5:32b", "qwq:latest", "deepseek-r1:70b", "deepseek-r1:32b", ]  # Your current Ollama models
         self.rerank_models = [
             None,  # No reranking
             "NV-RerankQA-Mistral-4B-v3",
@@ -481,14 +481,63 @@ Contenu:
             
             # Get response based on chat mode
             if chat_mode == "graph":
-                response_from_llm_logic = get_graph_augmented_results(
-                    self.vector_db,
-                    self.graph,
-                    test_case["question"],
-                    top_k=top_k,
-                    temperature=temperature,
-                    similarity_threshold=similarity_threshold
+                # First get results from vector DB
+                initial_results = self.vector_db.search(
+                    query=test_case["question"],
+                    n_results=top_k
                 )
+                
+                # Filter by similarity threshold
+                filtered_results = [
+                    doc for doc in initial_results if doc['distance'] <= (1.0 - similarity_threshold)
+                ]
+                
+                # Get graph augmented results - note the correct parameter order and no extra parameters
+                graph_results = get_graph_augmented_results(
+                    self.graph,
+                    filtered_results
+                )
+                
+                # Merge vector and graph results
+                combined_results = merge_results(filtered_results, graph_results)
+                
+                # Prepare context string for the prompt
+                if combined_results:
+                    context_str = "\n\n---\n\n".join(
+                        [f"Source {i+1} (distance: {doc.get('distance', 0):.4f}):\n{doc['document']}" 
+                         for i, doc in enumerate(combined_results)]
+                    )
+                else:
+                    context_str = "Aucun contexte pertinent trouvé après filtrage."
+                
+                # Construct prompt for LLM
+                prompt_template = """Tu es un assistant spécialisé dans l'analyse de contrats.
+Voici le contexte pertinent extrait des documents. Utilise ce contexte pour répondre à la question.
+Si l'information n'est pas dans le contexte, indique-le clairement.
+
+Contexte:
+{context}
+
+Question: {question}
+
+Réponse:"""
+                prompt = prompt_template.format(context=context_str, question=test_case["question"])
+                
+                # Call LLM and measure response time
+                llm_call_start_time = time.time()
+                llm_response_text = llm_chat.generate(
+                    prompt,
+                    options={"temperature": temperature}
+                )
+                llm_call_end_time = time.time()
+                llm_response_duration = llm_call_end_time - llm_call_start_time
+                
+                # Reconstruct the response dictionary
+                response_from_llm_logic = {
+                    "answer": llm_response_text,
+                    "context": [doc['document'] for doc in combined_results],
+                    "response_time": llm_response_duration
+                }
             else: # Normal mode
                 # 1. Retrieve context from vector_db
                 context_docs = self.vector_db.search(
