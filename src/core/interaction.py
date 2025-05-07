@@ -3,7 +3,6 @@ from document_processing.text_vectorizer import TextVectorizer
 from document_processing.vectordb_interface import VectorDBInterface
 from core.graph_manager import GraphManager
 from utils.logger import setup_logger
-from typing import List, Dict
 
 # Configurer le logger pour ce module
 logger = setup_logger(__file__)
@@ -203,75 +202,6 @@ def merge_results(vector_results, graph_results):
     
     return combined_results
 
-def hybrid_search(query: str, chroma_manager, n_results: int = 5) -> List[Dict]:
-    """
-    Effectue une recherche hybride combinant recherche par mot-clé, sémantique et filtrage.
-    
-    Args:
-        query: La question de l'utilisateur
-        chroma_manager: Instance de VectorDBInterface
-        n_results: Nombre de résultats souhaités
-        
-    Returns:
-        Liste des résultats pertinents avec scores pondérés
-    """
-    # Étape 1: Extraction du nom du document de la question
-    import re
-    doc_match = re.search(r"(?:dans|du|le|la|les)?\s+(?:contrat|document)\s+([A-Za-z0-9\s\-_]+)", query.lower())
-    target_doc = doc_match.group(1).strip() if doc_match else None
-    
-    # Étape 2: Recherche sémantique large
-    initial_results = chroma_manager.search(query, n_results=n_results * 2)
-    
-    # Étape 3: Pondération et filtrage des résultats
-    weighted_results = []
-    target_doc_results = []
-    other_results = []
-    
-    for result in initial_results:
-        # Calculer le score de similarité sémantique (1 - distance)
-        semantic_score = 1.0 - result['distance']
-        
-        # Vérifier si le résultat vient du document cible
-        doc_title = result['metadata'].get('document_title', '').lower()
-        is_target_doc = target_doc and target_doc.lower() in doc_title
-        
-        # Appliquer un bonus si c'est le document cible
-        final_score = semantic_score * 1.5 if is_target_doc else semantic_score
-        
-        # Créer un résultat pondéré
-        weighted_result = {
-            **result,
-            'weighted_score': final_score,
-            'is_target_doc': is_target_doc
-        }
-        
-        # Séparer les résultats par catégorie
-        if is_target_doc:
-            target_doc_results.append(weighted_result)
-        else:
-            other_results.append(weighted_result)
-    
-    # Étape 4: Combiner les résultats en privilégiant le document cible
-    if target_doc_results:
-        # Trier les résultats du document cible par score
-        target_doc_results.sort(key=lambda x: x['weighted_score'], reverse=True)
-        weighted_results.extend(target_doc_results)
-        
-        # Ajouter les meilleurs résultats des autres documents
-        other_results.sort(key=lambda x: x['weighted_score'], reverse=True)
-        weighted_results.extend(other_results[:n_results // 2])
-    else:
-        # Si aucun résultat du document cible, utiliser tous les résultats
-        weighted_results = sorted(
-            target_doc_results + other_results,
-            key=lambda x: x['weighted_score'],
-            reverse=True
-        )
-    
-    # Limiter le nombre final de résultats
-    return weighted_results[:n_results]
-
 def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = False) -> None:
     """
     Chat with the contract using embeddings for context and Ollama for generation
@@ -287,10 +217,6 @@ def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = False) 
     embeddings_manager = TextVectorizer()
     chroma_manager = VectorDBInterface(embeddings_manager)
 
-    # Utiliser la recherche hybride
-    results = hybrid_search(query, chroma_manager, n_results=n_context)
-    print(f"voila les résultats : {results}")
-
     graph_manager = None
     knowledge_graph = None
     if use_graph:
@@ -298,6 +224,11 @@ def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = False) 
         graph_manager = GraphManager(chroma_manager, embeddings_manager)
         # Load or build the graph
         knowledge_graph = load_or_build_graph(chroma_manager, embeddings_manager)
+
+    results = chroma_manager.search(query, n_results=n_context)
+    print(f"voila les résultats : {results}")
+    
+    if use_graph and knowledge_graph:
         graph_results = get_graph_augmented_results(knowledge_graph, results, n_additional=2)
         # Combine results (ensuring no duplicates)
         combined_results = merge_results(results, graph_results)
