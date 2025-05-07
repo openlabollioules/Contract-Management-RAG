@@ -8,37 +8,44 @@ langchain-ollama>=0.3.0
 langchain-experimental
 ollama==0.4.7
 
-# Traitement de PDF
+# Document Processing
+python-docx>=0.8.11  # For .docx files
 marker-pdf==1.6.2
 numpy==1.26.4
 ocrmypdf==16.10.0
 opencv-python==4.11.0.86
 pdf2image==1.17.0
-pdfminer.six==20250327
+pdfminer.six>=20220319  # Updated version
 PyMuPDF==1.25.5  # fitz
 PyPDF2==3.0.1
 pytesseract==0.3.13
 reportlab==4.3.1
 
-# Embeddings et modèles
+# Embeddings and Models
 onnxruntime==1.21.0
 sentence-transformers==4.0.2
 torch==2.6.0
 transformers==4.50.3
 
-# Utilitaires
+# Utilities
 fastapi==0.115.12
 langdetect==1.0.9
-pandas==2.2.3
+pandas>=2.0.0
 python-dotenv==1.1.0
 requests==2.32.3
 unidecode==1.3.8
 uvicorn==0.34.0
 watchdog==4.0.0
 
-# Graph et détection de communautés
+# Graph and Community Detection
 python-igraph>=0.10.6
 leidenalg>=0.9.1
 
-# Détection d'objets
+# Object Detection
 ultralytics==8.3.109
+
+# Progress Bars
+tqdm>=4.65.0
+
+# Logging
+loguru>=0.7.0
