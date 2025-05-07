@@ -263,6 +263,18 @@ class VectorDBInterface:
 
         logger.info(f"Ajout de {len(chunks)} documents à ChromaDB")
 
+        # Afficher les chunks
+        # print("\n📝 Affichage des chunks à ajouter:")
+        # print("=" * 80)
+        # for i, chunk in enumerate(chunks, 1):
+        #     print(f"\nChunk {i}/{len(chunks)}")
+        #     print("-" * 40)
+        #     print(f"Document: {chunk.get('metadata', {}).get('document_title', 'Sans titre')}")
+        #     print(f"Section: {chunk.get('metadata', {}).get('section_number', 'Non spécifiée')}")
+        #     print("\nContenu:")
+        #     print(chunk["content"])
+        #     print("-" * 40)
+
         # Generate embeddings
         logger.debug("Génération des embeddings pour les chunks")
         texts = [chunk["content"] for chunk in chunks]

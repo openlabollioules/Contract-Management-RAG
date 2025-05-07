@@ -84,3 +84,6 @@ scripts/.venv_new/
 visualize_test.py
 
 rag_reference.txt
+Contract/
+Contract_management/
+CS-IN_contract_manual.pdf
