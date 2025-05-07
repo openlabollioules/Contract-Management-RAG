@@ -203,12 +203,17 @@ class RAGBenchmark:
                             [3, 5, 7, 10],
                             [0.1, 0.3, 0.5, 0.7],
                             [0.5, 0.6, 0.7, 0.8],
-                            [True, False],
+                            [True],
                             ["graph"]
                         )]
         self.workspace_dir = Path(__file__).resolve().parent.parent
         self.contract_dir = self.workspace_dir / ".." / "data" / "Contract"
-        self.db_dir = self.workspace_dir / "chroma_db"
+        
+        # Modification - Utiliser le chemin absolu de la DB à la racine du projet
+        project_root = self.workspace_dir.parent  # Remonte d'un niveau pour atteindre le répertoire racine
+        self.db_dir = project_root / "chroma_db"
+        logger.info(f"Utilisation de la base de données à: {self.db_dir}")
+        
         self._verify_paths()
 
         # Initialize caches and components
@@ -227,7 +232,7 @@ class RAGBenchmark:
 
         self._prepare_result_files()
         self._init_rerankers()
-        self._prebuild_databases()
+        self._connect_to_database()
 
         # Start periodic analysis thread
         self.analysis_thread = threading.Thread(target=self._periodic_analysis)
@@ -241,6 +246,9 @@ class RAGBenchmark:
         if not files:
             raise FileNotFoundError("No supported files found in contract directory")
         logger.info(f"Found {len(files)} contract files.")
+        
+        if not self.db_dir.exists():
+            logger.warning(f"Database directory not found: {self.db_dir}. Running in read-only mode with existing database.")
 
     def _prepare_result_files(self):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -282,28 +290,144 @@ class RAGBenchmark:
             self.chunk_cache[file_path] = chunks
         return self.chunk_cache[file_path]
 
-    def _prebuild_databases(self):
-        for use_sum in {cfg.use_summarize for cfg in self.configs}:
-            if use_sum in self.db_cache:
-                continue
-            coll = f"contracts_{use_sum}".replace('-', '_')
-            db = VectorDBInterface(self.text_vectorizer, persist_directory=str(self.db_dir), collection_name=coll)
-            db.reset()
-            for file in self.contract_dir.iterdir():
-                if file.suffix.lower() not in {'.pdf', '.doc', '.docx'}:
+    def _connect_to_database(self):
+        """Connect to existing database in read-only mode without resetting or modifying it."""
+        logger.info(f"Connecting to existing database at: {self.db_dir}")
+        
+        # Création d'une seule instance de ChromaDB
+        import chromadb
+        try:
+            # Créer une seule instance du client ChromaDB
+            chroma_client = chromadb.PersistentClient(
+                path=str(self.db_dir),
+                settings=chromadb.config.Settings(
+                    anonymized_telemetry=False,
+                    allow_reset=False,  # Mode lecture seule
+                    is_persistent=True
+                )
+            )
+            
+            # Lister les collections disponibles - ChromaDB 0.6.0 retourne directement les noms
+            try:
+                collection_names = chroma_client.list_collections()
+                logger.info(f"Collections existantes dans la base: {collection_names}")
+            except Exception as e:
+                logger.error(f"Erreur lors de la récupération des collections: {e}")
+                # Essai direct avec la collection "contracts"
+                collection_names = ["contracts"]
+            
+            # Adapter notre classe VectorDBInterface pour utiliser le client existant
+            class ReadOnlyVectorDBInterface:
+                def __init__(self, client, collection_name, text_vectorizer):
+                    self.collection = client.get_collection(collection_name)
+                    self.embeddings_manager = text_vectorizer
+                
+                def search(self, query, n_results=5, filter_metadata=None):
+                    logger.info(f"Recherche dans ChromaDB: '{query}' (n_results={n_results})")
+                    query_embedding = self.embeddings_manager.get_embeddings([query])[0]
+                    results = self.collection.query(
+                        query_embeddings=[query_embedding],
+                        n_results=n_results * 2,
+                        where=filter_metadata,
+                    )
+                    
+                    formatted_results = []
+                    seen_originals = set()
+                    
+                    for i in range(len(results["ids"][0])):
+                        metadata = results["metadatas"][0][i]
+                        is_summary = metadata.get("is_summary", "false").lower() == "true"
+                        original_content = metadata.get("original_content", "")
+                        
+                        if is_summary:
+                            result = {
+                                "id": results["ids"][0][i],
+                                "document": results["documents"][0][i],
+                                "metadata": metadata,
+                                "distance": results["distances"][0][i],
+                                "is_summary": True,
+                                "original_content": original_content
+                            }
+                            formatted_results.append(result)
+                            seen_originals.add(original_content)
+                        elif results["documents"][0][i] not in seen_originals:
+                            result = {
+                                "id": results["ids"][0][i],
+                                "document": results["documents"][0][i],
+                                "metadata": metadata,
+                                "distance": results["distances"][0][i],
+                                "is_summary": False
+                            }
+                            formatted_results.append(result)
+                            
+                    formatted_results.sort(key=lambda x: x["distance"])
+                    return formatted_results[:n_results]
+            
+            # Si aucune collection n'est trouvée, essayons d'utiliser collection_names[0]
+            if not collection_names:
+                raise RuntimeError("Aucune collection n'existe dans la base de données")
+            
+            # Pour chaque configuration, utiliser la première collection disponible
+            for use_sum in {cfg.use_summarize for cfg in self.configs}:
+                if use_sum in self.db_cache:
                     continue
-                docs = []
-                for chunk in self._get_chunks(file):
-                    md = {k: str(getattr(chunk, k, '')) for k in ['section_number','hierarchy','document_title','position','total_chunks']}
-                    txt = f"Section: {md['section_number']}\nHierarchy: {md['hierarchy']}\n{chunk.content}"
-                    docs.append({'content': txt, 'metadata': md})
-                if use_sum:
-                    docs = self.summarizer.summarize_chunks(docs)
-                if docs:
-                    db.add_documents(docs)
-            graph = load_or_build_graph(db, self.text_vectorizer)
-            self.db_cache[use_sum] = (db, graph)
-            logger.info(f"Built DB (summarize={use_sum})")
+                
+                try:
+                    # Utiliser la première collection disponible
+                    collection_name = collection_names[0]
+                    logger.info(f"Utilisation de la collection: {collection_name}")
+                    
+                    # Créer notre wrapper de vectordb avec le client existant
+                    db = ReadOnlyVectorDBInterface(chroma_client, collection_name, self.text_vectorizer)
+                    
+                    # Valider que la collection contient des documents
+                    results = db.search("test", n_results=1)
+                    if not results:
+                        logger.warning(f"Collection '{collection_name}' est vide")
+                        continue
+                    
+                    # Tenter de charger le graphe depuis le fichier
+                    graph_path = self.workspace_dir.parent / "knowledge_graph.pkl"
+                    if graph_path.exists():
+                        try:
+                            # Charger directement avec pickle
+                            import pickle
+                            logger.info(f"Chargement du graphe depuis: {graph_path}")
+                            with open(str(graph_path), 'rb') as f:
+                                graph = pickle.load(f)
+                                if graph:
+                                    logger.info(f"Graphe chargé avec succès depuis: {graph_path}")
+                                    self.db_cache[use_sum] = (db, graph)
+                                    logger.info(f"Base de données et graphe chargés avec succès pour use_summarize={use_sum}")
+                                    continue
+                        except Exception as e:
+                            logger.warning(f"Échec du chargement du graphe: {e}")
+                    
+                    # Si nous sommes arrivés ici, c'est que nous n'avons pas pu charger le graphe
+                    # On va charger le graphe plus simplement avec la fonction existante
+                    try:
+                        from core.interaction import load_or_build_graph
+                        logger.info("Utilisation de load_or_build_graph")
+                        graph = load_or_build_graph(db, self.text_vectorizer)
+                        if graph:
+                            self.db_cache[use_sum] = (db, graph)
+                            logger.info(f"Graphe chargé/construit avec succès pour use_summarize={use_sum}")
+                            continue
+                        else:
+                            logger.warning("Échec de load_or_build_graph - graphe vide ou nul")
+                    except Exception as e:
+                        logger.warning(f"Échec de load_or_build_graph: {e}")
+                
+                except Exception as e:
+                    logger.warning(f"Échec avec la collection '{collection_name}': {e}")
+            
+            # Vérifier si nous avons réussi à configurer au moins une base de données
+            if not self.db_cache:
+                raise RuntimeError("Impossible de se connecter à une base de données valide")
+                
+        except Exception as e:
+            logger.error(f"Erreur de connexion à la base de données: {e}")
+            raise RuntimeError(f"Impossible de se connecter à une base de données valide: {e}")
 
     def _build_prompt(self, context: List[str], question: str) -> str:
         ctx = '\n\n---\n\n'.join(context) if context else 'Aucun contexte pertinent trouvé.'
