@@ -1,0 +1,418 @@
+[
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "normal"
+    },
+    "question": "Peux-tu m'indiquer les dates clés du Contrat A ?",
+    "response_time": 57.8811399936676,
+    "accuracy": 0.3220338983050847,
+    "semantic_sim": 0.720703125,
+    "answer": "Je suis désolé, mais je ne peux pas fournir d'informations sur les dates clés du Contrat A, car aucun contexte ou document relatif à ce contrat ne m'a été fourni. Pour pouvoir vous aider, j'aurais besoin des éléments suivants :\n\n1. **Le texte complet du Contrat A** : Cela me permettra d'identifier les clauses et les dates mentionnées.\n2. **Des informations spécifiques sur les dates recherchées** : Par exemple, s'agit-il des dates de signature, d'exécution, d'échéance, ou d'autres événements clés ?\n\nSi vous pouvez me fournir ces éléments, je serai en mesure de vous indiquer les dates clés du Contrat A."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "normal"
+    },
+    "question": "Dans le contrat A, quelle est la clause qui est la plus problématique du point de vue du fournisseur et pourquoi ?",
+    "response_time": 151.9100480079651,
+    "accuracy": 0.34375,
+    "semantic_sim": 0.837890625,
+    "answer": "Sans avoir accès au contenu spécifique du contrat A, il est impossible d'identifier précisément la clause la plus problématique pour le fournisseur. Cependant, voici quelques clauses courantes dans les contrats qui peuvent être problématiques pour un fournisseur, ainsi que les raisons potentielles :\n\n1. **Clause de responsabilité illimitée** :  \n   Si le contrat impose une responsabilité illimitée au fournisseur en cas de dommages ou de manquements, cela peut exposer le fournisseur à des risques financiers importants, dépassant parfois la valeur du contrat lui-même.\n\n2. **Clause de pénalité ou de retard sévère** :  \n   Des pénalités disproportionnées pour des retards de livraison ou des défauts de performance peuvent être très coûteuses pour le fournisseur, surtout si les délais ou les exigences sont difficiles à respecter.\n\n3. **Clause de résiliation unilatérale** :  \n   Si le client a le droit de résilier le contrat à tout moment sans motif valable, cela crée une incertitude pour le fournisseur quant à la stabilité du revenu et à la récupération des coûts engagés.\n\n4. **Clause de prix fixe avec coûts variables** :  \n   Un prix fixe convenu à l'avance peut devenir problématique si les coûts des matériaux ou des services augmentent significativement, entraînant une perte pour le fournisseur.\n\n5. **Clause de propriété intellectuelle restrictive** :  \n   Si le contrat cède tous les droits de propriété intellectuelle au client sans compensation adéquate, cela peut priver le fournisseur de la possibilité de réutiliser ou de monétiser son travail ailleurs.\n\n6. **Clause d'indemnisation large** :  \n   Une obligation d'indemniser le client pour des pertes indirectes ou conséquences imprévues peut exposer le fournisseur à des risques juridiques et financiers importants.\n\nPour une analyse précise, il serait nécessaire de consulter le texte exact du contrat A."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "normal"
+    },
+    "question": "Dans le contrat A, quel est le risque de change introduit par le fait qu'une partie des prix soient établis en roubles ?",
+    "response_time": 257.26564621925354,
+    "accuracy": 0.4811320754716981,
+    "semantic_sim": 0.9111328125,
+    "answer": "Le risque de change dans le contrat A, lié à l'établissement d'une partie des prix en roubles (RUB), découle principalement de la volatilité et des fluctuations du taux de change entre le rouble et la devise fonctionnelle ou de référence utilisée par les parties contractantes. Voici les risques clés :\n\n1. **Perte financière due aux variations de change** :  \n   Si une partie est payée en roubles mais a des coûts ou obligations libellés dans une autre devise (ex. euro, dollar), une dépréciation du rouble augmenterait le coût réel de la transaction pour cette partie, réduisant sa marge bénéficiaire. Inversement, une appréciation du rouble pourrait pénaliser l'autre partie.\n\n2. **Incertitude sur les flux de trésorerie** :  \n   La volatilité historique du rouble (liée à des facteurs géopolitiques, sanctions économiques, ou dépendance aux hydrocarbures) rend difficile la prévision des montants réels reçus/payés, compliquant la gestion budgétaire et la planification financière.\n\n3. **Déséquilibre contractuel** :  \n   Si le contrat ne prévoit pas de mécanisme d'ajustement (clause de révision, indexation sur un panier de devises), une partie pourrait être exposée à des pertes structurelles en cas de mouvement défavorable prolongé du rouble.\n\n4. **Coûts de couverture** :  \n   Pour atténuer ce risque, les parties pourraient recourir à des instruments financiers (contrats à terme, options, swaps de devises). Cependant, ces outils génèrent des coûts supplémentaires et exposent à un risque de contrepartie.\n\n**Recommandations pour limiter le risque** :  \n- Introduire une clause de partage du risque (ex. fourchette de variation acceptable du taux de change au-delà de laquelle les prix sont renégociés).  \n- Libeller les paiements dans une devise plus stable ou utiliser un panier de devises.  \n- Prévoir des mécanismes d'indexation sur un indice économique pertinent (ex. inflation russe).  \n\nEn l'absence de telles protections, le risque de change reste asymétrique et dépend du positionnement des parties (exportateur/importateur, résident/non-résident) par rapport à la zone rouble."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "normal"
+    },
+    "question": "Quelles sont les lois applicables mentionnées dans le contrat A ?",
+    "response_time": 329.06373715400696,
+    "accuracy": 0.3611111111111111,
+    "semantic_sim": 0.74365234375,
+    "answer": "Pour répondre à votre question, il faudrait que vous fournissiez le texte du **contrat A** ou la section pertinente où les lois applicables sont mentionnées. En général, dans une section introductive ou une clause spécifique (souvent intitulée **\"Loi applicable et juridiction compétente\"**), le contrat précise :\n\n1. **La loi qui régit l'interprétation et l'exécution du contrat** (par exemple, \"Le présent contrat est régi par le droit français\").  \n2. **La juridiction compétente en cas de litige** (par exemple, \"Tout litige sera soumis aux tribunaux de Paris\").\n\nSi vous partagez l'extrait concerné, je pourrai identifier précisément les lois applicables mentionnées dans le contrat A."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "normal"
+    },
+    "question": "Peux-tu me lister les éléments du contrat A qui impliquent le paiement potentiel d'indemnités ou de pénalités de la part du fournisseur ?",
+    "response_time": 383.1311810016632,
+    "accuracy": 0.45454545454545453,
+    "semantic_sim": 0.87939453125,
+    "answer": "Pour répondre à votre question, je vais supposer que le contrat A est un document standard contenant des clauses courantes relatives aux indemnités et pénalités. Voici une liste des éléments typiques qui pourraient impliquer le paiement d'indemnités ou de pénalités par le fournisseur :\n\n1. **Retard de livraison** :  \n   - Clause prévoyant des pénalités en cas de retard dans la livraison des biens ou services, souvent calculées en pourcentage du montant total ou par jour de retard.\n\n2. **Non-conformité des produits/services** :  \n   - Indemnisation ou pénalité si les produits ou services fournis ne respectent pas les spécifications contractuelles (qualité, quantité, etc.).\n\n3. **Résiliation anticipée** :  \n   - Clause prévoyant des indemnités en cas de résiliation du contrat par le fournisseur sans motif valable ou en violation des termes du contrat.\n\n4. **Manquement aux obligations contractuelles** :  \n   - Pénalités ou indemnités en cas de non-respect des obligations prévues (par exemple, non-respect des délais, défaut de performance).\n\n5. **Responsabilité et dommages** :  \n   - Clause d'indemnisation en cas de dommages causés par le fournisseur à l'acheteur ou à des tiers (par exemple, dommages matériels, préjudices corporels).\n\n6. **Violation de la propriété intellectuelle** :  \n   - Indemnisation si le fournisseur utilise ou fournit des éléments violant les droits de propriété intellectuelle de l'acheteur ou de tiers.\n\n7. **Non-respect des réglementations** :  \n   - Pénalités en cas de non-conformité du fournisseur aux lois et réglementations applicables (par exemple, normes de sécurité, respect des délais légaux).\n\n8. **Garanties non respectées** :  \n   - Indemnisation si les garanties offertes par le fournisseur sur les produits ou services ne sont pas honorées.\n\n9. **Coûts supplémentaires imprévus** :  \n   - Clause prévoyant des indemnités en cas de coûts supplémentaires causés par une faute ou une négligence du fournisseur.\n\n10. **Clause de force majeure non applicable** :  \n    - Pénalités si le fournisseur invoque abusivement la force majeure pour justifier un manquement à ses obligations.\n\nPour une analyse précise, il serait nécessaire d'examiner le contrat A en détail, car les termes spécifiques peuvent varier selon les accords contractuels."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "normal"
+    },
+    "question": "A partir du contrat A, peux-tu dresser la liste des actions à mener par le fournisseur en termes de documents à fournir au client ?",
+    "response_time": 386.63676285743713,
+    "accuracy": 0.18518518518518517,
+    "semantic_sim": 0.763671875,
+    "answer": "Pour pouvoir répondre précisément à votre question, j’ai besoin que vous me fournissiez l’extrait pertinent du **contrat A** qui détaille les obligations du fournisseur en matière de documents à fournir au client. Sans ce texte, je ne peux pas identifier les actions spécifiques requises. \n\nSi vous partagez l’extrait concerné, je pourrai :  \n1. Extraire les obligations documentaires du fournisseur.  \n2. Les lister de manière claire et concise.  \n\nMerci de copier-coller le texte pertinent ici !"
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "graph"
+    },
+    "question": "Dans le contrat A, quel est le risque de change introduit par le fait qu'une partie des prix soient établis en roubles ?",
+    "response_time": 570.540708065033,
+    "accuracy": 0.4528301886792453,
+    "semantic_sim": 0.88623046875,
+    "answer": "Le risque de change dans le contrat A, lié à l'établissement d'une partie des prix en roubles (RUB), découle principalement de la volatilité et des fluctuations du taux de change entre le rouble et la devise fonctionnelle ou de référence utilisée par les parties contractantes. Voici les principaux risques associés :\n\n1. **Perte de valeur pour l'acheteur** : Si le rouble se déprécie par rapport à la devise de l'acheteur (par exemple, EUR ou USD), ce dernier devra convertir davantage de sa monnaie locale pour payer le même montant en roubles, augmentant ainsi son coût réel.\n\n2. **Perte de valeur pour le vendeur** : Inversement, si le rouble s'apprécie, le vendeur recevra moins de valeur réelle lors de la conversion des roubles en sa devise locale, réduisant sa marge bénéficiaire ou ses revenus attendus.\n\n3. **Incertitude budgétaire** : Les fluctuations imprévisibles du taux RUB/devise de référence compliquent la planification financière pour les deux parties, notamment pour les contrats à long terme ou avec paiements échelonnés.\n\n4. **Coûts de couverture** : Pour atténuer ce risque, les parties pourraient recourir à des instruments financiers (comme des contrats à terme ou des options), mais cela engendre des coûts supplémentaires et expose à des risques de contrepartie.\n\n**Recommandations pour gérer ce risque** :  \n- Inclure une clause d'indexation liée à un taux de change de référence (ex. EUR/RUB) avec des seuils de tolérance (±X %).  \n- Préciser la devise prioritaire pour les paiements (avec option de conversion au choix de l'une des parties).  \n- Limiter l'exposition en fractionnant les paiements dans plusieurs devises ou en utilisant une devise neutre (ex. USD/EUR).  \n\nSans clauses spécifiques dans le contrat A, ce risque reste entièrement supporté par la partie dont la devise locale diffère du rouble, selon son rôle (acheteur/vendeur)."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "graph"
+    },
+    "question": "Peux-tu me lister les éléments du contrat A qui impliquent le paiement potentiel d'indemnités ou de pénalités de la part du fournisseur ?",
+    "response_time": 652.63534116745,
+    "accuracy": 0.48951048951048953,
+    "semantic_sim": 0.88427734375,
+    "answer": "Pour répondre à votre question, je vais supposer que le contrat A est un document standard contenant des clauses typiques relatives aux indemnités et pénalités. Voici une liste des éléments qui pourraient impliquer le paiement d'indemnités ou de pénalités de la part du fournisseur :\n\n1. **Clause de retard de livraison** : Si le fournisseur ne respecte pas les délais de livraison convenus, il peut être tenu de payer des pénalités de retard. Ces pénalités peuvent être calculées en fonction de la durée du retard et du préjudice subi par le client.\n\n2. **Clause de non-conformité** : En cas de livraison de biens ou services non conformes aux spécifications contractuelles, le fournisseur peut être obligé de verser des indemnités pour compenser les coûts de réparation, de remplacement ou de toute autre mesure corrective nécessaire.\n\n3. **Clause de garantie** : Si le fournisseur offre une garantie sur ses produits ou services et que ceux-ci présentent des défauts couverts par cette garantie, il peut être tenu de réparer, remplacer ou indemniser le client sans frais supplémentaires.\n\n4. **Clause de responsabilité** : Cette clause définit les cas dans lesquels le fournisseur est responsable des dommages causés au client ou à des tiers. Elle peut inclure des dispositions sur les indemnités à verser en cas de préjudice corporel, matériel ou financier.\n\n5. **Clause de résiliation anticipée** : Si le contrat est résilié avant son terme par le fournisseur sans motif valable, il peut être tenu de payer des pénalités ou des indemnités pour compenser les coûts encourus par le client en raison de cette résiliation.\n\n6. **Clause de force majeure** : Bien que cette clause exonère généralement les parties de leurs obligations en cas d'événements imprévisibles et insurmontables, elle peut également prévoir des indemnités ou des pénalités si le fournisseur ne prend pas les mesures nécessaires pour limiter les conséquences de ces événements.\n\n7. **Clause de confidentialité** : En cas de violation de la confidentialité des informations échangées dans le cadre du contrat, le fournisseur peut être tenu de verser des indemnités pour compenser les dommages subis par le client.\n\n8. **Clause de propriété intellectuelle** : Si le fournisseur utilise ou divulgue sans autorisation la propriété intellectuelle du client, il peut être obligé de payer des indemnités pour violation des droits de propriété intellectuelle.\n\n**Réponse finale :** Les éléments du contrat A qui impliquent le paiement potentiel d'indemnités ou de pénalités de la part du fournisseur sont principalement les clauses de retard de livraison, de non-conformité, de garantie, de responsabilité, de résiliation anticipée, de force majeure, de confidentialité et de propriété intellectuelle.\n\n**Remarque :** Cette liste est indicative et peut varier en fonction des spécificités du contrat A. Pour une analyse précise, il serait nécessaire d'examiner le document contractuel en question."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "normal"
+    },
+    "question": "Peux-tu m'indiquer les dates clés du Contrat A ?",
+    "response_time": 718.0930202007294,
+    "accuracy": 0.3220338983050847,
+    "semantic_sim": 0.72607421875,
+    "answer": "Je suis désolé, mais je ne peux pas fournir d'informations sur les dates clés du Contrat A, car aucun contexte ou document relatif à ce contrat ne m'a été fourni. Pour pouvoir vous aider, j'aurais besoin des éléments suivants :\n\n1. **Le texte complet du Contrat A** : Cela me permettra d'identifier les clauses et les dates mentionnées.\n2. **Des informations spécifiques sur les dates que vous recherchez** : Par exemple, la date de signature, la date d'entrée en vigueur, la date d'échéance, etc.\n\nSi vous pouvez me fournir ces éléments, je serai en mesure de vous indiquer les dates clés du Contrat A."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "graph"
+    },
+    "question": "A partir du contrat A, peux-tu dresser la liste des actions à mener par le fournisseur en termes de documents à fournir au client ?",
+    "response_time": 773.3638398647308,
+    "accuracy": 0.18518518518518517,
+    "semantic_sim": 0.763671875,
+    "answer": "Pour pouvoir répondre précisément à votre question, j’ai besoin que vous me fournissiez l’extrait pertinent du **contrat A** qui détaille les obligations du fournisseur en matière de documents à fournir au client. Sans ce texte, je ne peux pas identifier les actions spécifiques requises. \n\nSi vous partagez l’extrait concerné, je pourrai :  \n1. Extraire les obligations documentaires du fournisseur.  \n2. Les lister de manière claire et concise.  \n\nMerci de copier-coller le texte pertinent ici !"
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "graph"
+    },
+    "question": "Quelles obligations du contrat A doivent être impérativement intégrées aux contrats qu'ALSTOM signera avec ses fournisseurs ou sous-traitants ?",
+    "response_time": 826.526683807373,
+    "accuracy": 0.3961352657004831,
+    "semantic_sim": 0.869140625,
+    "answer": "Pour répondre à cette question, il est essentiel d'identifier les **obligations contractuelles clés** du contrat A qui doivent être répercutées dans les contrats signés par ALSTOM avec ses fournisseurs ou sous-traitants. Ces obligations peuvent inclure des clauses relatives à la qualité, aux délais, à la confidentialité, à la propriété intellectuelle, à la conformité légale, et aux responsabilités en cas de litige. Voici une liste non exhaustive des éléments à intégrer impérativement :\n\n1. **Qualité et normes techniques** :  \n   - Respect des spécifications techniques et des normes de qualité définies dans le contrat A.  \n   - Obligation de fournir des produits ou services conformes aux exigences du client final.  \n\n2. **Délais et pénalités de retard** :  \n   - Engagement à respecter les délais de livraison ou d'exécution, alignés sur ceux du contrat A.  \n   - Inclusion de clauses pénales en cas de retard, si prévues dans le contrat A.  \n\n3. **Confidentialité** :  \n   - Obligation de maintenir la confidentialité des informations échangées, notamment celles liées au projet ou au client final.  \n\n4. **Propriété intellectuelle** :  \n   - Clauses garantissant que les droits de propriété intellectuelle sur les livrables reviennent à ALSTOM ou au client final, selon les termes du contrat A.  \n\n5. **Conformité légale et réglementaire** :  \n   - Respect des lois et réglementations applicables, notamment en matière de sécurité, d'environnement et de travail.  \n\n6. **Responsabilité et assurance** :  \n   - Engagement des fournisseurs/sous-traitants à souscrire des assurances appropriées (responsabilité civile, dommages, etc.).  \n   - Limitation ou transfert de responsabilité en cas de dommage ou de non-conformité.  \n\n7. **Sous-traitance** :  \n   - Si le contrat A interdit ou encadre la sous-traitance, cette clause doit être répercutée dans les contrats avec les fournisseurs/sous-traitants.  \n\n8. **Résiliation et indemnisation** :  \n   - Conditions de résiliation du contrat alignées sur celles du contrat A.  \n   - Obligation d'indemniser ALSTOM en cas de manquement entraînant des pertes ou des dommages.  \n\n9. **Audit et contrôle** :  \n   - Droit pour ALSTOM de vérifier la conformité des livrables ou des processus du fournisseur/sous-traitant.  \n\n10. **Clause de force majeure** :  \n    - Alignement sur les dispositions du contrat A concernant les événements imprévus (pandémie, catastrophe naturelle, etc.).  \n\nCes obligations doivent être clairement formulées dans les contrats avec les fournisseurs/sous-traitants pour garantir qu'ALSTOM respecte ses propres engagements envers le client final et minimise les risques juridiques ou opérationnels."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "graph"
+    },
+    "question": "Peux-tu m'indiquer les dates clés du Contrat A ?",
+    "response_time": 891.9364469051361,
+    "accuracy": 0.3220338983050847,
+    "semantic_sim": 0.720703125,
+    "answer": "Je suis désolé, mais je ne peux pas fournir d'informations sur les dates clés du Contrat A, car aucun contexte ou document relatif à ce contrat ne m'a été fourni. Pour pouvoir vous aider, j'aurais besoin des éléments suivants :\n\n1. **Le texte complet du Contrat A** : Cela me permettra d'identifier les clauses et les dates mentionnées.\n2. **Des informations spécifiques sur les dates recherchées** : Par exemple, s'agit-il des dates de signature, d'exécution, d'échéance, ou d'autres événements clés ?\n\nSi vous pouvez me fournir ces éléments, je serai en mesure de vous indiquer les dates clés du Contrat A."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "normal"
+    },
+    "question": "Quelles obligations du contrat A doivent être impérativement intégrées aux contrats qu'ALSTOM signera avec ses fournisseurs ou sous-traitants ?",
+    "response_time": 974.8116872310638,
+    "accuracy": 0.3671497584541063,
+    "semantic_sim": 0.89990234375,
+    "answer": "Pour répondre à cette question, il est nécessaire d'examiner le contenu spécifique du **Contrat A** afin d'identifier les obligations qui doivent être transmises (ou \"flow down\") aux fournisseurs ou sous-traitants d'ALSTOM. En l'absence de détails sur le Contrat A, voici une approche générale des obligations typiques qui pourraient être impérativement intégrées :\n\n1. **Qualité et Conformité** :  \n   - Respect des normes techniques, réglementaires et de qualité spécifiées dans le Contrat A.  \n   - Certification des matériaux ou produits utilisés.  \n\n2. **Délais et Livraisons** :  \n   - Respect des échéances contractuelles pour la fourniture de biens ou services.  \n   - Pénalités ou clauses de retard applicables en cas de non-respect des délais.  \n\n3. **Confidentialité et Propriété Intellectuelle** :  \n   - Protection des informations confidentielles échangées.  \n   - Respect des droits de propriété intellectuelle d'ALSTOM ou de ses clients.  \n\n4. **Responsabilité et Assurance** :  \n   - Obligation de souscrire des assurances spécifiques (responsabilité civile, dommages, etc.).  \n   - Limitation de responsabilité conforme aux clauses du Contrat A.  \n\n5. **Sécurité et Environnement** :  \n   - Respect des normes de sécurité et des réglementations environnementales applicables.  \n   - Mise en œuvre de plans de prévention des risques.  \n\n6. **Audit et Contrôle** :  \n   - Droit pour ALSTOM ou ses clients d'auditer les processus du fournisseur/sous-traitant.  \n   - Obligation de fournir des rapports ou documents justificatifs.  \n\n7. **Résiliation et Pénalités** :  \n   - Conditions de résiliation alignées sur celles du Contrat A.  \n   - Clauses de pénalité ou de compensation en cas de manquement.  \n\n8. **Loi Applicable et Juridiction** :  \n   - Intégration des clauses relatives à la loi applicable et au tribunal compétent en cas de litige.  \n\nPour une réponse précise, il serait nécessaire d'analyser le Contrat A afin d'identifier les obligations spécifiques qui doivent être transmises aux fournisseurs ou sous-traitants."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "normal"
+    },
+    "question": "Peux-tu me lister les éléments du contrat A qui impliquent le paiement potentiel d'indemnités ou de pénalités de la part du fournisseur ?",
+    "response_time": 983.2592539787292,
+    "accuracy": 0.3076923076923077,
+    "semantic_sim": 0.6748046875,
+    "answer": "Le document fourni ne contient pas suffisamment d'informations pour identifier des clauses spécifiques relatives au paiement d'indemnités ou de pénalités par le fournisseur (NAVAL GROUP Atomenergomash). La section partagée se concentre sur la définition de l'\"Incoming Inspection\" et les informations générales sur les parties contractantes, sans aborder les termes financiers, sanctions ou responsabilités. \n\nPour répondre à votre question, il serait nécessaire d'examiner :\n1. **Clauses de responsabilité** (ex. retards, non-conformité).\n2. **Garanties du fournisseur**.\n3. **Conditions de résiliation** et conséquences financières.\n4. **Dispositions sur les litiges** ou les dommages.\n\nCes éléments ne sont pas visibles dans l'extrait fourni. Une analyse complète nécessiterait d’accéder aux sections pertinentes du contrat (ex. \"Paiements\", \"Responsabilités des parties\", \"Sanctions\")."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "graph"
+    },
+    "question": "Quelles sont les lois applicables mentionnées dans le contrat A ?",
+    "response_time": 1072.1529140472412,
+    "accuracy": 0.375,
+    "semantic_sim": 0.728515625,
+    "answer": "Pour répondre à votre question, il faudrait que vous fournissiez le texte du **contrat A** ou la section pertinente où les lois applicables sont mentionnées. En effet, les contrats incluent généralement une clause spécifique (souvent intitulée **\"Loi applicable et juridiction compétente\"**) qui indique clairement les lois régissant l'accord ainsi que les tribunaux compétents en cas de litige. \n\nVoici quelques éléments typiques à rechercher dans cette section :  \n1. **Loi applicable** : Par exemple, \"Le présent contrat est régi par le droit français.\" ou \"Les parties soumettent tout différend au droit de l'État de New York.\".  \n2. **Juridiction compétente** : Par exemple, \"Tout litige sera soumis aux tribunaux de Paris.\" ou \"Les parties acceptent la compétence exclusive des tribunaux fédéraux du comté de [X].\"  \n\nSi vous partagez le texte concerné, je pourrai identifier précisément les lois et juridictions mentionnées."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": true,
+      "chat_mode": "graph"
+    },
+    "question": "Dans le contrat A, quelle est la clause qui est la plus problématique du point de vue du fournisseur et pourquoi ?",
+    "response_time": 1136.4623460769653,
+    "accuracy": 0.3541666666666667,
+    "semantic_sim": 0.82568359375,
+    "answer": "Sans avoir accès au contenu spécifique du contrat A, il est impossible d'identifier précisément la clause la plus problématique pour le fournisseur. Cependant, voici quelques types de clauses couramment problématiques pour les fournisseurs, qui pourraient être pertinentes dans ce contexte :\n\n1. **Clause de responsabilité illimitée** : Si le contrat impose une responsabilité illimitée au fournisseur en cas de dommages ou de défaillances, cela peut exposer le fournisseur à des risques financiers importants.\n\n2. **Clause de pénalité excessive** : Des pénalités disproportionnées pour des retards de livraison ou des défauts de qualité peuvent être très préjudiciables pour le fournisseur, surtout si les délais ou les normes de qualité sont difficiles à respecter.\n\n3. **Clause de résiliation unilatérale** : Si le client a le droit de résilier le contrat à tout moment sans motif valable, cela crée une incertitude importante pour le fournisseur quant à la stabilité du contrat.\n\n4. **Clause de prix fixe avec coûts variables** : Si le contrat impose un prix fixe alors que les coûts des matériaux ou de la main-d'œuvre sont sujets à fluctuation, le fournisseur peut subir des pertes importantes.\n\n5. **Clause de propriété intellectuelle restrictive** : Si le contrat accorde au client des droits exclusifs sur la propriété intellectuelle développée par le fournisseur, cela peut limiter la capacité du fournisseur à réutiliser ou commercialiser ses innovations.\n\n6. **Clause de garantie étendue** : Une garantie trop longue ou trop large peut exposer le fournisseur à des coûts de maintenance ou de réparation imprévus.\n\nPour identifier la clause la plus problématique dans le contrat A, il faudrait examiner le texte spécifique du contrat et évaluer chaque clause en fonction des risques qu'elle présente pour le fournisseur."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "normal"
+    },
+    "question": "Dans le contrat A, quelle est la clause qui est la plus problématique du point de vue du fournisseur et pourquoi ?",
+    "response_time": 1204.2299461364746,
+    "accuracy": 0.3854166666666667,
+    "semantic_sim": 0.82763671875,
+    "answer": "Sans avoir accès au contenu spécifique du contrat A, il est impossible d'identifier précisément la clause la plus problématique pour le fournisseur. Cependant, voici quelques clauses courantes dans les contrats qui peuvent être problématiques pour un fournisseur, ainsi que les raisons potentielles :\n\n1. **Clause de responsabilité illimitée** :  \n   Si le contrat impose une responsabilité illimitée au fournisseur en cas de dommages ou de manquements, cela peut exposer le fournisseur à des risques financiers importants, dépassant potentiellement sa capacité à assumer ces coûts.\n\n2. **Clause de pénalité excessive** :  \n   Des pénalités disproportionnées pour des retards de livraison, des défauts de qualité ou d'autres manquements peuvent être très préjudiciables au fournisseur, surtout si les circonstances sont hors de son contrôle (par exemple, des perturbations de la chaîne d'approvisionnement).\n\n3. **Clause de résiliation unilatérale** :  \n   Si le client a le droit de résilier le contrat à tout moment sans motif valable, cela crée une incertitude pour le fournisseur quant à la stabilité du contrat et à la rentabilité de l'investissement initial.\n\n4. **Clause de prix fixe avec coûts variables** :  \n   Si le contrat impose un prix fixe alors que les coûts des matières premières ou d'autres facteurs externes sont volatils, le fournisseur peut subir des pertes importantes si ces coûts augmentent.\n\n5. **Clause de propriété intellectuelle restrictive** :  \n   Si le contrat transfère automatiquement tous les droits de propriété intellectuelle au client sans compensation adéquate, cela peut priver le fournisseur de la possibilité de réutiliser ou de commercialiser ses innovations.\n\n6. **Clause d'indemnisation large** :  \n   Une obligation d'indemniser le client pour des réclamations tierces, même si elles ne sont pas directement liées à la faute du fournisseur, peut exposer ce dernier à des risques juridiques et financiers importants.\n\nPour identifier la clause la plus problématique dans le contrat A, il faudrait examiner le texte spécifique du contrat et évaluer les implications de chaque clause pour le fournisseur en fonction de son contexte opérationnel et juridique."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "normal"
+    },
+    "question": "Quelles sont les lois applicables mentionnées dans le contrat A ?",
+    "response_time": 1060.9688868522644,
+    "accuracy": 0.3055555555555556,
+    "semantic_sim": 0.703125,
+    "answer": "Le texte fourni ne mentionne pas explicitement les lois applicables au contrat. Pour déterminer les lois applicables, il faudrait examiner la section du contrat consacrée au choix de la loi applicable ou à la clause de résolution des litiges, qui n'est pas présente dans l'extrait donné. \n\nSi cette information est absente, il serait nécessaire de consulter l'intégralité du contrat pour identifier les dispositions relatives à la loi applicable, généralement trouvées dans une section intitulée \"Loi applicable\" ou \"Juridiction compétente\". Sans ces détails, il n'est pas possible de répondre précisément à la question."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "normal"
+    },
+    "question": "Dans le contrat A, quel est le risque de change introduit par le fait qu'une partie des prix soient établis en roubles ?",
+    "response_time": 1170.9794750213623,
+    "accuracy": 0.4811320754716981,
+    "semantic_sim": 0.89599609375,
+    "answer": "Le risque de change dans le contrat A, lié à l'établissement d'une partie des prix en roubles (RUB), découle principalement de la volatilité et des fluctuations du taux de change entre le rouble et la devise fonctionnelle ou de référence utilisée par les parties contractantes. Voici les risques clés :\n\n1. **Perte financière due aux variations de change** :  \n   Si une partie est tenue de payer en roubles mais que sa devise locale (ex. EUR, USD) se déprécie face au rouble, le coût réel du paiement augmentera. Inversement, si le rouble se déprécie, la contrepartie recevra moins en valeur réelle.\n\n2. **Incertitude budgétaire** :  \n   Les fluctuations imprévisibles du rouble (souvent influencé par des facteurs géopolitiques, sanctions économiques ou volatilité des matières premières) rendent difficile l'anticipation des coûts/revenus réels, affectant la planification financière.\n\n3. **Risque de non-paiement ou de litige** :  \n   En cas de dévaluation brutale du rouble (ex. crise monétaire), une partie pourrait être tentée de renégocier les termes ou de ne pas honorer ses obligations, entraînant des conflits juridiques.\n\n4. **Coûts de couverture** :  \n   Pour atténuer ce risque, des instruments financiers (contrats à terme, options) pourraient être nécessaires, mais ils ajoutent des frais et une complexité opérationnelle.\n\n**Recommandations pour limiter le risque** :  \n- Inclure des clauses d'indexation ou de révision des prix en cas de variation significative du taux de change.  \n- Préciser la devise de règlement prioritaire (ex. EUR/USD avec conversion au cours du jour).  \n- Utiliser des mécanismes de couverture adaptés si les montants exposés sont importants.  \n\nEn résumé, le risque principal est une exposition aux fluctuations du rouble, pouvant générer des pertes financières ou des déséquilibres contractuels en l'absence de protections explicites dans le contrat."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "normal"
+    },
+    "question": "A partir du contrat A, peux-tu dresser la liste des actions à mener par le fournisseur en termes de documents à fournir au client ?",
+    "response_time": 1072.3872830867767,
+    "accuracy": 0.21481481481481482,
+    "semantic_sim": 0.72900390625,
+    "answer": "D'après la section 1.2 du contrat **ContratA_oriented.pdf**, l'**\"Incoming Inspection\"** (inspection entrante) implique que le fournisseur (Prime Contractor) doit fournir les documents suivants au client dans le cadre de la livraison de l'équipement :\n\n1. **Documentation en ligne (in-line documentation)** :  \n   - Cette documentation doit être exécutée en bonne et due forme, conformément aux exigences techniques et réglementaires applicables.  \n\n2. **Preuve de conformité aux paramètres techniques** :  \n   - Le fournisseur doit fournir des documents démontrant que l'inspection qualitative et quantitative de l'équipement a été réalisée selon les règles et réglementations techniques en vigueur.  \n\nEn résumé, le fournisseur doit remettre au client la documentation en ligne associée à l'équipement ainsi que les preuves de conformité aux exigences techniques lors de la livraison."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "graph"
+    },
+    "question": "Peux-tu m'indiquer les dates clés du Contrat A ?",
+    "response_time": 1080.8529000282288,
+    "accuracy": 0.3220338983050847,
+    "semantic_sim": 0.72607421875,
+    "answer": "Je suis désolé, mais je ne peux pas fournir d'informations sur les dates clés du Contrat A, car aucun contexte ou document relatif à ce contrat ne m'a été fourni. Pour pouvoir vous aider, j'aurais besoin des éléments suivants :\n\n1. **Le texte complet du Contrat A** : Cela me permettra d'identifier les clauses et les dates mentionnées.\n2. **Des informations spécifiques sur les dates que vous recherchez** : Par exemple, la date de signature, la date d'entrée en vigueur, la date d'échéance, etc.\n\nSi vous pouvez me fournir ces éléments, je serai en mesure de vous indiquer les dates clés du Contrat A."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "normal"
+    },
+    "question": "Quelles obligations du contrat A doivent être impérativement intégrées aux contrats qu'ALSTOM signera avec ses fournisseurs ou sous-traitants ?",
+    "response_time": 1172.0397169589996,
+    "accuracy": 0.4057971014492754,
+    "semantic_sim": 0.88134765625,
+    "answer": "Pour répondre à cette question, il est essentiel d'identifier les **obligations clés** du contrat A qui doivent être répercutées dans les contrats signés par ALSTOM avec ses fournisseurs ou sous-traitants. Ces obligations peuvent inclure des clauses relatives à la qualité, aux délais, à la confidentialité, à la propriété intellectuelle, à la conformité légale, et aux responsabilités en cas de litige. Voici une liste non exhaustive des éléments à intégrer impérativement :\n\n1. **Qualité et normes techniques** :  \n   - Respect des spécifications techniques et des normes de qualité définies dans le contrat A.  \n   - Obligation de fournir des produits ou services conformes aux exigences du client final.  \n\n2. **Délais et pénalités de retard** :  \n   - Engagement à respecter les délais de livraison ou d'exécution, avec des pénalités en cas de retard.  \n   - Clause de résiliation en cas de manquement répété aux délais.  \n\n3. **Confidentialité** :  \n   - Obligation de maintenir la confidentialité des informations échangées dans le cadre du contrat.  \n   - Interdiction de divulguer des données sensibles à des tiers sans autorisation.  \n\n4. **Propriété intellectuelle** :  \n   - Transfert ou licence des droits de propriété intellectuelle liés aux livrables.  \n   - Garantie que les produits ou services fournis ne violent pas les droits de tiers.  \n\n5. **Conformité légale et réglementaire** :  \n   - Respect des lois et réglementations applicables (par exemple, en matière de santé-sécurité, environnement, etc.).  \n   - Obligation de fournir des certifications ou attestations nécessaires.  \n\n6. **Responsabilité et assurance** :  \n   - Engagement à souscrire une assurance couvrant les risques liés à l'exécution du contrat.  \n   - Limitation ou répartition des responsabilités en cas de dommages ou préjudices.  \n\n7. **Sous-traitance** :  \n   - Obligation d'obtenir l'accord préalable d'ALSTOM pour toute sous-traitance.  \n   - Responsabilité solidaire du fournisseur principal en cas de défaillance du sous-traitant.  \n\n8. **Résolution des litiges** :  \n   - Clause attributive de juridiction ou de médiation pour régler les conflits.  \n   - Choix de la loi applicable au contrat.  \n\nCes obligations doivent être clairement définies et adaptées aux spécificités du contrat A pour garantir que les fournisseurs ou sous-traitants d'ALSTOM respectent les engagements pris envers le client final."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "graph"
+    },
+    "question": "Peux-tu me lister les éléments du contrat A qui impliquent le paiement potentiel d'indemnités ou de pénalités de la part du fournisseur ?",
+    "response_time": 1047.9486951828003,
+    "accuracy": 0.3706293706293706,
+    "semantic_sim": 0.7099609375,
+    "answer": "Le document fourni ne contient pas suffisamment d'informations pour identifier des clauses spécifiques relatives au paiement d'indemnités ou de pénalités par le fournisseur (NAVAL GROUP Atomenergomash). La section partagée se concentre sur la définition de l'\"Incoming Inspection\" et les informations générales sur les parties contractantes, sans aborder les termes financiers, sanctions ou responsabilités. \n\nPour répondre à votre question, il serait nécessaire d'examiner des sections typiquement associées aux **pénalités**, **indemnisation** ou **responsabilités** dans le contrat (ex. : clauses de retard, non-conformité, dommages et intérêts). Si ces éléments existent dans le document complet, ils pourraient inclure :\n\n1. **Retards de livraison** : Pénalités pour non-respect des délais.  \n2. **Non-conformité des équipements** : Indemnisation en cas de défauts post-\"Incoming Inspection\".  \n3. **Responsabilité contractuelle** : Clauses limitant ou engageant la responsabilité du fournisseur (ex. dommages matériels/corporels).  \n4. **Résolution anticipée** : Pénalités en cas de résiliation par le fournisseur sans motif valable.  \n\nVeuillez vérifier les sections suivantes dans le contrat complet (si disponibles) :  \n- **Article X \"Responsabilités et garanties\"**  \n- **Article Y \"Pénalités et indemnisation\"**  \n- **Article Z \"Résolution du contrat\"**.  \n\nSans ces éléments, aucune réponse précise n'est possible avec les données fournies."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "graph"
+    },
+    "question": "Dans le contrat A, quelle est la clause qui est la plus problématique du point de vue du fournisseur et pourquoi ?",
+    "response_time": 1066.6168022155762,
+    "accuracy": 0.3541666666666667,
+    "semantic_sim": 0.826171875,
+    "answer": "Sans avoir accès au contenu spécifique du contrat A, il est impossible d'identifier précisément la clause la plus problématique pour le fournisseur. Cependant, voici quelques types de clauses couramment problématiques pour les fournisseurs, qui pourraient être pertinentes dans ce contexte :\n\n1. **Clause de responsabilité illimitée** : Si le contrat impose une responsabilité illimitée au fournisseur en cas de dommages ou de défaillances, cela peut exposer le fournisseur à des risques financiers importants.\n\n2. **Clause de pénalité excessive** : Des pénalités disproportionnées pour des retards de livraison ou des défauts de qualité peuvent être très préjudiciables pour le fournisseur, surtout si les délais ou les normes de qualité sont difficiles à respecter.\n\n3. **Clause de résiliation unilatérale** : Si le client a le droit de résilier le contrat à tout moment sans motif valable, cela crée une incertitude importante pour le fournisseur quant à la stabilité du contrat.\n\n4. **Clause de prix fixe avec coûts variables** : Si le contrat impose un prix fixe alors que les coûts des matériaux ou de la main-d'œuvre sont sujets à fluctuation, le fournisseur peut subir des pertes importantes.\n\n5. **Clause de propriété intellectuelle restrictive** : Si le contrat accorde au client des droits exclusifs sur la propriété intellectuelle développée par le fournisseur, cela peut limiter la capacité du fournisseur à réutiliser ou commercialiser ses innovations.\n\n6. **Clause de garantie étendue** : Une garantie trop longue ou trop large peut exposer le fournisseur à des coûts de maintenance ou de réparation imprévus.\n\nPour identifier la clause la plus problématique dans le contrat A, il faudrait examiner le texte spécifique du contrat et évaluer chaque clause en fonction des risques qu'elle représente pour le fournisseur."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "graph"
+    },
+    "question": "Dans le contrat A, quel est le risque de change introduit par le fait qu'une partie des prix soient établis en roubles ?",
+    "response_time": 1058.7859189510345,
+    "accuracy": 0.4811320754716981,
+    "semantic_sim": 0.88720703125,
+    "answer": "Le risque de change dans le contrat A, dû à l'établissement d'une partie des prix en roubles, réside principalement dans la **volatilité du taux de change** entre le rouble et la devise fonctionnelle de chaque partie contractante. Voici les risques clés :\n\n1. **Fluctuations monétaires** : Si le rouble se déprécie par rapport à la devise de référence d'une partie (ex. euro ou dollar), cette dernière verra son coût réel augmenter, tandis que l'autre partie bénéficiera d'un gain relatif. Inversement, une appréciation du rouble réduirait les coûts pour l'acheteur en roubles mais diminuerait les recettes du vendeur.\n\n2. **Absence de clause de couverture** : Sans mécanisme de protection (ex. clause d'indexation, contrat de change à terme), les parties sont exposées aux variations imprévisibles des marchés de devises, surtout si le rouble est soumis à des facteurs géopolitiques ou économiques volatils (sanctions internationales, dépendance au pétrole).\n\n3. **Déséquilibre contractuel** : Si une seule partie assume ce risque (ex. le vendeur doit convertir les roubles en sa devise), elle pourrait subir des pertes significatives en cas de mouvement défavorable, menaçant la rentabilité du contrat ou sa solvabilité.\n\n4. **Retards de paiement** : Des délais dans les transactions aggraveraient l'exposition au risque de change pendant la période d'attente.\n\n**Recommandation** : Intégrer des clauses de réajustement périodique des prix en fonction du taux de change, ou recourir à des instruments financiers (hedging) pour stabiliser les montants en devise locale."
+  },
+  {
+    "config": {
+      "model": "command-a:latest",
+      "rerank_model": null,
+      "top_k": 3,
+      "temperature": 0.1,
+      "similarity_threshold": 0.5,
+      "use_summarize": false,
+      "chat_mode": "graph"
+    },
+    "question": "Quelles sont les lois applicables mentionnées dans le contrat A ?",
+    "response_time": 1008.9599990844727,
+    "accuracy": 0.3194444444444444,
+    "semantic_sim": 0.7060546875,
+    "answer": "Le texte fourni ne mentionne pas explicitement les lois applicables au contrat. Pour déterminer les lois applicables, il faudrait examiner la section du contrat dédiée aux dispositions générales ou à la résolution des litiges, qui n'est pas présente dans l'extrait fourni. \n\nSi vous avez accès à l'intégralité du contrat, cherchez une clause intitulée \"Loi applicable\" ou \"Juridiction compétente\", qui devrait indiquer les lois régissant le contrat et les tribunaux compétents en cas de litige. Sans cette information, il n'est pas possible de répondre à la question avec certitude."
+  }
+]

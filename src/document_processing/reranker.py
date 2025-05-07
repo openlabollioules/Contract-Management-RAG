@@ -12,7 +12,6 @@ class Reranker:
     """Handles reranking of search results using different models"""
     
     MODELS = {
-        "NV-RerankQA-Mistral-4B-v3": "nvidia/rerankqa-mistral-4b-v3",
         "bge-reranker-large": "BAAI/bge-reranker-large",
         "Jina-ColBERT-v1": "jinaai/jina-embeddings-v2-base-en"
     }
