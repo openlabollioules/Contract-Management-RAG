@@ -56,7 +56,7 @@ class LLMChat:
         """
         # Get model name from environment variables or use default
         if model is None:
-            self.model = os.getenv("LLM_MODEL", "mistral-small3.1:latest")
+            self.model = os.getenv("LLM_MODEL", "command-a:latest")
         else:
             self.model = model
 
@@ -122,7 +122,7 @@ class LLMChat:
 
         logger.debug("Appel à ollama.generate...")
         response = ollama.generate(
-            model=self.model, prompt=prompt, stream=stream, **kwargs
+            model=self.model, prompt=prompt, stream=stream, **kwargs, options={'temperature':0.7}
         )
         logger.debug("Réponse reçue")
 

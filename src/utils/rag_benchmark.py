@@ -198,8 +198,8 @@ class RAGBenchmark:
         self.test_cases = test_cases
         self.configs = [Config(m, r, k, t, s, u, c)
                         for m, r, k, t, s, u, c in product(
-                            ["command-a:latest"],
-                            [None, "bge-reranker-large", "Jina-ColBERT-v1"],
+                            ["mistral-small3.1:latest"],
+                            ["bge-reranker-large", "Jina-ColBERT-v1"],
                             [3, 5, 7, 10],
                             [0.1, 0.3, 0.5, 0.7],
                             [0.5, 0.6, 0.7, 0.8],
@@ -429,21 +429,6 @@ class RAGBenchmark:
             logger.error(f"Erreur de connexion à la base de données: {e}")
             raise RuntimeError(f"Impossible de se connecter à une base de données valide: {e}")
 
-    def _build_prompt(self, context: List[str], question: str) -> str:
-        ctx = '\n\n---\n\n'.join(context) if context else 'Aucun contexte pertinent trouvé.'
-        return f"Tu es un assistant spécialisé dans l'analyse de contrats.\nContexte:\n{ctx}\nQuestion: {question}\nRéponse:"
-
-    def _calculate_metrics(self, answer: str, expected: str) -> Dict[str, float]:
-        # keyword accuracy
-        terms = set(expected.lower().split())
-        found = sum(1 for t in terms if t in answer.lower())
-        acc = found/len(terms) if terms else 0.0
-        # semantic similarity using cached embeddings
-        emb_ans = self.text_vectorizer.get_embeddings([answer])[0]
-        emb_exp = self.text_vectorizer.get_embeddings([expected])[0]
-        sim = float(np.dot(emb_ans, emb_exp)/(np.linalg.norm(emb_ans)*np.linalg.norm(emb_exp))) if np.linalg.norm(emb_ans) and np.linalg.norm(emb_exp) else 0.0
-        return {'accuracy': acc, 'semantic_sim': sim}
-
     def _run_single(self, cfg: Config, case: Dict[str, Any]) -> None:
         res = {'config': asdict(cfg), 'question': case['question'], 'response_time': None, 'accuracy': None, 'semantic_sim': None}
         try:
@@ -455,9 +440,32 @@ class RAGBenchmark:
                 docs = merge_results(filtered, aug)
             else:
                 docs = filtered
-            context = [d['document'] for d in docs]
+                
+            # S'assurer que docs contient des chaînes de caractères et non des dictionnaires
+            context = []
+            for d in docs:
+                if isinstance(d, dict) and 'document' in d:
+                    context.append(d['document'])
+                elif isinstance(d, str):
+                    context.append(d)
+                else:
+                    logger.warning(f"Format inattendu dans les résultats: {type(d)}")
+
             if cfg.rerank_model and cfg.rerank_model in self.rerankers:
-                context = self.rerankers[cfg.rerank_model].rerank(case['question'], context, cfg.top_k)
+                reranked_docs = self.rerankers[cfg.rerank_model].rerank(case['question'], context, cfg.top_k)
+                # Extraire le texte des documents reclassés
+                context = []
+                for doc in reranked_docs:
+                    if isinstance(doc, dict):
+                        if 'text' in doc:
+                            context.append(doc['text'])
+                        elif 'document' in doc:
+                            context.append(doc['document'])
+                        else:
+                            logger.warning(f"Document reclassé sans champ texte reconnu: {doc.keys() if hasattr(doc, 'keys') else type(doc)}")
+                    else:
+                        context.append(doc)
+                
             llm = LLMChat(model=cfg.model)
             prompt = self._build_prompt(context, case['question'])
             t0 = time.time()
@@ -473,6 +481,30 @@ class RAGBenchmark:
             with open(self.json_file, 'w', encoding='utf-8') as f:
                 json.dump(self.results, f, ensure_ascii=False, indent=2)
 
+    def _build_prompt(self, context: List[str], question: str) -> str:
+        # Vérifier que tous les éléments du contexte sont bien des chaînes
+        context_strings = []
+        for item in context:
+            if isinstance(item, dict) and 'document' in item:
+                context_strings.append(item['document'])
+            elif isinstance(item, str):
+                context_strings.append(item)
+            else:
+                logger.warning(f"Élément de contexte ignoré car format non reconnu: {type(item)}")
+                
+        ctx = '\n\n---\n\n'.join(context_strings) if context_strings else 'Aucun contexte pertinent trouvé.'
+        return f"Tu es un assistant spécialisé dans l'analyse de contrats.\nContexte:\n{ctx}\nQuestion: {question}\nRéponse:"
+
+    def _calculate_metrics(self, answer: str, expected: str) -> Dict[str, float]:
+        # keyword accuracy
+        terms = set(expected.lower().split())
+        found = sum(1 for t in terms if t in answer.lower())
+        acc = found/len(terms) if terms else 0.0
+        # semantic similarity using cached embeddings
+        emb_ans = self.text_vectorizer.get_embeddings([answer])[0]
+        emb_exp = self.text_vectorizer.get_embeddings([expected])[0]
+        sim = float(np.dot(emb_ans, emb_exp)/(np.linalg.norm(emb_ans)*np.linalg.norm(emb_exp))) if np.linalg.norm(emb_ans) and np.linalg.norm(emb_exp) else 0.0
+        return {'accuracy': acc, 'semantic_sim': sim}
 
     def _periodic_analysis(self):
         while not self.analysis_event.wait(timeout=60):

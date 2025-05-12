@@ -2,6 +2,7 @@ from document_processing.llm_chat import ask_ollama
 from document_processing.text_vectorizer import TextVectorizer
 from document_processing.vectordb_interface import VectorDBInterface
 from core.graph_manager import GraphManager
+from document_processing.reranker import Reranker
 from utils.logger import setup_logger
 
 # Configurer le logger pour ce module
@@ -202,7 +203,7 @@ def merge_results(vector_results, graph_results):
     
     return combined_results
 
-def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = False) -> None:
+def chat_with_contract(query: str, n_context: int = 5, use_graph: bool = False) -> None:
     """
     Chat with the contract using embeddings for context and Ollama for generation
 
@@ -216,6 +217,7 @@ def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = False) 
     # Initialize managers
     embeddings_manager = TextVectorizer()
     chroma_manager = VectorDBInterface(embeddings_manager)
+    reranker_manager = Reranker("bge-reranker-large")
 
     graph_manager = None
     knowledge_graph = None
@@ -226,14 +228,16 @@ def chat_with_contract(query: str, n_context: int = 3, use_graph: bool = False) 
         knowledge_graph = load_or_build_graph(chroma_manager, embeddings_manager)
 
     results = chroma_manager.search(query, n_results=n_context)
-    print(f"voila les résultats : {results}")
+    filtered_results = [d for d in results if d['distance'] <= 1-0.6]
+    reranked_docs = reranker_manager.rerank(query, filtered_results, 5)
+    print(f"voila les résultats : {filtered_results}")
     
     if use_graph and knowledge_graph:
         graph_results = get_graph_augmented_results(knowledge_graph, results, n_additional=2)
         # Combine results (ensuring no duplicates)
-        combined_results = merge_results(results, graph_results)
+        combined_results = merge_results(filtered_results, graph_results)
     else:
-        combined_results = results
+        combined_results = filtered_results
     
     # Prepare context for the prompt
     context_parts = []
