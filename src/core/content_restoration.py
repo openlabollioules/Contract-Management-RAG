@@ -78,6 +78,10 @@ def restore_important_content(original_text: str, chunks: List[Chunk]) -> List[C
             r"^[A-Z][A-Z\s]+:$",
             # Titres courts tout en majuscules
             r"^[A-Z][A-Z\s]{1,30}$",
+            # Titres de sections Markdown
+            r"^#{1,6}\s+.*$",
+            # Identifiants de section explicites
+            r"^(ARTICLE|Section|Chapter|§)\s+\d+(\.\d+)*",
         ]
 
         # Vérifier si la ligne correspond à un des patterns de titre
@@ -89,13 +93,43 @@ def restore_important_content(original_text: str, chunks: List[Chunk]) -> List[C
         if line.isupper() and len(line.split()) <= 5:
             return True
 
+        # Vérifier spécifiquement pour les titres de section markdown
+        if re.match(r"^#{1,6}\s+.*$", line) or re.match(r"^#{1,6}$", line):
+            return True
+
+        # Vérifier pour les titres de style "1.1 Definitions"
+        if re.match(r"^(\d+\.)+\d*\s+[A-Z][a-z]+.*$", line):
+            return True
+
         return False
 
     # Critères pour identifier les lignes juridiques importantes - APPROCHE TRÈS PERMISSIVE
     def is_important_legal_content(line):
         # D'abord vérifier si c'est un titre - si oui, ce n'est pas du contenu juridique à restaurer
         if is_title(line):
+            # Exception: Si la ligne commence par une lettre/nombre entre parenthèses comme (a), (b), etc.,
+            # ou des formats comme a), b) - c'est probablement une liste d'items juridiques, pas un titre
+            if re.match(r"^\([a-zA-Z0-9]\)|^[a-zA-Z0-9]\)", line):
+                return True
             return False
+
+        # Format de liste numérotée qui doit être considéré comme contenu juridique
+        if re.match(r"^\([a-zA-Z0-9]\)|^[a-zA-Z0-9]\)", line):
+            return True
+
+        # Si la ligne commence par "Whereas, " c'est probablement un préambule de contrat à conserver
+        if line.startswith("Whereas,") or line.startswith("WHEREAS,"):
+            return True
+            
+        # Si la ligne commence par "for the " suivi d'un nom, c'est probablement un contenu important
+        if re.match(r"^for the [A-Za-z]", line):
+            return True
+            
+        # Détecter les paragraphes de texte simple (non-titres) de longueur significative
+        if len(line.split()) > 5 and not line.startswith('#') and not re.match(r"^\d+(\.\d+)*\s", line):
+            # Vérifier si c'est un paragraphe normal et non un titre
+            if not line.isupper() and not line.endswith(':'):
+                return True
 
         # Mots-clés juridiques importants (LISTE ÉTENDUE)
         legal_keywords = [
