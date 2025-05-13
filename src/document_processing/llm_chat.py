@@ -155,18 +155,19 @@ _ollama_chat = LLMChat()
 logger.debug("Instance globale _ollama_chat créée")
 
 
-def ask_ollama(prompt: str, model: str = "mistral-small3.1:latest", temperature: float = 0.5) -> str:
+def ask_ollama(prompt: str, temperature: float = 0.5, model: str = "mistral-small3.1:latest") -> str:
     """
     Generate a response using Ollama LLM (backward compatibility)
 
     Args:
         prompt: The input prompt
+        temperature: The temperature to use (default: 0.5)
         model: The model to use (default: mistral-small3.1:latest)
 
     Returns:
         The generated response
     """
-    logger.info(f"ask_ollama appelé avec modèle: {model}")
+    logger.info(f"ask_ollama appelé avec modèle: {model}, temperature: {temperature}")
     logger.debug(f"Changement de modèle de l'instance globale à: {model}")
     _ollama_chat.model = model
     logger.debug(f"Génération avec prompt: {prompt[:50]}...")

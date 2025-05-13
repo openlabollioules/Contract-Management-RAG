@@ -26,9 +26,10 @@ from document_processing.llm_chat import LLMChat
 from document_processing.text_chunker import TextChunker
 from document_processing.reranker import Reranker
 from core.graph_manager import GraphManager
-from core.interaction import load_or_build_graph, get_graph_augmented_results, merge_results
+from core.interaction import load_or_build_graph, get_graph_augmented_results, merge_results, chat_with_contract
 from document_processing.pdf_extractor import extract_pdf_text
 from utils.logger import setup_logger
+import document_processing.llm_chat
 
 # Configure logger
 logger = setup_logger(__file__)
@@ -324,52 +325,43 @@ class RAGBenchmark:
             raise RuntimeError(f"Database connection error: {e}")
 
     def _run_single(self, cfg: Config, case: Dict[str, Any]) -> None:
+        """Run a single benchmark case using chat_with_contract"""
         res = {'config': asdict(cfg), 'question': case['question'], 'response_time': None, 'accuracy': None, 'semantic_sim': None}
+        
         try:
-            db, graph = self.db_cache[cfg.use_summarize]
-            results = db.search(query=case['question'], n_results=cfg.top_k)
-            filtered = [d for d in results if d['distance'] <= 1-cfg.similarity_threshold]
-            if cfg.chat_mode=='graph':
-                aug = get_graph_augmented_results(graph, filtered)
-                docs = merge_results(filtered, aug)
-            else:
-                docs = filtered
-                
-            # S'assurer que docs contient des chaînes de caractères et non des dictionnaires
-            context = []
-            for d in docs:
-                if isinstance(d, dict) and 'document' in d:
-                    context.append(d['document'])
-                elif isinstance(d, str):
-                    context.append(d)
-                else:
-                    logger.warning(f"Format inattendu dans les résultats: {type(d)}")
+            from core.interaction import chat_with_contract
 
-            if cfg.rerank_model and cfg.rerank_model in self.rerankers:
-                reranked_docs = self.rerankers[cfg.rerank_model].rerank(case['question'], context, cfg.top_k)
-                # Extraire le texte des documents reclassés
-                context = []
-                for doc in reranked_docs:
-                    if isinstance(doc, dict):
-                        if 'text' in doc:
-                            context.append(doc['text'])
-                        elif 'document' in doc:
-                            context.append(doc['document'])
-                        else:
-                            logger.warning(f"Document reclassé sans champ texte reconnu: {doc.keys() if hasattr(doc, 'keys') else type(doc)}")
-                    else:
-                        context.append(doc)
-                
-            llm = LLMChat(model=cfg.model)
-            prompt = self._build_prompt(context, case['question'])
             t0 = time.time()
-            ans = llm.generate(prompt, temperature=cfg.temperature)
+            
+            
+            # Call chat_with_contract with our config
+            response = chat_with_contract(
+                query=case['question'],
+                n_context=cfg.top_k,
+                use_graph=(cfg.chat_mode == 'graph'),
+                temperature=cfg.temperature,
+                similarity_threesold=cfg.similarity_threshold, 
+                model=cfg.model,
+            )
+            
+            
             t1 = time.time()
-            metrics = self._calculate_metrics(ans, case['expected_answer'])
-            res.update({'answer': ans, 'response_time': t1-t0, **metrics})
+            
+            # Calculate metrics on the captured response
+            if response:
+                metrics = self._calculate_metrics(response, case['expected_answer'])
+                res.update({
+                    'answer': response, 
+                    'response_time': t1-t0, 
+                    **metrics
+                })
+            else:
+                res['error'] = "No response captured from chat_with_contract"
+            
         except Exception as e:
-            logger.exception("Error in run_single")
+            logger.exception(f"Error in run_single: {e}")
             res['error'] = str(e)
+        
         with self.results_lock:
             self.results.append(res)
             with open(self.json_file, 'w', encoding='utf-8') as f:

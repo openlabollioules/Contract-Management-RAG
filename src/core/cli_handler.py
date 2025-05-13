@@ -173,7 +173,7 @@ def handle_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        chat_with_contract(query, use_graph=False)
+        response = chat_with_contract(query, use_graph=False)
 
 def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
     """
@@ -211,7 +211,7 @@ def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        chat_with_contract(query, use_graph=True)
+        response = chat_with_contract(query, use_graph=True)
         
 def handle_search_mode(
     filepaths: List[str], search_query: str, force_reprocess: bool

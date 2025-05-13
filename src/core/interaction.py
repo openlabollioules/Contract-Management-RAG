@@ -203,7 +203,7 @@ def merge_results(vector_results, graph_results):
     
     return combined_results
 
-def chat_with_contract(query: str, n_context: int = 5, use_graph: bool = False) -> None:
+def chat_with_contract(query: str, n_context: int = 5, use_graph: bool = False, temperature: float = 0.5, similarity_threesold: float = 0.6, model: str = "mistral-small3.1:latest") -> None:
     """
     Chat with the contract using embeddings for context and Ollama for generation
 
@@ -228,8 +228,8 @@ def chat_with_contract(query: str, n_context: int = 5, use_graph: bool = False) 
         knowledge_graph = load_or_build_graph(chroma_manager, embeddings_manager)
 
     results = chroma_manager.search(query, n_results=n_context)
-    filtered_results = [d for d in results if d['distance'] <= 1-0.6]
-    reranked_docs = reranker_manager.rerank(query, filtered_results, 5)
+    filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
+    reranked_docs = reranker_manager.rerank(query, filtered_results, n_context)
     print(f"voila les résultats : {filtered_results}")
     
     if use_graph and knowledge_graph:
@@ -278,7 +278,7 @@ Si tu utilises un résumé, vérifie dans le contenu détaillé pour t'assurer d
 Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
 
     # Get response from Ollama
-    response = ask_ollama(prompt)
+    response = ask_ollama(prompt, temperature)
     logger.info("\n🤖 Réponse :")
     logger.info(response)
     print("\n🤖 Réponse :")
@@ -323,3 +323,4 @@ Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
     logger.info(f"- Résumés: {summaries}")
     logger.info(f"- Contenus originaux: {len(combined_results) - summaries - graph_sources}")
     logger.info(f"- Sources du graphe: {graph_sources}")
+    return response
