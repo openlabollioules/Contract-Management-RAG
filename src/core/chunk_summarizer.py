@@ -11,7 +11,7 @@ class ChunkSummarizer:
 
     def __init__(self):
         """Initialise le summarizer avec une instance de LLMChat"""
-        self.llm = LLMChat(
+        self.llm = LLMChat(model="mistral-small3.1:latest",
             system_prompt="""Tu es un assistant spécialisé dans le résumé de textes juridiques.
             Ta tâche est de produire des résumés concis mais informatifs des extraits de texte qui te sont fournis.
             Concentre-toi sur les points clés, les obligations, les conditions et les informations importantes.

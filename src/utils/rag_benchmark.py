@@ -37,149 +37,65 @@ logger = setup_logger(__file__)
 TEST_CASES = [
     {
         "question": "Peux-tu m'indiquer les dates clés du Contrat A ?",
-        "expected_answer": """
-        Voici les dates clés du Contrat A présent dans le fichier :
-        • Date de signature du contrat : 20 mars 2012.
-        • Date de commencement des travaux : correspond à la date de signature, soit le 20 mars 2012.
-        • Délai de 30 jours après le début du contrat : période prévue pour remplir certaines conditions supplémentaires.
-        • Délais de livraison : précisés dans l'Annexe 2 ("Delivery Schedule") pour chaque composant et document critique.
-        • Délai d'approbation des documents : 15 jours pour retour du client, 10 jours pour resoumission après commentaires.
-        """
+        "expected_answer": """• 2 février 2012 : signature du « Main Contract » n° 2012-KIT-002/2/07/2012 entre AAEM et CEPD, auquel le Contrat A est adossé.  
+            • 20 mars 2012 : signature du présent « Equipment Supply Contract » (Contrat A) entre ALSTOM Power Systems SA et AAEM.  
+            • 30 septembre 2012 (au plus tard) : signature du « Supplementary Agreement » devant formaliser tout ré-ajustement de prix - délai de 60 jours prévu à la clause 5.1.2 après constat d'une variation économique majeure.  
+            • 22 août 2017 : date estimée de remise à l'essai et mise en service de l'Unité 1 (Exhibit 2 - Delivery Schedule).  
+            • 22 août 2019 : date estimée de remise à l'essai et mise en service de l'Unité 2 (Exhibit 2 - Delivery Schedule)."""
     },
     {
         "question": "Peux-tu me lister les éléments du contrat A qui impliquent le paiement potentiel d'indemnités ou de pénalités de la part du fournisseur ?",
-        "expected_answer": """
-        Voici les éléments du Contrat A qui impliquent un paiement potentiel d'indemnités ou de pénalités par le fournisseur :
-        1. Retard de livraison d'équipement :
-        • Des pénalités journalières ("Equipment Delay Liquidated Damages") sont appliquées si le fournisseur dépasse les délais de livraison contractuels :
-        • 0,03 % du prix du composant/jour pendant le 1er mois,
-        • 0,04 % pendant le 2e mois,
-        • 0,05 % à partir du 3e mois.
-        • Ces pénalités sont plafonnées à 10 % du prix du composant concerné.
-        2. Retard dans la remise de documentation critique :
-        • Pénalités de 500 € par document et par semaine de retard,
-        • Plafond global fixé à 2 % du prix de l'unité concernée.
-        3. Non-respect des garanties de performance :
-        • Des pénalités peuvent s'appliquer si les performances garanties ne sont pas atteintes et que cela entraîne une demande du client final, sauf si la cause est externe au fournisseur.
-        4. Indemnisation pour dommages :
-        • Le fournisseur est responsable des dommages causés par des défauts de conception, fabrication ou négligence,
-        • Il couvre également les réclamations liées à des violations de droits de propriété intellectuelle.
-        5. Défauts non corrigés :
-        • En cas de défaut non réparé dans un délai raisonnable après notification écrite, le client peut faire exécuter les réparations par un tiers aux frais du fournisseur.
-        6. Résiliation pour retard :
-        • Si le fournisseur atteint le plafond des pénalités pour retard et ne respecte pas un délai de livraison additionnel, le contrat peut être résilié unilatéralement par le client.
-        """
+        "expected_answer": """Les pénalités contractuelles sont concentrées dans les articles 10, 12, 13 et 16 :
+            • Art 13.1 - « Equipment Delay LD » : 0,20 % du prix du composant et par semaine de retard, plafonné à 10 % du prix de ce composant citeturn17file3.  
+            • Art 13.2.1 - « Documentation Delay LD » : 500 €/document/semaine pour tout document critique livré hors délai citeturn17file13.  
+            • Art 13.3.4 - « Key-Milestone LD » en cas de non-atteinte d'une étape clef citeturn17file11.  
+            • Art 13.4 - « Performance Guarantee LD » : 0,13 % du prix contrat/MWe de déficit, avec un plafond global de 10 % du prix contrat citeturn19file2.  
+            • Art 10.5 à 10.9 - re-tests, inspections et frais associés répétés à la charge du fournisseur.  
+            • Art 10.14 / 10.17 / 10.18 - pénalités liées au respect des critères de puissance (1 197 MWe) et de rendement.  
+            • Art 4.32 - 4.33 - pénalités documentaires supplémentaires (supplémentaires à l'art 13.2).  
+            • Art 16.1 - plafond global de responsabilité fixé à 15 % du prix contrat citeturn19file0."""
     },
     {
         "question": "Dans le contrat A, quelle est la clause qui est la plus problématique du point de vue du fournisseur et pourquoi ?",
-        "expected_answer": """
-        La clause la plus problématique pour le fournisseur dans le Contrat A est probablement la suivante :
-
-        ⚠️ Clause 11 : Pénalités de Retard sur Livraison d'Équipement
-        📌 Pourquoi cette clause est problématique :
-            • Cumul des pénalités : Jusqu'à 0,05 %/jour à partir du 3e mois de retard.
-            • Plafond élevé : Plafonné à 10 % du prix de chaque composant.
-            • Application automatique : Sans obligation de démonstration d'un préjudice réel de la part de l'acheteur.
-            • Pénalités cumulables avec d'autres types de pénalités (ex. : documentation, performance) – ce qui peut générer une charge financière importante.
-
-        🎯 Risques concrets pour le fournisseur :
-            • Un simple retard logistique ou administratif peut entraîner des pénalités disproportionnées.
-            • Aucune clause de grâce, de mise en demeure préalable ni de prise en compte de circonstances atténuantes (hors force majeure explicite).
-        """
+        "expected_answer": """La clause la plus lourde pour ALSTOM est l'Article 16 « Limits of Liability ».  
+            - Elle plafonne la responsabilité cumulée du vendeur à 15 % du prix contrat (16.1 a & b), mais **exclut** de ce plafond les indemnités contractuelles (art 13) et les dommages nucléaires régis par la Convention de Vienne 1963, ce qui ouvre un risque financier bien supérieur, potentiellement illimité pour certains chefs de pertes citeturn19file0 citeturn19file6.  
+            - Elle vient s'ajouter aux pénalités spécifiques de l'Article 13 ; cumulées, ces sommes peuvent dépasser la marge du fournisseur.  
+            - Aucune contre-partie équivalente n'est prévue pour limiter la responsabilité du client (art 14 Compensation).  
+            En pratique, cet article oblige le fournisseur à s'assurer ou à provisionner largement, ce qui dégrade fortement son bilan et son prix."""
     },
     {
         "question": "Dans le contrat A, quel est le risque de change introduit par le fait qu'une partie des prix soient établis en roubles ?",
-        "expected_answer": """
-        Le Contrat A introduit un risque de change important du fait qu'une partie des prix soit libellée en roubles russes (RUB), comme cela est mentionné à l'article 7.1, qui distingue :
-            • une partie du prix en euros (EUR), et
-            • une partie du prix en roubles (RUB).
-
-        ⚠️ Nature du risque de change pour le fournisseur :
-            1. Volatilité du rouble : Le rouble est une monnaie soumise à une forte instabilité politique et économique. Sa valeur peut fluctuer brutalement, notamment en raison de :
-                ◦ sanctions internationales,
-                ◦ instabilités macroéconomiques,
-                ◦ décisions monétaires unilatérales de la Russie.
-            2. Risque de perte de marge : Si le fournisseur supporte des coûts en euros ou dollars mais facture en roubles, une dépréciation du rouble entre la signature et le paiement réduira significativement la valeur réelle perçue.
-            3. Absence apparente de clause d'ajustement : Le contrat ne semble pas comporter de mécanisme de couverture ou d'indexation en cas de variation du taux de change, ce qui laisse le fournisseur totalement exposé.
-        """
-    },
-    {
-        "question": "Quelles sont les lois applicables mentionnées dans le contrat A ?",
-        "expected_answer": """
-        Le Contrat A précise la loi applicable dans l'article 24.1, comme suit :
-        ⚖️ Loi applicable :
-        Le contrat est régi par le droit matériel suisse, à l'exclusion de ses règles de conflit de lois.
-        La Convention de Vienne de 1980 sur la vente internationale de marchandises ne s'applique pas.
-        
-        🧑‍⚖️ Règlement des litiges (Article 24.2) :
-        • En cas de litige non résolu à l'amiable :
-        • Il sera soumis à l'arbitrage selon les règles de la Chambre de commerce internationale (CCI).
-        • L'arbitrage se tiendra à Genève, en langue anglaise.
-        • La décision arbitrale est finale et contraignante pour les deux parties
-        """
+        "expected_answer": """Le risque de change est contenu :  
+            • Le prix contrat est établi et payé en euros (clau. 5.3.2), et seuls certains coûts locaux pourraient être supportés en roubles - ils sont répercutés via la formule d'indexation économique jointe à l'Exhibit 4.  
+            • La clause 5.1.2 prévoit que toute variation économique ou monétaire substantielle est compensée par un ré-ajustement de prix à négocier avec l'acheteur final et à formaliser dans un Supplementary Agreement sous 60 jours citeturn20file0.  
+            • Enfin, le financement couvert par l'agence COFACE (art 5.3 Financing Clause) assure au fournisseur des encaissements 100 % en euros et le protège contre un défaut de paiement en roubles citeturn20file9.  
+            En pratique, le fournisseur n'est exposé qu'à un risque résiduel, plafonné composant par composant par l'Article 13 (10 % max.) et globalement par l'Article 16 (15 % prix contrat)."""
     },
     {
         "question": "A partir du contrat A, peux-tu dresser la liste des actions à mener par le fournisseur en termes de documents à fournir au client ?",
-        "expected_answer": """
-        Voici la liste des actions documentaires à mener par le fournisseur selon le Contrat A, ainsi que leurs modalités :
-        📋 1. Livrables documentaires identifiés dans l'Annexe 2
-        • Le fournisseur doit fournir tous les documents listés dans l'Exhibit 2 ("Document Delivery Schedule").
-        • Cela inclut des documents techniques, qualité, essais, manuels de montage, mise en service, maintenance, etc.
-
-        📝 2. Documentation nécessitant validation du client
-        • Certains documents nécessitent revue, approbation ou acceptation du client. Cela est également spécifié dans l'Exhibit 2.
-        • Le client doit retourner les documents sous 15 jours avec commentaires.
-        • Le fournisseur doit soumettre une version corrigée sous 10 jours.
-
-        🏷️ 3. Format, codification et transmission
-        • Le format, codification, méthode d'envoi sont précisés dans un Supplementary Agreement à conclure dans les 90 jours suivant la signature.
-
-        ⚠️ 4. Documentation critique
-        • Toute "Critical Documentation" doit être livrée aux dates de l'Exhibit 2.
-        • En cas de retard, des pénalités de 500 € par document/semaine peuvent être appliquées, plafonnées à 2 % du prix de l'unité.
-
-        🌐 5. Langue
-        • Toute la documentation doit être fournie en anglais.
-
-        🚨 6. Correction des défauts
-        • En cas de défaut ou d'omission dans un document, le client peut exiger une correction immédiate et diligente.
-        """
+        "expected_answer": """Obligations documentaires (exhaustives à l'Annexe CDRL de l'Exhibit 2) :  
+            1. Plan Qualité, Procédures de soudage & QCP (Art 8 + Exhibit 5).  
+            2. Plans d'ensemble & de fabrication, calculs et nomenclatures.  
+            3. Rapports d'essais d'usine, protocoles FAT et certificats de conformité (Art 10).  
+            4. Programmes de montage, notices d'installation, d'exploitation et de maintenance.  
+            5. Dossiers environnement & sûreté (Art 9).  
+            6. « Incoming Control Certificate » remis après inspection sur site (clau. 4.4).  
+            7. Bank Guarantees : APBG et PBG par unité (clau. 5.2.7) citeturn20file10.  
+            8. End-User Certificate (Exhibit 10) et Cost Calculation Form dans les 30 j (clau. 5.1.2) citeturn20file1.  
+            9. Toutes les mises à jour périodiques requises par le « Contract Schedule » (Exhibit 3) et les rapports mensuels d'avancement.  
+            Tout retard sur un document critique déclenche la pénalité de 500 €/semaine prévue à l'art 13.2."""
     },
     {
         "question": "Quelles obligations du contrat A doivent être impérativement intégrées aux contrats qu'ALSTOM signera avec ses fournisseurs ou sous-traitants ?",
-        "expected_answer": """
-        Voici les obligations du Contrat A qui doivent impérativement être répercutées par ALSTOM dans ses contrats avec ses fournisseurs et sous-traitants (obligations dites "flow-down") :
-
-        🔐 1. Engagements de confidentialité
-        • Clause très stricte imposant la confidentialité pour une durée de 10 ans après divulgation.
-        • Toute sous-traitance impliquant l'accès à des informations sensibles doit être encadrée par des engagements similaires.
-
-        📄 2. Livraison de documentation critique
-        • Le fournisseur principal est responsable de livrer les documents critiques à des dates fixes sous peine de pénalités de 500 €/document/semaine, plafonnées à 2 % du prix de l'unité.
-        • Ces échéances doivent être transmises aux sous-traitants avec engagement contractuel ferme sur le respect des dates.
-
-        ⏱️ 3. Délais de livraison et pénalités
-        • Retards sur les composants entraînent des pénalités croissantes (jusqu'à 0,05 %/jour) avec un plafond de 10 % du prix du composant.
-        • Les sous-traitants livrant des composants critiques doivent se voir imposer des pénalités similaires pour permettre au fournisseur principal de se retourner contre eux si besoin.
-
-        ⚙️ 4. Garantie / responsabilité pour défauts
-        • Obligation pour le fournisseur de réparer ou remplacer les composants défectueux pendant la période de garantie (jusqu'à 24 mois après acceptation).
-        • ALSTOM doit s'assurer que ses fournisseurs offrent une garantie équivalente, avec droits de recours en cas de défaillance.
-
-        🛑 5. Clause de non-responsabilité du client pour l'installation
-        • Le Contrat A précise que le fournisseur ne sera pas tenu responsable des défauts liés à l'installation faite par des tiers. Si ALSTOM sous-traite l'installation, elle doit s'assurer que les responsabilités sont contractuellement bien réparties entre les acteurs concernés.
-
-        🔄 6. Garanties bancaires
-        • Obligation de fournir :
-        • Garantie de remboursement d'acompte (100 % APBG),
-        • Garantie de bonne exécution (5 % PBG),
-        • Délai précis de remise (20 jours après démarrage).
-        • Ces exigences doivent être imposées aux fournisseurs ou bancarisées à leur nom, si nécessaire.
-
-        📦 7. Obligations en cas de résiliation
-        • En cas de résiliation du contrat principal, ALSTOM peut devoir interrompre, transférer ou réclamer le matériel et les prestations.
-        • Elle doit prévoir des clauses de transfert de propriété anticipée et de continuité avec ses fournisseurs pour couvrir ce risque.
-        """
+        "expected_answer": """Clauses à « flow-down » obligatoires :  
+            • Qualité & documentation : Article 8 + Exhibit 5 (respect du QMS, formats de livrables).  
+            • Santé-Sécurité-Environnement : Article 9.  
+            • Inspections / essais & droit de visite client (Article 10, notamment 10.5-10.9).  
+            • Garantie et réparations (Article 12 : 2 ans + extensions après toute réparation).  
+            • Pénalités de délai et de performance (Article 13) - mêmes taux pour les sous-traitants que ceux supportés par ALSTOM.  
+            • Plafond de responsabilité et exclusions (Article 16) de façon à ce que le cap amont (15 %) reste effectif.  
+            • Conformité export / contrôle des données (Article 27).  
+            Sans transposition stricte de ces clauses, ALSTOM resterait exposé aux sanctions client qu'elle ne pourrait répercuter."""
     }
 ]
 
@@ -198,13 +114,13 @@ class RAGBenchmark:
         self.test_cases = test_cases
         self.configs = [Config(m, r, k, t, s, u, c)
                         for m, r, k, t, s, u, c in product(
-                            ["mistral-small3.1:latest"],
-                            ["bge-reranker-large", "Jina-ColBERT-v1"],
+                            ["mistral-small3.1:latest", "command-a:latest", "qwen3:30b-a3b"],
+                            ["bge-reranker-large"],
                             [3, 5, 7, 10],
-                            [0.1, 0.3, 0.5, 0.7],
-                            [0.5, 0.6, 0.7, 0.8],
+                            [0.3, 0.5],
+                            [0.6, 0.7, 0.8],
                             [True],
-                            ["graph"]
+                            ["chat"]
                         )]
         self.workspace_dir = Path(__file__).resolve().parent.parent
         self.contract_dir = self.workspace_dir / ".." / "data" / "Contract"
@@ -291,39 +207,54 @@ class RAGBenchmark:
         return self.chunk_cache[file_path]
 
     def _connect_to_database(self):
-        """Connect to existing database in read-only mode without resetting or modifying it."""
-        logger.info(f"Connecting to existing database at: {self.db_dir}")
+        """Connect to existing database in read-only mode."""
+        logger.info(f"Connecting to database at: {self.db_dir}")
         
-        # Création d'une seule instance de ChromaDB
+        # Check if the directory exists
+        if not self.db_dir.exists():
+            logger.error(f"Database directory does not exist: {self.db_dir}")
+            raise RuntimeError(f"Database directory does not exist: {self.db_dir}")
+        
+        # Check directory contents
+        db_files = list(self.db_dir.glob("*"))
+        logger.info(f"Database directory contents: {[f.name for f in db_files]}")
+        
+        # Create ChromaDB client
         import chromadb
         try:
-            # Créer une seule instance du client ChromaDB
-            chroma_client = chromadb.PersistentClient(
-                path=str(self.db_dir),
-                settings=chromadb.config.Settings(
-                    anonymized_telemetry=False,
-                    allow_reset=False,  # Mode lecture seule
-                    is_persistent=True
-                )
-            )
+            # Create client
+            chroma_client = chromadb.PersistentClient(path=str(self.db_dir))
             
-            # Lister les collections disponibles - ChromaDB 0.6.0 retourne directement les noms
+            # In v0.6.0, list_collections returns string names directly
+            collection_names = chroma_client.list_collections()
+            logger.info(f"Found collections: {collection_names}")
+            
+            if not collection_names:
+                logger.error("No collections found in database")
+                raise RuntimeError("No collections found in database")
+            
+            # Get first collection
+            collection_name = collection_names[0]
+            logger.info(f"Using collection: {collection_name}")
+            
+            # Check if collection has documents
             try:
-                collection_names = chroma_client.list_collections()
-                logger.info(f"Collections existantes dans la base: {collection_names}")
+                collection = chroma_client.get_collection(collection_name)
+                count = collection.count()
+                logger.info(f"Collection '{collection_name}' contains {count} documents")
             except Exception as e:
-                logger.error(f"Erreur lors de la récupération des collections: {e}")
-                # Essai direct avec la collection "contracts"
-                collection_names = ["contracts"]
+                logger.error(f"Error accessing collection: {e}")
+                raise
             
-            # Adapter notre classe VectorDBInterface pour utiliser le client existant
-            class ReadOnlyVectorDBInterface:
-                def __init__(self, client, collection_name, text_vectorizer):
+            # Create interface
+            class ChromaDBInterface:
+                def __init__(self, client, collection_name, embeddings_manager):
+                    self.client = client
+                    self.collection_name = collection_name
                     self.collection = client.get_collection(collection_name)
-                    self.embeddings_manager = text_vectorizer
+                    self.embeddings_manager = embeddings_manager
                 
                 def search(self, query, n_results=5, filter_metadata=None):
-                    logger.info(f"Recherche dans ChromaDB: '{query}' (n_results={n_results})")
                     query_embedding = self.embeddings_manager.get_embeddings([query])[0]
                     results = self.collection.query(
                         query_embeddings=[query_embedding],
@@ -363,71 +294,34 @@ class RAGBenchmark:
                     formatted_results.sort(key=lambda x: x["distance"])
                     return formatted_results[:n_results]
             
-            # Si aucune collection n'est trouvée, essayons d'utiliser collection_names[0]
-            if not collection_names:
-                raise RuntimeError("Aucune collection n'existe dans la base de données")
+            # Create database interface
+            db = ChromaDBInterface(chroma_client, collection_name, self.text_vectorizer)
             
-            # Pour chaque configuration, utiliser la première collection disponible
+            # Create or load graph
+            try:
+                from core.interaction import load_or_build_graph
+                logger.info("Loading graph with load_or_build_graph")
+                graph = load_or_build_graph(db, self.text_vectorizer)
+                if not graph:
+                    logger.warning("Graph is empty, creating minimal graph")
+                    from core.graph_manager import GraphManager
+                    graph = GraphManager()
+            except Exception as e:
+                logger.warning(f"Could not load graph: {e}, creating minimal graph")
+                from core.graph_manager import GraphManager
+                graph = GraphManager()
+            
+            # Cache for all configurations
             for use_sum in {cfg.use_summarize for cfg in self.configs}:
-                if use_sum in self.db_cache:
-                    continue
+                self.db_cache[use_sum] = (db, graph)
                 
-                try:
-                    # Utiliser la première collection disponible
-                    collection_name = collection_names[0]
-                    logger.info(f"Utilisation de la collection: {collection_name}")
-                    
-                    # Créer notre wrapper de vectordb avec le client existant
-                    db = ReadOnlyVectorDBInterface(chroma_client, collection_name, self.text_vectorizer)
-                    
-                    # Valider que la collection contient des documents
-                    results = db.search("test", n_results=1)
-                    if not results:
-                        logger.warning(f"Collection '{collection_name}' est vide")
-                        continue
-                    
-                    # Tenter de charger le graphe depuis le fichier
-                    graph_path = self.workspace_dir.parent / "knowledge_graph.pkl"
-                    if graph_path.exists():
-                        try:
-                            # Charger directement avec pickle
-                            import pickle
-                            logger.info(f"Chargement du graphe depuis: {graph_path}")
-                            with open(str(graph_path), 'rb') as f:
-                                graph = pickle.load(f)
-                                if graph:
-                                    logger.info(f"Graphe chargé avec succès depuis: {graph_path}")
-                                    self.db_cache[use_sum] = (db, graph)
-                                    logger.info(f"Base de données et graphe chargés avec succès pour use_summarize={use_sum}")
-                                    continue
-                        except Exception as e:
-                            logger.warning(f"Échec du chargement du graphe: {e}")
-                    
-                    # Si nous sommes arrivés ici, c'est que nous n'avons pas pu charger le graphe
-                    # On va charger le graphe plus simplement avec la fonction existante
-                    try:
-                        from core.interaction import load_or_build_graph
-                        logger.info("Utilisation de load_or_build_graph")
-                        graph = load_or_build_graph(db, self.text_vectorizer)
-                        if graph:
-                            self.db_cache[use_sum] = (db, graph)
-                            logger.info(f"Graphe chargé/construit avec succès pour use_summarize={use_sum}")
-                            continue
-                        else:
-                            logger.warning("Échec de load_or_build_graph - graphe vide ou nul")
-                    except Exception as e:
-                        logger.warning(f"Échec de load_or_build_graph: {e}")
-                
-                except Exception as e:
-                    logger.warning(f"Échec avec la collection '{collection_name}': {e}")
+            logger.info(f"Successfully connected to database and initialized graph")
             
-            # Vérifier si nous avons réussi à configurer au moins une base de données
-            if not self.db_cache:
-                raise RuntimeError("Impossible de se connecter à une base de données valide")
-                
         except Exception as e:
-            logger.error(f"Erreur de connexion à la base de données: {e}")
-            raise RuntimeError(f"Impossible de se connecter à une base de données valide: {e}")
+            import traceback
+            logger.error(f"Database connection error: {e}")
+            logger.error(f"Traceback:\n{traceback.format_exc()}")
+            raise RuntimeError(f"Database connection error: {e}")
 
     def _run_single(self, cfg: Config, case: Dict[str, Any]) -> None:
         res = {'config': asdict(cfg), 'question': case['question'], 'response_time': None, 'accuracy': None, 'semantic_sim': None}
@@ -469,7 +363,7 @@ class RAGBenchmark:
             llm = LLMChat(model=cfg.model)
             prompt = self._build_prompt(context, case['question'])
             t0 = time.time()
-            ans = llm.generate(prompt, options={'temperature':cfg.temperature})
+            ans = llm.generate(prompt, temperature=cfg.temperature)
             t1 = time.time()
             metrics = self._calculate_metrics(ans, case['expected_answer'])
             res.update({'answer': ans, 'response_time': t1-t0, **metrics})
@@ -533,6 +427,7 @@ class RAGBenchmark:
 
     def run(self):
         print("🚀 Starting RAG benchmark...")
+        print(self.configs)
         tasks = [(cfg, case) for cfg in self.configs for case in self.test_cases]
         # On soumet tout et on garde la correspondance future→(cfg,case)
         with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count() or 4) as executor:

@@ -120,9 +120,18 @@ class LLMChat:
         logger.debug(f"Prompt: {prompt[:50]}...")
         logger.debug(f"Paramètres supplémentaires: {kwargs}")
 
+        # Extract parameters that need to go into options
+        options = {}
+        if 'temperature' in kwargs:
+            options['temperature'] = kwargs.pop('temperature')
+        
+        # Add any other options that might be directly in kwargs
+        if 'options' in kwargs:
+            options.update(kwargs.pop('options'))
+
         logger.debug("Appel à ollama.generate...")
         response = ollama.generate(
-            model=self.model, prompt=prompt, stream=stream, **kwargs, options={'temperature':0.7}
+            model=self.model, prompt=prompt, stream=stream, options=options, **kwargs
         )
         logger.debug("Réponse reçue")
 
@@ -146,7 +155,7 @@ _ollama_chat = LLMChat()
 logger.debug("Instance globale _ollama_chat créée")
 
 
-def ask_ollama(prompt: str, model: str = "mistral-small3.1:latest") -> str:
+def ask_ollama(prompt: str, model: str = "mistral-small3.1:latest", temperature: float = 0.5) -> str:
     """
     Generate a response using Ollama LLM (backward compatibility)
 
@@ -161,7 +170,7 @@ def ask_ollama(prompt: str, model: str = "mistral-small3.1:latest") -> str:
     logger.debug(f"Changement de modèle de l'instance globale à: {model}")
     _ollama_chat.model = model
     logger.debug(f"Génération avec prompt: {prompt[:50]}...")
-    response = _ollama_chat.generate(prompt)
+    response = _ollama_chat.generate(prompt, temperature=temperature)
     logger.info(
         f"Réponse générée via ask_ollama (longueur: {len(response)} caractères)"
     )
