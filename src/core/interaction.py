@@ -278,7 +278,7 @@ Si tu utilises un résumé, vérifie dans le contenu détaillé pour t'assurer d
 Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
 
     # Get response from Ollama
-    response = ask_ollama(prompt, temperature)
+    response = ask_ollama(prompt, temperature, model)
     logger.info("\n🤖 Réponse :")
     logger.info(response)
     print("\n🤖 Réponse :")
