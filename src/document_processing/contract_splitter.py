@@ -435,6 +435,10 @@ class ContractSplitter:
         # Si le contenu ne contient qu'une seule ligne non vide
         if len(non_empty_lines) == 1:
             content_line = non_empty_lines[0]
+            
+            # Si la ligne contient des termes contractuels importants, ce n'est pas un titre vide
+            if re.search(r"\b(shall|may|must|will)\b", content_line):
+                return False
 
             # Vérifier si la ligne correspond à un modèle de titre
             for pattern in title_patterns:
@@ -492,7 +496,10 @@ class ContractSplitter:
                     or stripped.endswith("**")
                     or stripped.isupper()
                 ):
-                    is_title_line = True
+                    # PRESERVATION LOGIC: Don't mark as title if it contains important contract language
+                    # Example: "#### 13.3.1 For each Unit, Seller shall achieve..."
+                    if not re.search(r"\b(shall|may|must|will)\b", stripped) and len(stripped.split()) <= 7:
+                        is_title_line = True
 
             # Add the line only if it's not a title line or we've already removed a title
             if not is_title_line or title_removed:

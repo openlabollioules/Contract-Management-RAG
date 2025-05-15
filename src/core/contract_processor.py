@@ -166,6 +166,7 @@ Contenu:
         f"📊 Taille moyenne des chunks: {sum(len(c.content.split()) for c in chunks) / len(chunks):.1f} tokens"
     )
 
+
     # Display chunks details and removed content
     display_chunks_details(chunks)
     display_removed_content(text, chunks)

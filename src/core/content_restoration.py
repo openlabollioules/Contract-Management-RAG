@@ -61,6 +61,11 @@ def restore_important_content(original_text: str, chunks: List[Chunk]) -> List[C
 
     # Fonction pour détecter si une ligne est un titre
     def is_title(line):
+        # Exception pour les sections avec format markdown qui contiennent aussi du contenu juridique
+        # comme "#### 13.3.1 For each Unit, Seller shall achieve..."
+        if re.match(r"^#{1,6}\s+\d+(\.\d+)*\s+.*\b(shall|may|must|will)\b", line):
+            return False
+            
         # Patterns pour identifier les titres
         title_patterns = [
             # Titres markdown (# Titre)
@@ -130,6 +135,19 @@ def restore_important_content(original_text: str, chunks: List[Chunk]) -> List[C
             # Vérifier si c'est un paragraphe normal et non un titre
             if not line.isupper() and not line.endswith(':'):
                 return True
+
+        # Vérifier si la ligne correspond à un format de section Markdown (####) suivi de texte
+        if re.match(r"^#{1,6}\s+\d+(\.\d+)*\s", line):
+            return True
+            
+        # Spécifiquement pour restaurer les sections avec format markdown qui contiennent du contenu juridique
+        # comme '#### 13.3.1 For each Unit, Seller shall achieve...'
+        if re.match(r"^#{1,6}\s+\d+(\.\d+)*\s+.*\b(shall|may|must|will)\b", line):
+            return True
+            
+        # Vérifier les lignes courtes avec des mots-clés juridiques importants
+        if (len(line.split()) <= 5 and any(x in line.lower() for x in ["date", "signature", "between", "and", "list", "exhibit", "therefore", "contract", "shall", "mean", "defined", "pursuant", "under", "according", "damage", "payment"])):
+            return True
 
         # Mots-clés juridiques importants (LISTE ÉTENDUE)
         legal_keywords = [
