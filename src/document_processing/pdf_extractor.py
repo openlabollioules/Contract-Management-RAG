@@ -736,7 +736,7 @@ def extract_pdf_text(pdf_path):
             document_title = os.path.splitext(filename)[0]
 
         # Ajouter toujours le nom de fichier au titre pour assurer la traçabilité
-        full_document_title = f"{document_title} ({filename})"
+        full_document_title = f"{filename}"
         logger.info(f"📄 Titre final du document: {full_document_title}")
 
         # S'assurer que metadata est un dictionnaire
@@ -752,10 +752,7 @@ def extract_pdf_text(pdf_path):
         # Add metadata to the text in a safe way
         text_with_metadata = f"""
 Document Metadata:
-- Title: {full_document_title}
 - Filename: {filename}
-- Author: {metadata.get('author', 'Unknown')}
-- Pages: {metadata.get('pages', 'Unknown')}
 
 Content:
 {text}
@@ -961,16 +958,13 @@ def fallback_extract_text(pdf_path):
         # Créer un texte avec métadonnées
         text_with_metadata = f"""
 Document Metadata:
-- Title: {full_document_title}
 - Filename: {filename}
-- Author: Unknown
-- Pages: {len(doc)}
 
 Content:
 {cleaned_text}
 """
 
-        return text_with_metadata, full_document_title
+        return text_with_metadata, filename
 
     except Exception as e:
         logger.error(f"❌ Erreur lors de l'extraction de secours: {str(e)}")

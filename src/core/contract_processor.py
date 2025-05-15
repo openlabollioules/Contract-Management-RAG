@@ -43,6 +43,7 @@ def process_contract(filepath: str, summarize_chunks: bool = False) -> List[Chun
         "📄 Extraction du texte du PDF (avec détection des en-têtes/pieds de page et suppression des références d'images)..."
     )
     text, document_title = extract_pdf_text(filepath)
+
     logger.info(f"✅ Texte extrait ({len(text.split())} mots)")
 
     logger.info(

@@ -305,14 +305,14 @@ class ContractSplitter:
         if len(parts) == 1:
             if chapter_number in self.section_titles:
                 return [
-                    f"{chapter_number} (**{chapter_number}. {self.section_titles[chapter_number]}**)"
+                    f"{chapter_number} (**{chapter_number}. **)"
                 ]
             return [chapter_number]
 
         # Si c'est une sous-section
         if chapter_number in self.section_titles:
             return [
-                f"{chapter_number} (**{chapter_number}. {self.section_titles[chapter_number]}**) -> {section_number}"
+                f"{chapter_number} (**{chapter_number}. -> {section_number}"
             ]
         return [chapter_number, "->", section_number]
 
