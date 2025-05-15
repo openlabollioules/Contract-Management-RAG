@@ -115,7 +115,6 @@ def process_contract(filepath: str, summarize_chunks: bool = False) -> List[Chun
 Section: {metadata['section_number']}
 Hiérarchie complète: {hierarchy_str}
 Document: {metadata['document_title']}
-Position: {metadata['position']}/{metadata['total_chunks']}
 
 Contenu:
 {chunk.content}
