@@ -73,7 +73,7 @@ def process_contract(filepath: str, summarize_chunks: bool = False) -> List[Chun
             for sub_chunk in sub_chunks:
                 sub_chunk.section_number = chunk.section_number
                 sub_chunk.hierarchy = chunk.hierarchy
-                sub_chunk.document_title = chunk.document_title
+                sub_chunk.document_title = document_title
                 sub_chunk.parent_section = chunk.parent_section
                 sub_chunk.chapter_title = chunk.chapter_title
                 # Add position metadata
@@ -105,14 +105,9 @@ def process_contract(filepath: str, summarize_chunks: bool = False) -> List[Chun
             "hierarchy": hierarchy_str,
             "document_title": str(chunk.document_title or "unknown"),
             "parent_section": str(chunk.parent_section or "unknown"),
-            "chapter_title": str(chunk.chapter_title or "unknown"),
-            "title": str(document_title),
+            #"chapter_title": str(chunk.chapter_title or "unknown"),
+            #"title": str(document_title),
             "content": str(chunk.content),
-            "chunk_type": str(getattr(chunk, "chunk_type", "unknown")),
-            "position": str(getattr(chunk, "position", "0")),
-            "total_chunks": str(getattr(chunk, "total_chunks", "0")),
-            "chunk_size": str(len(chunk.content.split())),  # Approximate token count
-            "timestamp": str(time.time()),
         }
 
         # Enhanced content with metadata
