@@ -4,10 +4,12 @@ from document_processing.vectordb_interface import VectorDBInterface
 from core.graph_manager import GraphManager
 from document_processing.reranker import Reranker
 from utils.logger import setup_logger
+import os
+from dotenv import load_dotenv
 
 # Configurer le logger pour ce module
 logger = setup_logger(__file__)
-
+load_dotenv("config.env")
 
 def search_contracts(query: str, n_results: int = 5) -> None:
     """
@@ -203,7 +205,9 @@ def merge_results(vector_results, graph_results):
     
     return combined_results
 
-def chat_with_contract(query: str, n_context: int = 5, use_graph: bool = False, temperature: float = 0.5, similarity_threesold: float = 0.6, model: str = "mistral-small3.1:latest") -> None:
+def chat_with_contract(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False, 
+temperature: float = float(os.getenv("TEMPERATURE", 0.5)), similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
+model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest")) -> None:
     """
     Chat with the contract using embeddings for context and Ollama for generation
 

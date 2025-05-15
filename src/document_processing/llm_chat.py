@@ -155,7 +155,8 @@ _ollama_chat = LLMChat()
 logger.debug("Instance globale _ollama_chat créée")
 
 
-def ask_ollama(prompt: str, temperature: float = 0.5, model: str = "mistral-small3.1:latest") -> str:
+def ask_ollama(prompt: str, temperature: float = float(os.getenv("TEMPERATURE", 0.5)), 
+model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest")) -> str:
     """
     Generate a response using Ollama LLM (backward compatibility)
 
