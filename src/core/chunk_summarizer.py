@@ -88,23 +88,25 @@ class ChunkSummarizer:
             is_table = self._is_likely_table(chunk['content'])
             
             # Préparer le prompt approprié
-            if is_table:
-                prompt = f"""Voici un extrait de texte juridique contenant un tableau à résumer.
-Garde la structure tabulaire si elle est importante et résume le contenu en préservant les relations entre les colonnes.
-Indique explicitement qu'il s'agit d'un tableau et mentionne les titres des colonnes si présents.
+            print("Ce n'est pas une table: ")
+            print(chunk['content'])
+            prompt = f"""Voici un extrait de texte juridique à résumer :
 
 {chunk['content']}
 
-Résumé structuré :"""
-            else:
-                prompt = f"""Voici un extrait de texte juridique à résumer en 2-3 phrases maximum :
+Résumé concis :
 
-{chunk['content']}
-
-Résumé concis :"""
+Instructions : 
+ - Si l'extrait de texte contient un tableau, veille à fournir un résumé des informations contenues dans ce tableau toujours en restant dans la limite de 800 tokens.
+ - Tu ne dois jamais dépasser la barre symbolique des 800 tokens dans le résumé que tu fournis.
+ - Le but étant de fournir un résumé mais tout en gardant réinsérant dans le résumé les informations importantes (les numéro d'articles par exemple).
+"""
 
             # Générer le résumé
             summary = self.llm.generate(prompt)
+
+            print("voila le résultat: ")
+            print(summary)
 
             # Créer un nouveau chunk avec le résumé
             summarized_chunk = {

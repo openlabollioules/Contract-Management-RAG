@@ -23,7 +23,7 @@ class TextChunker:
 
     def __init__(
         self,
-        embedding_model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
+        embedding_model_name: str = "sentence-transformers/all-mpnet-base-v2",
         breakpoint_threshold_type: str = "percentile",
         breakpoint_threshold_amount: Optional[float] = None,
         buffer_size: int = 3,

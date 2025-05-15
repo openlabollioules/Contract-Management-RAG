@@ -188,7 +188,7 @@ class TextVectorizer:
         # Ajouter les autres modèles utilisés dans l'application
         if all_models:
             # Modèle utilisé par TextChunker
-            models_to_download.append("sentence-transformers/all-MiniLM-L6-v2")
+            models_to_download.append("sentence-transformers/all-mpnet-base-v2")
             # Ajouter d'autres modèles ici si nécessaire
 
         # Répertoire des modèles
