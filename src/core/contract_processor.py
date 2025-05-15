@@ -148,8 +148,6 @@ Contenu:
     # Print document metadata
     logger.info("\nDocument Metadata:")
     logger.info(f"- Title: {document_title}")
-    logger.info(f"- Author: Unknown")
-    logger.info(f"- Pages: Unknown")
 
     # Print processing time and statistics
     processing_time = time.time() - start_time
