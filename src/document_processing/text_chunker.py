@@ -25,18 +25,18 @@ class TextChunker:
         self,
         embedding_model_name: str = "sentence-transformers/all-mpnet-base-v2",
         breakpoint_threshold_type: str = "percentile",
-        breakpoint_threshold_amount: Optional[float] = None,
-        buffer_size: int = 3,
+        breakpoint_threshold_amount: Optional[float] = 0.6,
+        buffer_size: int = 8,
         number_of_chunks: Optional[int] = None,
         preserve_legal_structure: bool = True,
-        chunk_size: int = 1000,
-        chunk_overlap: int = 200,
+        chunk_size: int = 1024,
+        chunk_overlap: int = 256,
     ):
         """
         Initialise le manager de chunking sémantique.
 
         Args:
-            embedding_model_name: Nom du modèle d'embeddings à utiliser
+            embedding_model_name: Nom du modèle d'embeddings à utiliser (all-mpnet-base-v2 ou bge-m3)
             breakpoint_threshold_type: Type de seuil pour déterminer les points de rupture ('percentile', 'standard_deviation', 'interquartile')
             breakpoint_threshold_amount: Valeur du seuil pour les points de rupture (selon le type)
             buffer_size: Taille du buffer entre chunks
@@ -327,6 +327,7 @@ class TextChunker:
     def _calculate_optimal_threshold(self, text: str) -> float:
         """
         Calcule le seuil optimal pour le chunking sémantique basé sur la complexité du texte.
+        Optimisé pour all-mpnet-base-v2 et bge-m3.
 
         Args:
             text: Texte à analyser
@@ -373,14 +374,13 @@ class TextChunker:
             elif re.match(r"^[0-9]+\.", line):
                 section_depth = max(section_depth, 1)
 
-        # Calcul du seuil basé sur les indicateurs de complexité
-        base_threshold = 0.5  # Valeur par défaut
+        # Calcul du seuil basé sur les indicateurs de complexité et le modèle d'embedding
+        # Valeur par défaut optimisée pour all-mpnet-base-v2 et bge-m3
+        base_threshold = 0.65
 
         # Ajustement pour la longueur des phrases
         if avg_sentence_length > 35:
-            base_threshold -= (
-                0.1  # Phrases plus longues = seuil plus bas pour plus de découpage
-            )
+            base_threshold -= 0.05  # Phrases plus longues = seuil plus bas pour plus de découpage
         elif avg_sentence_length < 15:
             base_threshold += 0.05  # Phrases courtes = moins de découpage nécessaire
 
@@ -389,13 +389,11 @@ class TextChunker:
             (legal_terms_count + complex_sections * 2) / max(len(text.split()), 1) * 100
         )
         if complexity_factor > 5:
-            base_threshold -= 0.15  # Texte juridique complexe = plus de découpage
+            base_threshold -= 0.1  # Texte juridique complexe = plus de découpage
 
         # Ajustement pour les références croisées
         if cross_references > 10:
-            base_threshold -= (
-                0.1  # Beaucoup de références = plus de découpage nécessaire
-            )
+            base_threshold -= 0.05  # Beaucoup de références = plus de découpage nécessaire
 
         # Ajustement pour les termes définis
         defined_terms_density = defined_terms / max(len(text.split()), 1) * 100
@@ -404,10 +402,10 @@ class TextChunker:
 
         # Ajustement pour la profondeur des sections
         if section_depth >= 3:
-            base_threshold -= 0.1  # Structure complexe = plus de découpage
+            base_threshold -= 0.05  # Structure complexe = plus de découpage
 
         # Limites pour éviter des valeurs extrêmes
-        return max(0.2, min(0.8, base_threshold))
+        return max(0.4, min(0.8, base_threshold))
 
     def chunk_text(
         self, text: str, doc_id: str = None, doc_metadata: dict = None
@@ -565,7 +563,7 @@ class TextChunker:
         # 2. Traitement de chaque chunk structurel
         for chunk in initial_chunks:
             # Si le chunk est petit, le garder tel quel
-            if len(chunk.content.split()) <= 800:  # ~800 tokens
+            if len(chunk.content.split()) <= 1024:  # ~1024 tokens
                 final_chunks.append(chunk)
             else:
                 # Pour les sections longues, appliquer le chunking sémantique

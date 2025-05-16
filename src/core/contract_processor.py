@@ -23,7 +23,7 @@ def process_contract(filepath: str, summarize_chunks: bool = False) -> List[Chun
     """
     Process a contract file and return intelligent chunks using a hybrid approach:
     1. First split by legal structure (articles, sections, subsections)
-    2. Then apply semantic chunking for sections exceeding 800 tokens
+    2. Then apply semantic chunking for sections exceeding 1024 tokens
     3. Preserve hierarchical metadata for traceability
     4. Apply post-processing to restore important legal content that might have been lost
     5. Optionally summarize chunks using Ollama
@@ -56,16 +56,16 @@ def process_contract(filepath: str, summarize_chunks: bool = False) -> List[Chun
     # Then apply semantic chunking for large sections
     semantic_manager = TextChunker(
         breakpoint_threshold_type="percentile",
-        breakpoint_threshold_amount=0.6,
-        buffer_size=3,
-        chunk_size=800,  # Limite de ~800 tokens
-        chunk_overlap=100,  # Chevauchement de 100 tokens
+        breakpoint_threshold_amount=0.75,
+        buffer_size=8,
+        chunk_size=1024,  # Limite de ~1024 tokens
+        chunk_overlap=256,  # Chevauchement de 256 tokens
     )
 
     chunks = []
     for chunk in structure_chunks:
         # If section is small enough, keep it as is
-        if len(chunk.content.split()) < 800:  # Approximate token count
+        if len(chunk.content.split()) <= 1024:  # Approximate token count
             chunks.append(chunk)
         else:
             # For large sections, apply semantic chunking

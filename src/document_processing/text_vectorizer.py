@@ -171,6 +171,19 @@ class TextVectorizer:
     def download_models_for_offline_use(cls, model_name=None, all_models=True):
         """Télécharge les modèles pour une utilisation hors ligne
 
+        Télécharge et met en cache les modèles d'embeddings pour une utilisation future
+        sans connexion internet. Supporte deux modèles principaux :
+        
+        1. sentence-transformers/all-mpnet-base-v2 :
+           - Contexte: 768 tokens
+           - Précision: Excellente pour les textes courts
+           - Utilisé pour le chunking sémantique
+        
+        2. BAAI/bge-m3 :  
+           - Contexte: Peut gérer des textes plus longs (1024+)
+           - Précision: Supérieure à all-mpnet-base-v2 sur les textes juridiques longs
+           - Utilisé pour l'embedding de documents
+
         Args:
             model_name: Nom du modèle à télécharger (optionnel)
             all_models: Si True, télécharge aussi les autres modèles utilisés dans l'application
