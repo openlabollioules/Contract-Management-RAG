@@ -25,7 +25,7 @@ class TextChunker:
         self,
         embedding_model_name: str = "sentence-transformers/all-mpnet-base-v2",
         breakpoint_threshold_type: str = "percentile",
-        breakpoint_threshold_amount: Optional[float] = 0.6,
+        breakpoint_threshold_amount: Optional[float] = 0.75,
         buffer_size: int = 8,
         number_of_chunks: Optional[int] = None,
         preserve_legal_structure: bool = True,
@@ -56,6 +56,7 @@ class TextChunker:
         logger.debug(
             f"Initialisation du modèle d'embeddings HuggingFace: {embedding_model_name}"
         )
+
         self.embedding_model = HuggingFaceEmbeddings(model_name=embedding_model_name)
 
         # Stocker les paramètres de chunking
