@@ -231,17 +231,47 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest")) -> None:
         # Load or build the graph
         knowledge_graph = load_or_build_graph(chroma_manager, embeddings_manager)
 
+    # Get search results
     results = chroma_manager.search(query, n_results=n_context)
-    filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
-    reranked_docs = reranker_manager.rerank(query, filtered_results, n_context)
-    print(f"voila les résultats : {filtered_results}")
+    logger.info(f"Found {len(results)} initial search results")
     
+    # Filter results based on similarity threshold
+    filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
+    logger.info(f"After filtering: {len(filtered_results)} results remain")
+    
+    # If no results pass the threshold, use the original results
+    if not filtered_results and results:
+        logger.warning("No results passed the similarity threshold. Using unfiltered results instead.")
+        filtered_results = results
+    
+    # Only attempt reranking if we have results
+    if filtered_results:
+        try:
+            reranked_docs = reranker_manager.rerank(query, filtered_results, n_context)
+            logger.info(f"Successfully reranked {len(reranked_docs)} documents")
+        except Exception as e:
+            logger.error(f"Error during reranking: {e}")
+            logger.warning("Using filtered results without reranking")
+            reranked_docs = filtered_results
+    else:
+        logger.warning("No documents available for reranking")
+        reranked_docs = []
+    
+    # Use graph results if available
     if use_graph and knowledge_graph:
         graph_results = get_graph_augmented_results(knowledge_graph, results, n_additional=2)
         # Combine results (ensuring no duplicates)
         combined_results = merge_results(filtered_results, graph_results)
     else:
         combined_results = filtered_results
+    
+    # Check if we have any results to use
+    if not combined_results:
+        no_results_response = "Je n'ai pas trouvé d'information pertinente dans la base de connaissances pour répondre à votre question. Pourriez-vous reformuler ou préciser votre demande?"
+        print("\n🤖 Réponse :")
+        print(no_results_response)
+        logger.warning("No relevant documents found for the query")
+        return no_results_response
     
     # Prepare context for the prompt
     context_parts = []

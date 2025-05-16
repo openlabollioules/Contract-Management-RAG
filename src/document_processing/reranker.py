@@ -35,7 +35,13 @@ class Reranker:
     def rerank(self, query: str, documents: List, top_k: Optional[int] = None) -> List:
         """Rerank documents based on their relevance to the query"""
         if not documents:
+            logger.warning("No documents provided to rerank, returning empty list")
             return []
+            
+        # Add debug logging to inspect documents and their structure
+        logger.info(f"Reranking {len(documents)} documents")
+        logger.debug(f"Documents type: {type(documents)}")
+        logger.debug(f"Documents sample: {documents[:1] if len(documents) > 0 else 'empty'}")
             
         # Prepare pairs for reranking
         pairs = []
@@ -68,10 +74,26 @@ class Reranker:
         # Get relevance scores
         with torch.no_grad():
             scores = self.model(**features).logits.squeeze()
+            
+            # Add logging for scores shape before sigmoid
+            logger.debug(f"Scores shape before sigmoid: {scores.shape}")
             scores = torch.sigmoid(scores).cpu().numpy()
+            logger.debug(f"Scores shape after sigmoid: {scores.shape}, type: {type(scores)}")
             
         # Sort documents by score
-        scored_docs = list(zip(documents, scores))
+        try:
+            scored_docs = list(zip(documents, scores))
+            logger.debug(f"Scored docs length: {len(scored_docs) if scored_docs else 'Failed to create'}")
+        except Exception as e:
+            logger.error(f"Error creating scored_docs: {e}")
+            logger.error(f"Documents: {documents}")
+            logger.error(f"Scores: {scores}, shape: {scores.shape if hasattr(scores, 'shape') else 'no shape'}")
+            # If scores is a scalar, convert to an array with one element
+            if not hasattr(scores, "__iter__"):
+                logger.info("Converting scalar score to array")
+                scores = np.array([scores])
+            scored_docs = list(zip(documents, [scores] * len(documents)))
+            
         scored_docs.sort(key=lambda x: x[1], reverse=True)
         
         # Return top_k documents if specified

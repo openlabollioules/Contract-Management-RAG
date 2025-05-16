@@ -1,0 +1,345 @@
+CONTRACT
+
+between
+
+ALSTOM
+Atomenergomash LLC
+
+and
+
+ALSTOM Power Systems
+SA
+
+for the Supply of Turbine
+Hall Equipment
+
+for BALTIC Nuclear
+Power Plant Unit 1 & 2
+
+Dated: March 20th, 2012
+
+Contract Ref: 19/10/2012
+
+ДОГОВОР
+
+между
+
+ООО «АЛЬСТОМ
+Атомэнергомаш»
+
+и
+
+АЛЬСТОМ ПАУЭР СИСТЕМС
+СА
+
+на поставку
+оборудования для
+машинного зала
+
+энероблоков 1 и 2
+Балтийской атомной
+электростанции
+
+от «20» марта 2012 г.
+
+№ 19/10/2012
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract / March 20th, 2012
+1
+
+
+CONTENTS
+
+Terms and Conditions of the Contract
+
+Article 1. Definitions and Interpretations
+Article 2. Contract Effectiveness and Commencement of Work
+Article 3. Seller's Scope of Work
+Article 4. Buyer's Obligations
+Article 5. Price, Terms of Payment, Taxes and Duties, Financing
+Article 6. Delivery - Transfer of Title and Risk
+Article 7. Delivery Time - Extension of Time and Costs
+Article 8. Quality Assurance and Technical Documentation
+Article 9. Environmental and Safety Responsibilities
+Article 10. Inspection and Tests
+Article 11. Provisional Acceptance
+Article 12. Warranty and Defects Liability
+Article 13. Liquidated Damages and Performance Guarantee
+Article 14. Compensation
+Article 15. Nuclear Liability and Insurance
+Article 16. Limits of Liability
+
+СОДЕРЖАНИЕ
+
+Условия и положения Договора
+
+Статья 1. Определения и толкования
+Статья 2. Вступление Договора в силу и начало Работ
+Статья 3. Объем Работ Продавца
+Статья 4. Обязательства Покупателя
+Статья 5. Цена, порядок расчетов, налоги и пошлины, финансирование
+Статья 6. Поставка - переход права собственности и риски
+Статья 7. Сроки поставки - продление сроков и затраты
+Статья 8. Документация по обеспечению качества и техническая документация
+Статья 9. Обязательства по охране окружающей среды и безопасности
+Статья 10. Контроль и испытания
+Статья 11. Промежуточная приемка
+Статья 12. Гарантия и ответственность за дефекты
+Статья 13. Неустойки и гарантированные показатели
+Статья 14. Компенсация
+Статья 15. Ядерная ответственность и страхование
+Статья 16. Пределы ответственности
+
+
+Article 17. Insurance
+Article 18. Default, Suspension & Termination
+Article 19. Change in Law & Change Orders
+Article 20. Confidentiality
+Article 21. Intellectual Property Rights
+Article 22. Subcontract
+Article 23. Force Majeure
+
+Article 24. Applicable Law & Dispute Resolution
+Article 25. Notice
+Article 26. General Provisions
+Article 27. Export Control
+
+Article 28. Legal Addresses and Banking Details of the Parties
+
+List of Exhibits
+
+Exhibit 1 - Technical Specifications
+Exhibit 2 - Delivery Schedule
+Exhibit 3 - Contract Schedule
+
+Exhibit 4 - Terms and Conditions of Payments
+Exhibit 5 - Quality Management
+
+Exhibit 6 - Performance Guarantee, Performance Test and Heat Balance
+
+Exhibit 7 - Termination Schedule
+
+Exhibit 8 - Advance Payment Bank Guarantee Form, Performance Bank Guarantee Form
+
+
+Exhibit 9 - Approved Subcontractors
+Exhibit 10 - End User Certificate
+Exhibit 11 - Change Order Form
+
+Exhibit 12 - Conditions of Staying
+Buyer’s Customer, Prime
+Contractor’s, Buyer’s Customer
+Authorized Specialists at
+Buyer’s/Seller’s/Subcontractor’s
+Production site
+
+Exhibit 13 - Cost Calculation Form
+
+
+This Contract is made and entered into by and between
+
+ALSTOM Power Systems SA, a corporation organized under the laws of France, having its registered office at 2 quai Michelet, 92800 Puteaux, France, hereinafter referred to as "Seller",
+
+and
+
+[COMPANY NAME], a [COUNTRY] corporation with its principal place of business at [ADDRESS], hereinafter referred to as "Buyer".
+
+The parties have agreed as follows:
+
+1.1 "Project" means the [PROJECT DESCRIPTION] to be executed by the Buyer.
+
+1.2 "Contract" means this Agreement and all its attachments.
+
+1.3 "Seller" means ALSTOM Power Systems SA.
+
+1.4 "Buyer" means [COMPANY NAME].
+
+2.1 The Seller shall provide the Goods and Services as described in this Contract.
+
+2.2 The Buyer shall pay the Seller for the Goods and Services provided.
+
+3.1 The Seller warrants that the Goods and Services shall meet the specifications set out in this Contract.
+
+3.2 The Buyer shall notify the Seller of any defects in the Goods and Services.
+
+4.1 The Seller shall be responsible for any damage caused by the Goods and Services.
+
+4.2 The Buyer shall be responsible for any damage caused by its own negligence.
+
+5.1 This Contract shall be governed by and construed in accordance with the laws of [COUNTRY].
+
+5.2 Any disputes arising out of or in connection with this Contract shall be resolved through [DISPUTE RESOLUTION PROCESS].
+
+6.1 This Contract may not be amended or modified except in writing signed by both parties.
+
+6.2 This Contract constitutes the entire agreement between the parties.
+
+7.1 This Contract shall come into effect on [EFFECTIVE DATE].
+
+7.2 This Contract shall continue in full force and effect until [TERMINATION DATE].
+
+IN WITNESS WHEREOF, the parties have executed this Contract as of the date first above written.
+
+[SELLER'S SIGNATURE]
+[BUYER'S SIGNATURE]
+
+
+Article 1. DEFINITIONS AND INTERPRETATIONS
+
+1.1 Definitions
+
+In this Contract, the following capitalized words and expressions shall, unless the context otherwise requires, bear the meanings hereinafter ascribed to them.
+
+"Affiliate" shall mean, as to any Party, an entity that directly or indirectly controls or is controlled by or is under common control with such Party; the term "control" being used in this sense, or the power to elect or appoint a majority of the directors or to direct the management of an entity.
+
+"Applicable Laws" shall mean the governing law of this Contract as stated in Article 24.1, and any statute, law, regulation, ordinance, rule, judgment, decree, directive, mandatory guideline or policy, or any similar form of decision of or interpretation by, or any execution of, or any directive given by, any governmental, quasi-governmental, administrative, or regulatory body, or any entity having jurisdiction over the Work.
+
+Article 1. TERMS AND DEFINITIONS
+
+1.1 Definitions
+
+In this Contract, the following words and expressions shall, unless the context otherwise requires, bear the meanings hereinafter ascribed to them.
+
+"Affiliate" shall mean, as to any Party, an entity that directly or indirectly controls or is controlled by or is under common control with such Party; the term "control" being used in this sense, or the power to elect or appoint a majority of the directors or to direct the management of an entity.
+
+"Applicable Laws" shall mean the governing law of this Contract as stated in Article 24.1, and any statute, law, regulation, ordinance, rule, judgment, decree, directive, mandatory guideline or policy, or any similar form of decision of or interpretation by, or any execution of, or any directive given by, any governmental, quasi-governmental, administrative, or regulatory body, or any entity having jurisdiction over the Work.
+
+1.1 ОПРЕДЕЛЕНИЯ
+
+В настоящем Договоре нижеприведенные слова и выражения имеют следующие значения, если контекст не требует иного.
+
+"Аффилированное лицо" означает в отношении любой Стороны - лицо, которое прямо или косвенно контролирует или находится под общим контролем с такой Стороной; термин "контроль" используется в этом смысле, или власть назначать или избирать большинство директоров или управлять делами такого лица.
+
+"Применимое право" означает право, регулирующее настоящий Договор, и любой законодательный акт, закон, подзаконный акт, постановление, указ, директиву, обязательное руководство или политику, или любой аналогичный акт, или решение, или интерпретацию, или исполнение, или директиву, данную любым правительственным, квазиправительственным, административным или регулирующим органом, или любым другим органом, имеющим юрисдикцию над Работой.
+
+
+"Applicable Codes" shall mean all applicable design codes as specified in the Technical Specifications for the Work.
+
+"Buyer's Approvals" shall mean all licenses, permits, and other authorizations and approvals, required for the import, certification, installation, commissioning, maintenance and operation of the Equipment.
+
+"Buyer's Customer" shall mean Open Joint Stock Company "NPP OJSC".
+
+"Buyer's Risks" shall mean loss, damage and/or delay arising from any of the following causes:
+
+a) Force Majeure impacting the Buyer;
+
+b) pressure waves caused by aircraft or other aerial devices traveling at sonic or supersonic speeds;
+
+c) the use or occupation of the Site by the Equipment for the purposes of the Contract;
+
+d) interference, whether temporary or permanent with any right of way, light, air, or water or with any easement or similar right;
+
+e) acts, omissions, delay, breach of contract or of statutory duty of the Buyer and/or contractors and/or third parties not under the control of the Seller;
+
+"Применимые нормы и правила" означают все применимые нормы и правила, указанные в Технических Спецификациях для Работ.
+
+"Согласования Покупателя" означают все лицензии, разрешения и другие утверждения и одобрения, необходимые для импорта, сертификации, установки, ввода в эксплуатацию, технического обслуживания и эксплуатации Оборудования.
+
+"Заказчик Покупателя" означает Открытое Акционерное Общество "НПП ОЭС".
+
+"Риски Покупателя" означают ущерб, потери и/или задержки, возникающие по любой из следующих причин:
+
+a) обстоятельств непреодолимой силы, влияющих на Покупателя;
+
+b) воздействия ударных волн от самолетов или других воздушных устройств, движущихся со звуковой или сверхзвуковой скоростью;
+
+c) использования или занятия Площадки для целей, предусмотренных Договором;
+
+d) помех, временных или постоянных, связанных с правом проезда, освещения, вентиляции, водоснабжения или других прав, подобных указанным;
+
+e) действий, бездействия, просрочки, нарушения договора или невыполнения обязанностей Покупателем и/или его подрядчиками и/или третьими лицами, не находящимися под контролем Продавца;
+
+
+f) damage which is the result of the installation of the Equipment in accordance with the Contract;
+
+g) use of the Works or any part thereof or failure to follow Seller's recommendations and good industry practice;
+
+h) fault, error, defect or omission in the design of any part of the Equipment or any information furnished by the Buyer or Buyer's other contractors and/or third parties not under the control of the Seller;
+
+i) handling, storage or onward transportation after Delivery.
+
+“Buyer’s Scope of Supply” or “Buyer’s Scope” shall mean all of Buyer’s obligations contained herein.
+
+“Change in Laws” shall mean a change in the Applicable Laws, Applicable Codes, tax or other mandatory technical standards coming into force after the date of signature of the Main Contract which make performance of the Works more onerous or result in delays to the Delivery Schedule.
+
+“Commencement Date” shall mean the date at which all the conditions set forth in Article 2.2 herein are fulfilled and on which the Parties begin performance of their respective Scopes of Supply/Work.
+
+“Commercial Operation” shall mean the use of a Unit for producing electricity for sale.
+
+CON 20 MAP 2012
+
+20 марта 2012 г.
+
+КОНФИДЕНЦИАЛЬНЫЙ ДОКУМЕНТ
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract / March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+5
+
+«Component» shall mean those items of «Компонент» означает такие элементы
+
+6
+
+Equipment (as per Exhibit 1: 1.2.1 - «Оборудование» (в соответствии
+Division of Work), column «Раздела работ», столбец
+
+7
+
+«Equipment») identified as subject «Оборудование», подлежащее
+
+8
+
+to Equipment Delay Liquidated and Damages Exhibit 2. «Объект», в соответствии с Приложением 2.
+
+9
+
+«Confidential Information» shall mean «Конфиденциальная информация» означает
+
+10
+
+all information in any form (whether oral, documentary, magnetic, electronic, graphic or in any other form), containing or consisting of information of a commercial, financial or technical nature or in any other form, and includes without limitation designs, drawings, photographs, circuits, calculations, measurements, techniques, processes, markets, suppliers, organization, personnel, assets, financial condition or results and other data relating to or associated with the business of either party.
+
+11
+
+«Contract» shall mean the present Agreement «Договор» означает настоящий
+
+12
+
+and this Exhibit and all Exhibits and Schedules attached hereto. «Контракт» и «Соглашение» означают настоящий
+
+13
+
+document and all documents referenced herein. «Договор» означает настоящий
+
+14
+
+document and all documents referenced herein. «Договор» означает настоящий
+
+15
+
+and this Exhibit and all Exhibits and Schedules attached hereto. «Договор» означает настоящий
+
+16
+
+«Contract Price» shall mean the total price «Договорная цена» означает общую
+
+17
+
+payable to the Seller in accordance with the terms of this Contract. «Договорная цена» означает общую
+
+18
+
+price payable to the Seller in accordance with the terms of this Contract. «Договорная цена» означает общую
+
+19
+
+«Contract Price» shall mean the total price «Договорная цена» означает общую
+
+20
+
+payable to the Seller in accordance with the terms of this Contract. «Договорная цена» означает общую
+
+

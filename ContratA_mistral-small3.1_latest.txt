@@ -1,0 +1,1326 @@
+```
+CONTRACT
+
+between
+
+ALSTOM
+Atomenergomash LLC
+
+and
+
+ALSTOM Power Systems
+SA
+
+for the Supply of Turbine
+Hall Equipment
+
+for BALTIC Nuclear
+Power Plant Unit 1 & 2
+
+Dated: March 20th, 2012
+
+Contract Ref:
+19/10/2012
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+```
+
+
+CONTENTS
+
+Terms and Conditions of the Contract
+
+Article 1. Definitions and Interpretations
+Article 2. Contract Effectiveness and Commencement of Work
+Article 3. Seller’s Scope of Work
+Article 4. Buyer’s Obligations
+Article 5. Price, Terms of Payment, Taxes & Duties, Financing
+Article 6. Delivery – Transfer of Title & Risk
+Article 7. Delivery Time - Extension of Time & Costs
+Article 8. Quality Assurance & Technical Documentation
+Article 9. Environmental & Safety Responsibilities
+Article 10. Inspection & Tests
+Article 11. Provisional Acceptance
+Article 12. Warranty & Defects Liability
+Article 13. Contractual Liquidated Damages and Performance Guarantee
+Article 14. Compensation
+Article 15. Nuclear Liability & Insurance
+Article 16. Limits of Liability
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Article 17. Insurance
+Article 18. Default, Suspension & Termination
+Article 19. Changes in Law & Change Orders
+Article 20. Confidentiality
+Article 21. Intellectual Property Rights
+Article 22. Subcontract
+Article 23. Force Majeure
+Article 24. Applicable law & Dispute Resolution
+Article 25. Notice
+Article 26. General Provisions
+Article 27. Export Control
+Article 28. Legal Addresses and Banking Details of the Parties
+
+List of Exhibits
+Exhibit 1 - Technical Specifications
+Exhibit 2 - Delivery Schedule
+Exhibit 3 - Contract Schedule
+Exhibit 4 - Terms and Conditions of Payments
+Exhibit 5 - Quality Management
+Exhibit 6 - Performance Guarantee, Performance Test and Heat Balance
+Exhibit 7 - Termination Schedule
+Exhibit 8 - Advance Payment Bank Guarantee Form, Performance Bank Guarantee Form
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Exhibit 9 - Approved Subcontractors List
+Exhibit 10 - End User Certificate Template
+Exhibit 11 - Change Order Form
+
+Exhibit 12 - Conditions of Staying Buyer’s Customer’s, Prime Contractor’s, Buyer’s Customer-Developer’s and Buyer’s Authorized Organization’s Specialists at Buyer’s/Seller’s/Subcontractor’s Production site
+
+Exhibit 13 - Cost Calculation Form
+
+[SIGNATURE]
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+This Contract is made and entered into by and between
+
+ALSTOM Atomenergomash LLC, a company organized under the laws of Russian Federation, having its registered office at 2, Zheleznodorozhnaya Ulitsa, Podolsk, Moscow Region 142103, Russian Federation, hereinafter referred to as “AAEM” or “Buyer”,
+
+and
+
+ALSTOM Power Systems SA, a corporation organized under the laws of France, having its registered office at 2 quai Michelet 3, 92300 Levallois-Perret, France, hereinafter referred to as “Alstom” or “Seller”.
+
+Seller and Buyer may be referred to individually as a “Party” or collectively as the “Parties”.
+
+WITNESSED
+
+Whereas, Seller is in the business of designing, manufacturing and supplying various equipment and services for the nuclear power generation industry, and
+
+Whereas, Buyer wishes to purchase equipment and services from Seller based on ARABELLE™ technology to be used for a nuclear power plant project to be located at Kaliningrad Region of the Russian Federation (the “Project” or “Baltic Project”), and
+
+Whereas, to that end, Seller has made a proposal to Buyer on December 22nd, 2011
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+for the supply of equipment and services and Buyer has accepted such proposal, and
+
+Whereas, the Parties now wish to set forth the terms and conditions that shall apply to this Contract.
+
+THEREFORE IT IS HEREBY AGREED as follows:
+
+Article 1. DEFINITIONS and INTERPRETATIONS
+
+1.1 Definitions
+
+In this Contract, the following capitalized words and expressions shall, unless the context otherwise requires, bear the meanings hereinafter ascribed to them.
+
+“Affiliate” shall mean, as to any Party, an entity that directly or indirectly controls or is controlled by or is under common control with, that Party; the term "control" being used in the sense of power to elect or appoint a majority of directors or to direct the management of a company.
+
+“Applicable Laws” shall mean the governing law of this Contract as stated in Article 24.1 as well as any statute, law, regulation, ordinance, rule, judgment, order, decree, directive, mandatory guideline or policy, or any similar form of decision of or determination by, or any interpretation or administration of any of the foregoing by the government, any political subdivision or any governmental, quasi-governmental, judicial, public or statutory instrumentality, administrative agency, authority, body or other entity having jurisdiction over the Work in effect at the date of Alstom’s proposal to Buyer.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+“Applicable Codes” shall mean all applicable design codes as specified in the Technical Specifications for the Work.
+
+“Buyer’s Approvals” shall mean all licenses, permits, and other authorizations and approvals from all applicable governmental bodies and agencies required for the import, certification, installation, commissioning, maintenance and operation of the Equipment.
+
+“Buyer’s Customer” shall mean Open Joint Stock Company Consolidated NPP equipment procurement Directorate (CEPD OJSC).
+
+“Buyer Risks” shall mean loss, damage and/or delay arising from any of the following causes:
+
+a) Force Majeure impacting the Buyer;
+
+b) pressure waves caused by aircraft or other aerial devices traveling at sonic or supersonic speeds;
+
+c) the use or occupation of the Site by the Equipment for the purposes of the Contract;
+
+d) interference, whether temporary or permanent with any right of way, light, air, or water or with any easement wayleaves or right of a similar nature which is the inevitable result of the construction of the Works in accordance with the Contract;
+
+e) acts, omissions, delay, breach of contract or of statutory duty of the Buyer and/or Buyer’s other contractors and/or third parties not under the control of Seller;
+
+
+f) damage which is the result of the installation of the Equipment in accordance with the Contract;
+g) use of the Works or any part thereof or a failure to follow Seller’s installation, operation and maintenance recommendations and good industry practice;
+h) fault, error, defect or omission in the design of any part of the Equipment or any information furnished by the Buyer or Buyer’s other contractors and/or third parties not under the control of Seller;
+i) handling, storage or onward transportation after Delivery.
+
+“Buyer’s Scope of Supply” or “Buyer’s Scope” shall mean all of Buyer’s obligations contained herein.
+
+“Change in Laws” shall mean a change in the Applicable Laws, Applicable Codes, tax or any other applicable regulation (including mandatory technical standards) coming into force after the date of signature of the Main Contract which make performance of the Work more onerous or results in delays to the Delivery Schedule.
+
+“Commencement Date” shall mean the date at which all the conditions set forth in Article 2.2 herein are fulfilled and on which the Parties shall begin performance of their respective Scopes of Supply/Work.
+
+“Commercial Operation” shall mean the use of a Unit for producing electricity for sale.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+“Component” shall mean those items of Equipment (as per Exhibit 1: 1.2.1 – “Division of Work”, column “Equipment”) identified as subject to Equipment Delay Liquidated Damages in Exhibit 2.
+
+“Confidential Information” shall mean any and all information in any form (whether oral, documentary, magnetic, electronic, graphic or digitized), containing or consisting of information or material of a commercial, financial or technical nature or in the nature of intellectual property of any kind and relating (wholly or in part) to design, engineering, manufacture or business of the Alstom products and/or the Buyer products and includes without limitation designs, drawings, photographs, circuits, calculations, measurements, techniques, processes, markets, suppliers, organization, personnel, facilities, assets, financial condition or results and other data relating thereto, exchanged during the negotiation or performance of the Contract by the Parties.
+
+“Contract” shall mean the present agreement, together with the Exhibits hereto.
+
+“Contract Price” shall mean the total amount payable to the Seller in accordance with clause 5.1.1 in respect of the Work performed by Seller pursuant to this Contract.
+
+“Contract Schedule” shall mean the schedule set forth in Exhibit 3 that details the dates corresponding to the performance of a particular obligation by a Party.
+
+“Control Points” shall mean a point in the process of manufacturing or assembling the
+
+
+Equipment at which Buyer may witness a test or inspect the Equipment, as described in said Exhibit 5.
+
+“Critical Documentation” shall mean the Documentation subject to Documentation Delay Liquidated Damages and identified as such in Exhibit 2.
+
+“Defects Liability Period” shall mean the period of time during which Seller is responsible for remedy or repair of defects in the Equipment in accordance with Article 12.
+
+“Delivery” shall mean delivery of the Equipment as set forth therefore in Articles 6 and 7 of this Contract.
+
+“Delivery Schedule” shall mean the schedule set forth in Exhibit 2 that details the dates of Delivery of the Documents and Equipment.
+
+“Delivery Term” shall have the meaning defined in Article 6 of this Contract.
+
+“Documentation” shall mean those documents identified in Exhibit 2 and required to be submitted to Buyer by Seller.
+
+“End User Certificate” shall mean the certificate described in Article 27.2.
+
+“Equipment” shall mean the steam turbine, generator, MSR, HP Heaters, Extraction condensate pumps before polishing (or any part thereof) as further defined in Exhibit 1.
+
+“Facility” shall mean the power generation plant in which the Equipment is to be installed.
+
+“Force Majeure” shall mean an event or
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+circumstance beyond the control of a party, which that party could not reasonably have foreseen or avoided and which was not substantially attributable to that party, including but not limited to:
+
+(a) War including the war in the neighbouring countries, hostilities (whether war be declared or not), invasion, act of foreign enemies, mobilization for war, requisition or embargo;
+
+(b) Rebellion, terrorism, revolution, insurrection, military or usurped power, or civil war;
+
+(c) Riot, commotion or disorder, unless restricted solely to employees of Seller or of its subcontractors.
+
+(d) Ionizing radiation or contamination by radio-activity except as may be attributable to Seller's use of such radiation or radio-activity;
+
+(e) Contamination by or other hazardous effects of any toxic substance except as may be attributable to Seller's use of such substance;
+
+(f) Operation of the forces of nature such as earthquake, hurricane, monsoon, lightning, tornado, or volcanic activity, drought, flood, landslide, fire, storms;
+
+(g) National or regional industrial disputes or targeted disputes which are part of a national or regional campaign and which it is not reasonably within the powers of a party to prevent or stop;
+
+(h) Explosion, accident, structural
+
+
+collapse or chemical contamination;
+
+(i) Transport accident, air crash, shipwreck, train wreck or failure or delay of transportation due to mentioned Force Majeure events;
+
+(j) Strike, work-to-rule actions, go-slows or similar labor difficulties (excluding such events which are attributable to Seller);
+
+(k) Major difficulties in procurement of raw materials as evidenced by reasonable supporting documentation;
+
+(l) Epidemics, diseases, plagues, quarantine measures;
+
+(m) Discovery of historically significant artefacts on the site;
+
+(n) Failure by a Government entity to grant any authorization, consent or permit within reasonable time after application therefore having been duly made, or revocation by a Government entity of any authorization, consent or permit (unless such revocation is due to a default of the affected Party).
+
+“Hazardous Substances” shall mean any material, the generation, handling, transportation, or storage of which is regulated by Applicable Laws, rules, or regulations applicable to hazardous or toxic materials, or any material that, in the absence of appropriate protective equipment, is harmful to human health and safety, including asbestos.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+“Incoming Control Certificate” shall mean certificate to be issued after inspection of the Equipment on Site in accordance with clause 4.4 herein.
+
+“Intellectual Property Rights” shall mean any patent, registered design, copyright, trade mark, trade name, trade secret, know-how, know-why or other intellectual or industrial property right relating to the Work.
+
+“Main Contract” shall mean Contract N° 2012-Блт-002/2/07/2012 signed between ALSTOM Atomenergomash and CEPD OJSC on 02.02.2012 for the supply of Turbine Hall equipment for Baltic Nuclear Power Plant Unit 1&2.
+
+“NTP” or “Notice To Proceed” shall mean the written notice sent by Buyer to Seller authorizing Seller to proceed with the Work.
+
+“Nuclear Damage” shall mean any damage, loss or claim (including damage to the nuclear power plant for which the Work is being performed and any property on or off the Site) resulting directly or indirectly from a Nuclear Incident in such nuclear power plant and includes any incidental or consequential damages, losses, costs or expenses flowing from any of the foregoing.
+
+“Nuclear Fuel” shall mean any material that is capable of producing energy by a self-sustaining chain process of nuclear fission.
+
+“Nuclear Incident” shall mean any occurrence or succession of occurrences having the same origin which causes damage,
+
+
+provided that such occurrence or succession of occurrences, or any of the damage caused by, arises out of or results from the radioactive properties, or a combination of radioactive properties with toxic, explosive or other hazardous properties of Nuclear Fuel or radioactive products or wastes or with any of them.
+
+“Nuclear Material” shall mean: (i) Nuclear Fuel, other than natural uranium and depleted uranium, capable of producing energy by a self-sustaining chain process of nuclear fission outside a nuclear reactor, either alone or in combination with some other material, and (ii) radioactive products or waste (which means any radioactive material produced in, or any material made radioactive by exposure to the radiation incidental to, the production or utilization of Nuclear Fuel, but does not include radioisotopes which have reached the final stage of fabrication so as to be usable for any scientific, medical, agricultural, commercial or industrial purpose).
+
+“Owner” shall mean the owner and/or operator of the facility into which the Equipment is to be incorporated, i.e. Open Joint Stock Company Rosenergoatom.
+
+“Performance Guarantee” shall mean the guaranteed performance of the Equipment set forth in Exhibit 6.
+
+“Prime Contractor” –shall mean Open Joint Stock Company NIZHNY NOVGOROD ENGINEERING ATOMENERGOPROEKT (NIAEP OJSC).
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+“Prime Designer” shall mean Open Joint Stock Company Saint-Petersburg Research & Design Institute ATOMENERGOPROEKT (CPbAEP OJSC).
+
+“Provisional Acceptance” shall mean occurrence of the conditions for provisional acceptance or deemed provisional acceptance specified in Article 11 herein.
+
+“Secondary Loop Package” shall mean the Steam Turbine and auxiliaries, Generator and auxiliaries, Moisture Separator Reheater, Condenser, Condenser Ball Cleaning System, Low Pressure and High Pressure Heaters, Feedwater Storage and Deaerator Tank, District Heaters, Closed Cooling Circuit components, Extraction Condensate Pumps, Feedwater Pumps, Vacuum Pumps, By Pass Valves, Electrical equipment, Piping and Valves (or any part thereof) as further defined in Exhibit 1.
+
+“Seller’s Scope of Work” or “Work” shall mean the Equipment and Services to be provided to Buyer by Seller under this Contract.
+
+“Seller’s Approvals” shall mean all licenses, permits, and other authorizations and approvals from all applicable governmental bodies and agencies required to be in Seller’s name.
+
+“Services” shall mean the engineering, project management and transport services provided by Seller to Buyer in accordance with the Contract.
+
+“Site” shall mean the place where the Facility
+
+
+is located, as identified in the Contract.
+
+“Subcontractor” shall mean, as to a Party, any contractor, vendor, or supplier that provides equipment or other goods or services to that Party.
+
+“Territory” shall mean the country of Russia (Kaliningrad Oblast), where the Site is located.
+
+“Unit” shall mean an individual set forming part of the Equipment related to Seller’s Scope of Work to be supplied for each Baltic NPP unit.
+
+“Unit Price” shall mean that portion of the Contract Price payable in respect of an individual Unit as defined hereinabove.
+
+1.2 Interpretations
+
+In this Contract,
+
+- The singular includes the plural and the masculine includes the feminine and neuter and vice versa;
+
+- References to persons shall include bodies corporate, unincorporated associations and partnerships;
+
+- References to articles are, unless expressly identified otherwise, references to the articles of this Contract;
+
+- The heading and sub-headings of this Contract are inserted for convenience only and shall not affect the construction or interpretation thereof; and
+
+- The preamble forms part of this Contract.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+1.3 Precedence
+
+The Contract shall consist of these terms and conditions of Contract and the Exhibits. These terms and conditions of Contract shall prevail over any conflicting term of the Exhibits, and the higher alphabetically denominated Exhibit shall prevail over any conflicting term in any lower alphabetically denominated Exhibit (such that Exhibit 1 has the highest precedence of any Exhibit, Exhibit 2 the second highest and so on). Any conditions or requirements not expressly incorporated into the Contract shall have no force or effect.
+
+Article 2. Contract Effectiveness and Commencement of Work
+
+2.1. This Contract shall become effective upon signature by the authorized representatives of all Parties.
+
+2.2. The Contract commencement date shall be the date of signature of the Contract by the authorized representatives of the Buyer and the Seller ("the Commencement Date").
+
+2.3. Subsequent Condition
+
+Within 30 days from the Commencement Date, the following conditions shall be fulfilled:
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract / March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+a) Further to proper notification by a) Seller of this present Contract to the relevant Governmental body of France and of the Russian Federation in accordance with the Bilateral Liability Agreement on Third Party Liability for Nuclear Damage caused in connection with Deliveries from the French Republic for Nuclear Installations in the Russian Federation signed on 20th June 2000 between France and the Russian Federation: receipt by the Seller from the Russian authorities of the relevant notification letter, duly executed with the Russian Authority approval.
+
+Should the condition a) here above not be fulfilled within thirty (30) days from Commencement Date, Seller shall be entitled to suspend the Work according to Clause 18 of the present Contract.
+
+Should the condition a) here above not be fulfilled within ninety (90) days from the Commencement Date, the Seller may terminate the Contract according to Clause 18 -Termination by Seller- without incurring any liability whatsoever towards the Buyer nor any other party to the Project. The Buyer shall hold harmless the Seller from any claims from other party of the Project caused by such termination.
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract / March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+In such case the Parties shall:
+(i) assess the substantiated costs of all work performed and commitments entered into prior to such termination and the reasonable costs of demobilization incurred by the Seller,
+(ii) balance these costs against the advance payment received, if any.
+
+Article 3. Seller’s Scope of Work
+
+3.1 This Contract is for the design and supply of Equipment and Services. The supply by Seller of the Work shall be in conformance with this Contract and in particular the Technical Specifications (Exhibit 1) and the Quality Management (Exhibit 5) and the applicable Mandatory Normative Legal Acts of Russian Federation which shall be provided by the Buyer.
+
+3.2 The Seller must obtain and maintain all Seller Approvals that are required to be issued in Seller’s name in accordance with all Applicable Laws. Upon the Seller’s reasonable written request, the Buyer must make reasonable steps to assist the Seller to obtain and/or maintain the Seller Approvals and support the Seller in its dealings with the relevant authorities in connection with obtaining any such Seller Approvals.
+
+3.3 In undertaking its obligations under the Contract and agreeing to the Contract Schedule, Seller relies upon Buyer performing its obligations in a timely manner.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+3.4 Seller’s design shall be based upon the information provided to Seller by Buyer (including, but not limited to initial and interface data) and Seller shall be entitled to rely upon the completeness and accuracy of such information provided to him. The Seller shall not be liable for Site preparation works, construction, installation, commissioning, start-up, testing and operation of the Equipment and the correctness of all data and information provided to Seller by Buyer (or its other contractors) under or in connection with this Contract.
+
+To the extent of occurrence of any change in the information provided by Buyer to Seller and which Seller has relied upon in preparing the Technical Specifications or in performing the design and such variations impact Seller’s Performance Guarantee or the operability of the Equipment or causes additional work, cost or time then Seller shall be entitled to an equitable adjustment of the Contract Price and Contract Schedule. Such adjustment shall be considered as a Change Order made in accordance with Article 19.1 herein.
+
+3.5 Seller shall not provide any Site services.
+
+3.6 Notwithstanding the foregoing and any conflicting term of this Contract (including its Exhibits), Seller shall have no liability for the acts and/or omissions of any party performing the installation, commissioning, start-up,
+
+
+testing and operation of the Equipment. Seller gives no guarantee and accepts no liability for the Contract Schedule for completion of the installation, commissioning, start-up, testing and operation of the Equipment or the quality of workmanship of, or information provided by, the installation or commissioning contractor or any party not a Subcontractor of Seller.
+
+3.7 Notwithstanding anything to the contrary stated in the present Contract, both Parties agree that Seller/Buyer obligations or activity covered by the License and Technology Transfer Agreement ("LTTA") signed between ALSTOM Power Systems SA (formerly ALSTOM Power Turbomachines), ALSTOM Atomenergomash LLC, Machine Building Plant "ZIO-Podolsk" OJSC, Atomenergomash OJSC, ALSTOM Holdings and ALSTOM Power Holdings SA on December 13th, 2007, shall be governed exclusively by the LTTA. Liability in respect of such obligations or activities shall be exclusively dealt with under and in accordance with LTTA. Transfer of documentation in relation with LTTA is governed exclusively by the LTTA. Transfer of documentation in relation with this Contract is governed exclusively by this Contract.
+
+3.8 Any other obligation contained in the Contract, although not expressly set forth in this Article 3.
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+### Article 4. Buyer’s Obligations
+
+4.1 Buyer shall be responsible for obtaining and maintaining all Buyer’s Approvals. Upon the Buyer’s reasonable written request, the Parties shall cooperate in dealings with the relevant authorities in connection with obtaining any such Buyer Approvals until obtaining of such Buyer Approvals.
+
+4.2 The Buyer must pay the Seller the Contract Price and other amounts payable under this Contract in accordance with Clause 5.
+
+4.3 Buyer must take Delivery of the Equipment in accordance with Article 6 and Exhibit 2 (Delivery Schedule).
+
+4.4 Buyer undertakes to obtain preliminary acceptance of the Equipment by Buyer’s Customer and issuance of Incoming Control Certificate without any reserve within seventy (70) days after Delivery in accordance with clause 6.1 of the Contract.
+
+4.5 On or before the issuance of the Notice to Proceed, the Buyer must appoint a representative to be the contact for the Seller with respect to the performance of the Work, who will be authorized to act and administer this Contract on the Buyer’s behalf. The Buyer may change the Buyer’s representative by written notice to the Seller.
+
+4.6 More generally, Buyer will guarantee the quality, delivery time schedule and all other aspects for the performance
+
+
+of its scope of work specified in the Main Contract and will be responsible for performance deficiency resulting from failure to comply with the above.
+
+Except for the design provided by Seller, Buyer shall remain liable for the quality, the performance, the completeness and the conformity of its scope of supply and services to be supplied in accordance with the Main Contract.
+
+4.7 Any other obligation contained in the Contract, although not expressly set forth in this Article 4.
+
+Article 5. Price, Terms of Payment, Taxes & Duties
+
+5.1 Contract Price
+
+5.1.1 The Price to be paid by Buyer to Seller for the Work shall be as follows:
+
+Equipment and Services Price per Unit including the technical documentation as set forth in Exhibit 2:
+
+Price of Unit 1: 205 694 000.00 Euro
+
+Two hundred five millions six hundred ninety four thousand euro,
+Price of Unit 2: 168 294 000.00 Euro
+One hundred sixty eight millions two hundred ninety four thousand euro
+
+Total Contract Price: 373 988 000 Euro
+(Three hundred seventy three millions nine hundred eighty eight thousand euro),
+
+5.1.2 The Parties agree to prepare jointly
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+within thirty (30) days of signature of the Contract the Cost Calculation Form as defined in Annex 3 of contract between Buyer and Buyer's Customer and attached here in Exhibit 13.
+
+The Contract Price defined in clause 5.1.1 is based on economic conditions prevailing at the time of submission of the offer by Seller to Buyer.
+
+Some of these economic conditions and in particular specific commodity markets could change materially and affect adversely Seller’s project economics in the course of performance of its Work.
+
+The Parties agree that in case of such material changes the Seller will provide the Buyer with all relevant information to present the situation to the Buyer's Customer and substantiate a request for change in price in the Main Contract. This substantiation can be developed, among other approaches, on the basis of escalation formula attached for information in Exhibit 4 as a valuable and transparent indicator of the evolution of economic conditions.
+
+After preparing and reviewing the final argumentation with Seller, Buyer shall do its best efforts to secure from Buyer’s Customer an equitable price adjustment to off-set changes in the project/contract execution conditions identified by Seller and shall do its best efforts to have this adjustment formalized in a supplementary agreement to the Main Contract within 60 days.
+
+
+If and only when, Buyer's Customer agree on the above price adjustment under the Main Contract, Buyer will provide Seller with the entire amount of such price adjustment by amendment to this Contract to properly indemnify Seller from the changes which occurred in the economic conditions of its Work.
+
+Similarly, Buyer shall pass in full to Seller the benefits of price increase approved by Buyer's Customer or Buyer's cost savings, resulting from design optimization performed by Seller in the course of project execution.
+
+5.1.3 In the event of an unforeseeable change in the prevailing market conditions result in increased cost of labor, materials, equipment and/or any other costs associated with Seller's scope the Parties shall seek to agree on an equitable adjustment to the Contract Price and/or guaranteed Delivery Dates of the Equipment, taking into account the relevant changes in market conditions associated with Seller's scope.
+
+5.2 Terms of Payment
+
+5.2.1 Payments shall be made at Seller's domicile, without any deduction for cash discount, expenses, taxes, levies, financing charges, fees, duties and the like.
+
+5.2.2 The Contract Price shall be paid in accordance with Exhibit 4 upon
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract/March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+achievement of the applicable milestones. Milestones of payment shall be finalized on a mutual agreement within thirty (30) days after the Contract signature, provided that the overall profile of the curve of payment submitted by Seller to Buyer (attached in Exhibit 4) shall not be affected.
+
+5.2.3 Buyer shall not set-off any claims it may have against Seller against sums owed to Seller without prior written agreement of Seller.
+
+5.2.4 In case of late payment, the Buyer shall pay interest on the overdue sum for the period of delay at three percent (3%) above the 3 months LIBOR rate for the currency of the Contract Price.
+
+5.2.5 Unless a shorter period is expressly set out elsewhere in the Contract, payments shall be made within thirty (30) days of submission of invoices.
+
+5.2.6 Seller shall be entitled to suspend performance of its obligations under the Contract when payment due is not paid within thirty (30) days from the invoice due date.
+
+5.2.7 Seller will furnish from an internationally reputed bank:
+
+(a) Per Unit, an Advance Payment Bank Guarantee ("APBG") in the amount of 100% of the Advance Payment and on a form substantially similar to the APBG Form provided in Exhibit 8. This guarantee shall:
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+(i) be reduced automatically pro rata to the value of Equipment delivered;
+
+(ii) be issued not later than twenty (20) calendar days after the Commencement Date;
+
+(iii) expire automatically thirty (30) calendar days after completion of Delivery of the last component of the Equipment for Unit 1 and 2 accordingly whether it is returned or not;
+
+(iv) contain a calendar expiry date; and
+
+(v) shall not be transferable.
+
+(b) Per Unit, a Performance Bank Guarantee ("PBG") in the amount of 5% of the Unit Price and on a form substantially similar to the PBG Form provided in Exhibit 8. This guarantee shall:
+
+(i) be issued not later than twenty (20) calendar days after the Commencement Date;
+
+(ii) expire automatically sixty (60) calendar days after completion of Delivery of the last component of the Equipment for Unit 1 and 2 accordingly, whether the original bank guarantee document is returned or not;
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract / March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+(iii) contain a calendar expiry date; and
+(iv) shall not be transferable.
+
+(c) Per Unit, a Warranty Bank Guarantee in the amount of 5% of the Unit Price and on a form substantially similar to the Warranty Bank Guarantee Form provided in Exhibit 8. This guarantee shall:
+
+(i) be issued not later than thirty (30) calendar days after the delivery of the last component of the Equipment for Unit 1 and 2 accordingly;
+(ii) expire automatically ninety (90) calendar days after expiration of the Warranty Period of the Equipment as per clause 12.1.2, whether the original bank guarantee document is returned or not;
+(iii) contain a calendar expiry date; and
+(iv) shall not be transferable.
+
+5.3 Taxes & Duties
+
+5.3.1 The Contract Price includes the cost of all taxes payable by Seller outside of the Territory. All other taxes, import and other duties and charges in the Territory shall be borne and paid by the
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Buyer.
+
+5.3.2 The Contract Price is net and exclusive of taxes, withholding taxes, fees, duties and charges, present and future that may be levied in the Territory. If any such taxes or deductions are required to be paid by Seller, Buyer shall increase the amount of its payments to Seller by such amounts in order for Seller to receive the sums net of any deductions.
+
+5.4 Financing Clause
+When entering into this Contract, the Parties take into account that Rosenergoatom, whether directly or via its subsidiary company Baltic NPP OJSC, intends to finance in Euro the part of Contract pertaining to the scope of manufacturing and supply of ALSTOM Power Systems SA acting as an appointed sub-supplier under the Main Contract. Such financing will be raised under cover provided by the French state export credit agency, namely the COFACE.
+
+In such an event, ALSTOM Power Systems SA will invoice Rosenergoatom directly in Euro and receive direct payments in Euro made upon the instruction of Rosenergoatom.
+
+Upon receipt by Buyer of the notice from Rosenergoatom stating that the financing covered by COFACE in Euro is approved, the Parties shall take all necessary actions to amend the Contract accordingly.
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+5.5. Any change in the Scope of Works to be performed by Seller and associated modification of the Contract Price correlated with a change of Buyer's scope of work under the Main Contract shall only apply with receipt of a prior written consent of Buyer's Customer, and after the Main Contract is amended accordingly.
+
+5.6 Any increase of the Contract Price for Change in the governing law defined in article 24.1.1 shall only apply with receipt of a prior written consent of Buyer's Customer and after the Main Contract is amended accordingly.
+
+Article 6 Delivery - Transfer of Title & Risk
+
+6.1 Delivery of Equipment shall be CIF port of Kaliningrad region in accordance with Incoterms 2010 (to be specified before any shipment). Partial shipment is permitted. This shall be referred to as “Delivery Term”.
+
+6.2 Title in Equipment shall pass to Buyer upon Delivery in accordance with the Delivery Term.
+
+6.3 Risk of loss or damage to the Equipment shall pass to Buyer upon Delivery in accordance with the relevant Delivery Term.
+
+6.4 Buyer shall be the importer of the Equipment and shall be responsible for
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+obtaining all import permits, customs clearance formalities and payment of import duties. Should any additional permits, consents or licenses ("Permits") be required for the Delivery of the Equipment, then Buyer shall obtain and maintain at its costs those Permits required of it by the applicable Delivery Term (but excluding any obligation to perform customs clearance formalities at the port of import or to obtain import permits or licenses) or as otherwise expressly required of it under the Contract.
+
+6.5 The Seller shall carry out, or cause Seller’s Subcontractor to carry out, a packing inspection of all goods prior to packing for final Delivery. Seller shall notify Buyer twenty three (23) days prior to such inspection of the place and time of this packing inspection and the type of goods involved in order to permit Buyer and/or its authorized representative the opportunity to verify completeness of goods. In such case, Buyer shall bear its own costs for attending the above-mentioned inspection. Seller shall also notify date for shipment of the Equipment. Buyer within eight (8) calendar days after receipt of the Seller's notice shall confirm the exact Equipment shipment date in writing.
+
+Upon completion of the inspection at loading, a packing list will be prepared
+
+
+by Seller or its Subcontractor. If applicable, a discrepancy report noting any discrepancies or damage shall be issued. The packing list and discrepancy report shall be valid pre-shipment evidence of the status of completeness of the goods. Buyer, or its authorized representative, shall note any discrepancies or observations on the discrepancy report. The Buyer’s participation in verifying completeness of goods shall not release the Seller from liability for an incomplete delivery attributable to the Seller.
+
+The Equipment cannot be shipped without Buyer writing confirmation.
+
+If Buyer or its authorized representative fails to attend any such inspection Seller shall, at its discretion, be entitled to carry out the inspection in the absence of the Buyer, and Buyer shall be deemed to have accepted Seller’s inspection. Seller shall then effect Delivery of the goods.
+
+6.6 If Seller is ready to make Delivery of the Equipment (or any part thereof), but is delayed by (i) act or omission of Buyer and/or Buyer’ Customer for more than ninety (90) days from shipment date notified by Seller in accordance with clause 6.5 above, (ii) any third party not under the control of Seller, or (iii) Force Majeure event, Seller may effect Delivery to a storage location agreed with Buyer, or in default of such agreement, to a storage location which Seller deems appropriate under the circumstances. Delivery to such location shall constitute completion of Delivery in accordance with the Delivery Term and payment becoming payable upon
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Delivery shall become payable against presentation of warehouse storage certificate. Title in the Equipment and risks of loss or damage to the Equipment shall therefore pass upon completion of Delivery as described above.
+
+In such case, Buyer and Seller shall mutually agree on new date for shipment and delivery of the Equipment. Seller shall transport the Equipment as per the Delivery Term. Buyer shall reimburse Seller for all costs of storage, handling and additional transportation costs reasonably incurred within thirty (30) days of receipt of Seller’s invoice for payment of such costs.
+
+6.7 Seller shall have no liability for loss, damage and/or delay attributable to Buyer’s Risks. Liability for Buyer’s Risks shall remain with Buyer.
+
+Article 7. Delivery Time, Extension of Time & Costs
+
+7.1 Seller shall make Delivery of the Equipment in accordance with the Delivery Schedule set forth in Exhibit 2 (Delivery Schedule).
+
+7.2 Seller shall be entitled to reasonable extensions of time and costs in the event of suspension, default, disruption or delay caused by any acts or
+
+
+omissions of the Buyer, Buyer’s other contractors and/or third parties not under the control of Seller, or attributable to Force Majeure. Extensions of time and costs shall also be due in case of Buyer’s instructions or variations and/or in the event Seller has been delayed from achieving a milestone necessary to invoice for payment.
+
+Article 8. Quality Assurance & Technical Documentation
+
+8.1 Quality Assurance
+
+8.1.1 Seller undertakes to fulfill requirements for quality assurance in compliance with Exhibit 5 to the Contract.
+
+8.2 Technical Documentation
+
+8.2.1 Documentation to be submitted to Buyer is identified in Exhibit 2. The Documentation shall be delivered in accordance with Document Delivery Schedule as per Exhibit 2.
+
+The Parties shall additionally, within a time period of not more that ninety (90) calendar days from the signature of the Contract, agree on the scope, format and dates for the design, engineering, erection, commissioning, operation and maintenance documentation (including the 3D model of the turbine generator plant) to be furnished by the Seller to the Buyer, by entering into a Supplementary Agreement to the Contract which will define an additional documentation list (Exhibit 2-a).
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+8.2.2 Documentation requiring Buyer’s review/approval/acceptance are identified in Exhibit 2. Documents that are identified for review/approval/acceptance by Buyer shall be returned to Seller stating the review status and the details of any necessary modifications within fifteen (15) days of receipt by Buyer. In case of failure to meet the deadline for approval of Documentation not attributable to the Seller, Seller shall be entitled to extensions of time and costs, and Buyer shall not be entitled to apply Documentation Delay Liquidated Damages to the Seller. These provisions may be amended by the Supplementary Agreement as per clause 8.2.1.
+
+All of Buyer’s comments shall be incorporated in a single transmittal for each document. All documents that are not approved/accepted by Buyer shall be corrected by Seller and resubmitted to Buyer within ten (10) days after receipt thereof, or any other mutually agreed period. Both Parties agree to do their best efforts to limit the number of iteration to 2 for each document. These provisions may be amended by the Supplementary Agreement as per clause 8.2.1.
+
+The rules for Documentation numbering/coding, the format in which it should be furnished, the methods of dispatch will be defined in a Supplementary Agreement to the Contract, as per clause 8.2.1.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+8.2.3 Any request for changes in the Documentation, other than a request to amend a feature which is non-compliant with the Contract and the Supplementary Agreement to the Contract, as per clause 8.2.1, shall be treated as a request for a Change Order in accordance with Article 19.1.
+
+8.2.4 To the extent that the Contract and the Supplementary Agreement to the Contract, as per clause 8.2.1 call for Seller’s review and comment on Buyer provided information, Seller shall give its comments in good faith, but Seller shall have no liability for the accuracy or completeness of such information review or comments or for any use made thereof.
+
+8.2.5 In case of any delay and/or modifications caused or imposed by Buyer and/or Buyer’s Customer and/or Owner and/or any third parties not under the control of Seller or any governmental body having authority over the Project, including without limitation on a document already approved, Seller shall be entitled to additional costs and extension of time for the associated re-works. Implementation of modifications shall be subject to prior approval in accordance with Article 19.1.
+
+8.2.6 All Documentation shall be provided in English.
+
+8.2.7 In the event of any defect or omission in the Documentation, Buyer’s remedy shall be to require the Seller to
+
+
+promptly and diligently correct such defect or omission.
+
+8.2.8 The Parties understand that Clause 10.14 of the Main Contract provides for large Documentation delay liability of the Buyer towards the Buyer's Customer. The Parties recognize that seamless engineering communication between Seller and Buyer is key in managing the process of issuing Documentation to Buyer’s Customer.
+
+In order to optimize this communication, Seller will help that the Documentation issued by Seller is well understood by Buyer, Buyer’s Customer and General Designer, and that questions or expectations of Buyer are well addressed by Seller.
+
+Article 9. Environmental & Safety Responsibilities
+
+9.1 Buyer shall be responsible for pre-existing conditions at the Site, including pollution, contamination, Hazardous Substances and for the generation, emission, handling, storage, removal or disposal of such substances. Buyer shall defend, indemnify, and hold harmless Seller (including its Affiliates and/or Subcontractors) from any claims, liability, or damage arising out of or related to the Hazardous Substances for which Buyer is responsible under this Article 9.1, except to the extent that any such claims, liability, or damage are caused by the negligence of Seller, its Affiliates or Subcontractors.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+9.2 (a) The Parties agree that the Site areas where Seller’s employees/personnel will perform Work shall be free of Hazardous Substances, including asbestos, and that Seller’s employees/personnel shall not be exposed to Hazardous Substances. Seller shall not be required to perform any work in any areas where a health or safety hazard exists, or is reasonably suspected to exist. In case Hazardous Substances are encountered on Site by the employees/personnel of a Party during the course of carrying out the Work, such Party shall immediately notify the other Party. Seller will be entitled to stop its Work in progress and remove its employees/personnel from the concerned area until the Hazardous Substances are removed. Buyer shall be responsible for, and Seller shall not be involved in, removal and disposal of Hazardous Substances and costs related thereto.
+
+(b) The Parties shall immediately liaise to determine the actions necessary to minimize delays, if any, to the Work as a result of Hazardous Substances. The time for performance of the Work shall be extended accordingly. Buyer shall reimburse Seller’s costs incurred for Buyer’s non-compliance with this Clause 9.2.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+(c) Should any claim be made by Seller’s personnel or any third party against Seller as a result of the presence of Hazardous Substances at Site (except through the negligence of Seller, its Affiliates or Subcontractors), Buyer shall indemnify and hold harmless Seller against any and all losses, damages, costs and expenses awarded against or incurred by Seller.
+
+9.3 Seller shall be entitled to immediately withdraw its personnel from the Site or the Territory if, in Seller’s opinion, there exists a significant threat of terrorism, hijack, public disorder or victimization of individuals associated with the Site, or similar risks exists in the area to the public generally. To the extent that matters referred to in this Article 9.3 occur without the fault or negligence of Seller, then Seller shall be entitled to relief in time from performance of its obligations and reimbursement of its costs, including additional travel, waiting time, accommodation, demobilization from and remobilization to the Site.
+
+Article 10. Inspection & Tests
+
+10.1 Inspection and testing of the Equipment prior to Delivery shall be carried out by Seller in accordance with the Exhibit 5. Seller shall notify Buyer of the scheduled date of Buyer Witness Points not later than twenty three (23) days prior to the inspection or test. Buyer shall notify Seller in writing of its absence or presence at the inspection
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+or test no later than five (5) days after receipt of Seller’s notification of the inspection or test. Seller shall provide Buyer reasonable escorted access to manufacturing facilities to witness the inspection and testing.
+
+Buyer shall not be entitled to require Seller to postpone or reschedule inspection or testing for any reason except for cases described in Exhibit 5. If, following a written notice of the Seller, Buyer does not attend an inspection or test at the appointed place and time, Buyer shall be deemed to have waived its right to witness such inspection or test.
+
+Representatives of the Buyer’s Customer, Prime Contractor, Construction Manager and Buyer’s authorized organization shall have the right to perform check points acceptance in accordance with Quality Plans. For accommodation conditions for the said visiting representatives see Exhibit 12.
+
+10.2 Any request by Buyer to amend the Buyer Witness Points shall be made in writing by Buyer not later than ten (10) weeks prior to Seller’s scheduled date for such inspection or test. Such request shall be treated as a Change Order in accordance with Article 19.1 herein. Seller shall endeavor to accommodate any such request, provided that such request can be
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+reasonably accommodated by Seller and its Subcontractors without disruption of the Work or work for other customers.
+
+10.3 In case of a non-conformance of the Equipment with the Technical Specifications, Seller shall submit to Buyer in accordance with the Exhibit 5 and Seller’s Quality Assurance program a correction plan giving details on the methodology Seller intends to implement to rectify such non-conformance. For non-conformances that can be corrected at a later stage, Seller shall not be prevented from proceeding with the Work, including shipment of the Equipment.
+
+10.4 The Seller will provide necessary data for development of ToR (Terms of Reference) /TC (Technical Conditions) and test program for the Equipment and deliver technical support to enable the Buyer to get approval of them by Buyer’s Customer.
+
+Article 11. Provisional Acceptance
+
+11.1 Provisional Acceptance for a Unit shall occur as soon as the respective Unit passed Provisional Acceptance test as defined in Exhibit 6 (“Provisional Acceptance Test”). Provisional Acceptance of any single Unit shall take place independent of any other Unit’s Provisional Acceptance.
+
+11.2 Provisional Acceptance shall occur the earliest of: (i) for Unit 1 – 29th
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+March, 2018, and for Unit 2 – 29th March, 2020 ("End-Date"), (ii) as soon as the Provisional Acceptance Test is successfully achieved for the respective Unit in accordance with Article 11.1, or (iii) upon Commercial Operation of the respective Unit.
+
+Should Provisional Acceptance of a Unit not occur by the End-Date, Provisional Acceptance of such Unit shall be deemed to have occurred and shall produce all effects attached to Provisional Acceptance under the Contract. For the avoidance of doubt the End-Date shall not be extended for any reason other than delays attributable to events of Force Majeure or suspension of work.
+
+11.3 If any part of the Equipment is used (except for the purposes of commissioning, start-up or carrying out the Provisional Acceptance Test) then Provisional Acceptance of that part or any other part used in connection therewith shall be deemed to have issued. If the Equipment is so used then the technical Performance Guarantee shall be deemed to have been successfully achieved and shall produce all effects of Provisional Acceptance under the Contract.
+
+Article 12. Warranty & Defects Liability
+
+12.1 Warranty of Equipment
+
+12.1.1 Seller warrants that the Equipment when delivered will be free of defects in design, material and workmanship ("Warranty" or "Defects Liability").
+
+
+Seller’s obligations during the Defects Liability Period shall be to repair or replace, at its option, defects in the Equipment attributable to Seller. Repair and/or replacement shall be the sole and exclusive remedy for defects in the Equipment.
+
+12.1.2 For each Unit, the Defects Liability Period shall commence upon issuance of the Incoming Control Certificate in accordance with clause 4.4 above and expire upon the earlier to occur of (i) twenty four (24) months from the Provisional Acceptance of the relevant Unit, or (ii) March 29th, 2020 for Unit 1, and March 29th, 2022 for Unit 2 (“Defects Liability Period”).
+
+Upon expiry of the Defect Liability Period of the Equipment of a Unit, Buyer shall issue the Final Acceptance Certificate for the relevant Unit. Such issuance shall relieve Seller from any on-going Warranty obligations in respect of the Equipment and Seller shall have no further Warranty obligations in respect of the Equipment, subject to any repaired or replaced Equipment as provided for in Article 12.1.5.
+
+12.1.3 (a) Seller’s liability for defects shall be conditional to the appointment by the Buyer of a competent and experienced erection contractor and a technical services company experienced in the installation of the Secondary Loop Package to provide assurance satisfactory to Seller that the
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+erection, commissioning, testing and start-up of the Equipment has been conducted in accordance with Seller’s specifications.
+
+(b) Buyer shall notify Seller in writing of any defects no later than five (5) days after their discovery, and Seller shall be given the opportunity to examine the defect. Buyer shall provide Seller with a work area and unrestricted access to the Site in a timely manner to enable Seller to perform its Warranty obligations. Buyer shall make, or cause to make, available to Seller the operational records of the Equipment.
+
+(c) Seller shall have no liability for the opening up, dismantling, closing, or reassembly of the Equipment. Seller shall not be responsible for damage caused by equipment not supplied by it, normal wear and tear, errors in information provided by Buyer or for defects and/or damage attributable to the failure of the Buyer, Owner and/or their other contractors and/or any third parties not under the control of Seller to comply with Seller’s procedures (including without limitation handling, storage, erection, installation and commissioning procedures), Operation and Maintenance Manuals and/or good utility practices, or attributable to Force Majeure.
+
+12.1.4 The Defects Liability Period in respect of any part of the Equipment
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+shall expire immediately if Buyer or a third party undertakes inappropriate modifications or repairs or if Buyer/ Owner, in case of a defect, does not promptly take the appropriate steps to avoid or mitigate damage and allow Seller the possibility of remedying such defect.
+
+Notwithstanding the foregoing, if Seller fails after receipt of written notification to commence appropriate action to remedy a defect within an agreed period, or in the absence of an agreement within such time as is reasonable under all the circumstances, then Buyer may upon further written notice to Seller arrange for a competent contractor experienced in such work to perform Seller’s obligations to correct the defect and Seller shall reimburse Buyer the reasonable and documented costs of such work
+
+12.1.5 If any repair or replacement of the Equipment has occurred within the Defects Liability Period for such Equipment, then the Defects Liability Period for the repaired or replaced parts shall be extended for duration of repair/ replacement works after the completion of such repair or delivery of the replacement part (the “Extended Defects Liability Period”).
+
+12.1.6 Seller shall have no Warranty obligations in respect of repaired or replaced items beyond thirty six (36) months after Provisional Acceptance of
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+the Equipment or March 29th, 2021 for Unit 1, and March 29th, 2023 for Unit 2, whichever occurs earlier.
+
+12.1.7 With respect to incorrect design specifications provided by Seller to Buyer for equipment not supplied by Seller, Seller’s sole liability and obligations and Buyer’s sole remedy shall be limited to the correction of said design specifications.
+
+12.2 Exclusive Warranties
+
+The warranties, guarantees and remedies provided for in this Contract shall be the exclusive warranties, guarantees and remedies given by Seller in respect of defects or otherwise and shall apply in lieu of any warranties, guarantees and remedies which may be implied by law, trade practice or otherwise, including any implied warranty of merchantability, satisfactory quality or fitness for a particular purpose or any statutory warranties.
+
+Article 13. Contractual Liquidated Damages and Performance Guarantee
+
+13.1 Liquidated Damages for Failure to Achieve the Contractual Guaranteed Delivery Dates for Equipment.
+
+13.1.1 For each Unit, Seller shall deliver the Components of the Equipment by the
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Delivery Date set forth in Exhibit 2 (Delivery Schedule). To the extent that such delivery is not achieved in accordance with the Delivery Date due to reasons directly attributable to Seller, and solely attributable to Seller, and such delay is not excused under the Contract, Seller shall pay Buyer at its request, Liquidated Damages for each day of delay (percent of the price of the delayed Component) for failure by Seller to achieve the contractual guaranteed Delivery Date ("Equipment Delay Liquidated Damages") as follows:
+
+- during the 1st month of delay - 0,03% for each day of delay;
+- during the 2nd month of delay - 0,04% for each day of delay;
+- during the 3rd and following months of delay - 0,05% for each day of delay.
+
+The total amount of Equipment Delay Liquidated Damages for delayed delivery of the Component shall not exceed 10% of the relevant delayed Component price.
+
+13.1.2 It shall be a pre-condition to a claim for Equipment Delay Liquidated Damages that the Buyer has received a formal demand for payment of contractual penalties/ liquidated damages by Buyer’s Customer under the Main Contract for a corresponding period of delay which was attributable to Seller. In case Buyer did not make payment of contractual penalties/ liquidated damages to Buyer’s Customer under the Main Contract within thirty (30) days from payment by Seller of Equipment Delay Liquidated Damages, Buyer shall reimburse to Seller all amounts paid by
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Seller related to Equipment Delay Liquidated Damages.
+
+13.1.3 In the case of prolonged delay and if the limit on Equipment Delay Liquidated Damages has been reached, Buyer shall fix a reasonable final Delivery Date. Buyer shall have the right to suspend its obligations related to concerned Component under the Contract if Seller then fails to meet this revised final delivery date, until fulfillment of its obligations by Seller.
+
+13.2 Liquidated Damages for Failure to Achieve the Contractual Guaranteed Delivery Dates for Critical Documentation.
+
+13.2.1 For each Unit, Seller shall deliver the Critical Documentation by the Delivery Date set forth in Exhibit 2 (Delivery Schedule). To the extent that such delivery is not achieved in accordance with the Delivery Date due to reasons directly and solely attributable to Seller, and such delay is not excused under the Contract, Seller shall pay Buyer at its request, Liquidated Damages at the rate of 500 Euros per document for each week of delay for failure by Seller to achieve the contractual guaranteed Delivery Date ("Documentation Delay Liquidated Damages").
+
+The total amount of Liquidated Damages for delayed delivery of the
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract / March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+Critical Documentation shall not exceed 2% of the Unit Price.
+
+Seller shall not be liable to pay Documentation Delay Liquidated Damages for late delivery of Documentation which is not expressly identified as Critical Documentation. Any other times quoted for delivery shall be regarded as estimated only and Seller shall have no liability for failure to deliver on the dates stated.
+
+13.2.2 It shall be a pre-condition to a claim for Documentation Delay Liquidated Damages that (i) the Buyer has received a formal demand for payment of contractual penalties/ liquidated damages by Buyer’s Customer under the Main Contract for a corresponding period of delay which was attributable to Seller. In case Buyer did not make payment of contractual penalties/ liquidated damages to Buyer’s Customer under the Main Contract within thirty (30) days from payment by Seller of Documentation Delay Liquidated Damages, Buyer shall reimburse to Seller all amounts paid by Seller related to Documentation Delay Liquidated Damages.
+
+13.2.3 In the case of prolonged delay and if the limit on Documentation Delay Liquidated Damages has been reached, Buyer shall fix a reasonable final Delivery Date. Buyer shall have the right to suspend its obligations under the Contract related to concerned Critical Documentation if Seller then fails to meet this revised final Delivery Date, until fulfillment of its obligations by Seller.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+### 13.3 Liquidated Damages for Failure to Achieve the Key Milestones for Equipment
+
+#### 13.3.1 For each Unit, Seller shall achieve the Key Milestone of the Equipment by Key Milestone Achievement Date set forth in Exhibit 3 (Contract Schedule). To the extent that such Key Milestone is not achieved in accordance with the Key Milestone Achievement Date due to reasons directly and solely attributable to Seller, and such delay is not excused under the Contract, Seller shall pay Buyer, at its request Liquidated Damages for each day of delay (percent of the amount of the delayed Key Milestone) for failure by Seller to achieve the contractual guaranteed Key Milestone Achievement Date ("Key Milestone Liquidated Damages") as follows:
+
+- during the 1st month of delay - 0.03% for each day of delay;
+- during the 2nd month of delay - 0.04% for each day of delay;
+- during the 3rd and following months of delay - 0.05% for each day of delay.
+
+The total amount of Liquidated Damages for delay in achievement of the Key Milestone shall not exceed 10% of the relevant delayed Key Milestone amount.
+
+Seller shall not be liable to pay Key Milestone Liquidated Damages for delay in achievement of any other
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+milestones, i.e. any milestone not identified as a Key Milestone. Any other times quoted for achievement shall be regarded as estimated only and Seller shall have no liability for failure to achieve on the dates stated.
+
+13.3.2 It shall be a pre-condition to a claim for Key Milestone Liquidated Damages that the Buyer has received a formal demand for payment of contractual penalties/ liquidated damages by Buyer’s Customer under the Main Contract for a corresponding period of delay which was attributable to Seller. In case Buyer did not make payment of contractual penalties/ liquidated damages to Buyer’s Customer under the Main Contract within thirty (30) days from payment by Seller of Key Milestone Liquidated Damages, Buyer shall reimburse to Seller all amounts paid by Seller related to Key Milestone Liquidated Damages.
+
+13.3.3 In the case of prolonged delay and if the limit on Key Milestone Liquidated Damages has been reached, Buyer shall fix a reasonable final achievement date. Buyer shall have the right to suspend its obligations related to concerned Key Milestone under the Contract if Seller then fails to meet this revised final achievement date, until fulfillment of its obligations by Seller.
+
+13.3.4 Key Milestone Liquidated Damages
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+fails to deliver the related Component in compliance with Delivery Dates.
+
+In case delay in achievement of Key Milestone causes delay in delivery of Component, Buyer may at its option claim either payment of Key Milestone Liquidated Damages, or Equipment Delay Liquidated Damages.
+
+13.4 Performance Guarantee
+
+13.4.1 Seller guarantees that the Unit will satisfy the performance criteria for gross electrical output at generator terminals (the “Performance Guarantee”) set forth in Exhibit 6. Only performance specifically marked “guaranteed” constitute Performance Guarantee. Performance Guarantee shall be subject to contractual Liquidated Damages for performance (“Performance Guarantee Liquidated Damages”). In case Seller fails to achieve Performance Guarantee due to reasons directly attributable to Seller, and such non-achievement is not excused under the Contract, Seller shall pay Buyer, at its request Liquidated Damages for failure to achieve the contractual guaranteed Performance Guarantee in the amount of 0.13 % of the Contract Price per each MWe shortage of average Unit 1 and 2 outputs compared to the guaranteed gross electrical output.
+
+
+In case an improvement over guaranteed Equipment performance is achieved for one Unit, then the Seller shall be entitled to a credit equal to the amount of Performance Guarantee Liquidated Damages that would apply for an equivalent shortfall to offset Performance Guarantee Liquidated Damages payable by the Seller for shortfall in achievement of Performance Guarantee for other Unit.
+
+The total amount of Performance Guarantee Liquidated Damages shall not exceed 10% of the Contract Price.
+
+For avoidance of doubt, any other values, descriptions or specifications contained in the Contract are for information only and do not constitute guarantees. Seller shall not provide any other guarantee.
+
+13.4.2 This Performance Guarantee is conditioned upon the Equipment being stored, installed, maintained, commissioned, tested, operated, and repaired if applicable in accordance with Seller’s specifications, generally approved industry practices and such other “Performance Conditions” as are identified in Exhibit 6.
+
+13.4.3 The exclusive means for determining whether the Unit has satisfied the Performance Guarantee shall be by the “Performance Test” identified in Exhibit 6. Performance Test shall be conducted prior to Provisional Acceptance of the
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Unit, and Buyer shall give Seller sufficient advance notice to enable Seller/Buyer to witness the Performance Test, and Seller then will assist the Performance Test. The Unit shall be deemed to have met the Performance Guarantee and no further testing as to the Performance Guarantee shall be conducted if Buyer uses the Unit commercially ("Commercial Operation") prior to passing the Performance Test.
+
+13.4.4 The Seller is entitled to a complete preliminary Performance Test. If during this preliminary Performance Test the Unit seems not satisfy the Performance Guarantee for reasons directly attributable to Seller, then Seller shall have the option to take reasonable corrective efforts to cause the Unit to satisfy the Performance Guarantee, including repair or replacement of defective components. If after making such corrective efforts, the Unit as demonstrated during the final Performance Test does not satisfy the Performance Guarantee for reasons directly attributable to Seller, then Seller shall pay to Buyer after Provisional Acceptance of the last executed Unit Performance Guarantee Liquidated Damages as described in clause 13.4.1.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+No Performance Guarantee Liquidated Damages shall be due by Seller should the failure to achieve Performance Guarantee be for reasons not directly attributable to Seller.
+
+13.4.5 It shall be a pre-condition to a claim for Performance Guarantee Liquidated Damages that Buyer has received a formal demand for payment of performance penalties/ liquidated damages by the Owner or Buyer’s Customer under the Main Contract between the Buyer’s customer and Buyer, for a failure to achieve guaranteed performance attributable to Seller. In case Buyer did not make payment of contractual penalties/ liquidated damages to Buyer’s customer under the Main Contract within thirty (30) days from payment by Seller of Performance Liquidated Damages, Buyer shall reimburse to Seller all amounts paid by Seller related to Performance Guarantee Liquidated Damages.
+
+13.5 Aggregate Liability for Liquidated Damages
+
+Seller’s aggregate liability for all Liquidated Damages under the Contract shall be limited to 10% of the Contract Price.
+
+13.6 No Harm, No Foul
+
+Seller shall not be liable for Liquidated Damages as a result of any delay in the Delivery of the Components, Critical
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Documentation, delay in achievement of Key Milestone or failure to achieve a Performance Guarantee if Buyer did not incur loss or liability as a result of such delay or failure. If Buyer has incurred loss or liability as the combined result of such delay or failure on Seller’s part together with the acts or omissions of other persons for which Seller is not responsible, including other contractors and suppliers working on the same project, then there shall be pro-rating and Seller’s liability for such Liquidated Damages shall be reduced in proportion to the extent that Seller’s delay or failure caused Buyer to incur such loss or liability.
+
+13.7 Sole & Exclusive Remedy
+
+The application of contractual Liquidated Damages in accordance with this Article 13 shall be the sole and exclusive remedies of Buyer in full and final satisfaction of Seller’s liability for delay in delivering Components, Critical Documentation, delay in achievement of Key Milestone or failure to achieve the Performance Guarantee.
+
+Article 14. Compensation
+
+14.1 Seller shall compensate Buyer for Buyer’s damages/harm experienced as a result of claims for death or personal injury and loss of or damage to third party tangible property (excluding
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract / March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+property forming part of the facility into which the Equipment will be incorporated) to the extent Buyer’s damages/harm are caused by the defective design, material or workmanship of Seller or by its negligence or breach of statutory duty, and for Buyer’s damages/harm experienced as a result of claims against Buyer for the infringement of Intellectual Property Rights, arising from the design, construction or use of the Equipment (other than a design furnished by the Buyer) in the manner specified in the Contract.
+
+14.2 The above compensation is conditional upon Buyer promptly notifying Seller of any matter which Buyer is aware of which may lead to a claim from third parties, and of any claim received from third parties in connection with the matters set out in this clause 14.2, and thereafter permitting the Seller to take over the defence or settlement of such claim at Seller’s cost.
+
+In the event of an infringement of third party Intellectual Property Rights, Seller shall be entitled at its cost to obtain a licence of use for Buyer (or as the case may be for the end-user or Owner), or modify the infringing parts of the Equipment or Documentation so that they become non-infringing, or to replace infringing parts of the Equipment or Documentation with non-infringing parts or documentation having substantially the same functionality, provided always that any such modification or replacement shall
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+allow the Equipment to be operated and maintained safely and reliably for the purposes contemplated by the Contract.
+
+14.3 The above obligation of Seller to compensate Buyer shall not apply to the extent any claim arises from the Buyer’s, Owner’s or their other contractors acts, omissions or neglect or improper use of the Equipment and shall cease upon expiry of the Defects Liability Period of the last Unit to receive Provisional Acceptance. In such cases, Buyer shall be liable for and compensate Seller for Seller’s damages/harm experienced as a result of all losses, expenses and claims arising in connection therewith.
+
+Article 15. Nuclear Liability & Insurance
+
+15.1 In no event shall Seller or its Subcontractors of any tier be liable to Buyer, Owner or their insurers for (i) any personal injury, death or property damage due to a Nuclear Incident or (ii) loss or damage resulting from the unavailability of any Owner nuclear plant or shutdowns of any Owner nuclear plant or other facilities or service interruptions (including loss of profits or revenue, inventory or use charges, cost of replacement power, cost of capital or claims by customers) due to a Nuclear Incident. Buyer shall, and shall cause Owner to, waive any right of recovery and shall cause its insurers to waive any rights of recovery
+
+| 1 | For the purposes of this Article 15, “Seller” shall also include Seller’s Affiliates. |
+|---|-------------------------------------------------------------------------------------|
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+against Seller and its Subcontractors of any tier for Nuclear Damages. Buyer shall, or cause Owner to, indemnify, defend and hold harmless Seller and its Subcontractors of any tier from and against any suit, demand, claim, counter-claim, cross-claim, cause of action or actions and from all damages that may be imposed on, incurred by or asserted against them, or any one of them, in any manner arising out of, resulting from or in connections with any type of Nuclear Damage or Nuclear Incident.
+
+15.2 Buyer shall notify Owner to provide and maintain nuclear insurance coverages and financial securities as provided in the "1963 Vienna Convention on Civil Liability for Nuclear Damage", as amended, and to the extent permitted thereby in an amount equal to the greater of the maximum amount available or the full replacement value of Buyer and Owner’s real and personal property at the nuclear power plant.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+These Nuclear liability insurance and financial securities shall ensure full compensation of the Buyer, Seller and their Subcontractors of any tier and their personnel for compensation of any Nuclear Damage and full protection against a Nuclear Incident, including coverage for any loss of or damage to any property arising out of insurable perils.
+
+The insurance and indemnity arrangement shall continue in effect for such period as may be necessary to cover liability arising out the operation of the nuclear power plant.
+
+The insurers providing such nuclear insurance coverages shall have no rights of recourse or subrogation against Buyer, Seller, its Subcontractors of any tier or their personnel for Nuclear Damage.
+
+In addition, and in accordance with Article 2 of this Agreement, it has been approved by the relevant Russian Authority that the "2000 Bilateral Agreement on Third Party Liability for Nuclear Damage caused in connection with deliveries from the French Republic for Nuclear Installations in the Russian Federation", fully applies to Seller, its Subcontractors of any tier and their personnel, meaning that (i) no claims can be brought against the French suppliers on grounds of nuclear damage resulting from nuclear incident which has taken place within the territory of the Russian Federation, and (ii) the Government of the Russian Federation has agreed to provide the French suppliers appropriate legal protection and to exempt them from liability claims by third parties in connection with nuclear damage resulting from nuclear incident occurring within the territory of the Russian Federation.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract / March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+15.3 The Parties agree that Owner, as operator of the nuclear power plant for which the Work is being performed is exclusively liable for all damages resulting from a Nuclear Incident.
+
+15.4 Seller and its Subcontractors of any tier shall under no circumstances and at no time be liable for any Nuclear Damage resulting directly or indirectly from a Nuclear Incident.
+
+15.5 Buyer shall, or cause Owner to, defend, indemnify and hold harmless Seller and its Sub-suppliers of any tier against any claims by third parties, including insurers, for any Nuclear Damage.
+
+15.6 If after the entering into force of the Contract, any Applicable Law or international convention expires or is modified in such a way that Seller and its Subcontractors of any tier may be held liable for Nuclear Damage in connection with a Nuclear Incident, then Buyer shall, or cause Owner to, inform Seller promptly thereof and to ensure by legally enforceable means (e.g., waivers of liability, government indemnity and/or insurance) that Seller and its Subcontractors of any tier shall incur no such liability.
+
+15.7 Buyer shall, or cause Owner to, ensure that neither Work or any information or service furnished hereunder is transferred or any interest therein is assigned without Buyer or Owner having ensured protection for Seller and its Subcontractors of any tier equivalent to the protection provided in this clause after such transfer or assignment. This applies only
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+for items that are intended to be used in a critical safety application. A critical safety application is the use where there is a plausible possibility that failure, malfunction or error could cause a Nuclear Incident or aggravate the consequences of such an incident.
+
+15.8 The provisions of this Article 15 shall be in effect for as long as the nuclear power plant for which the Work is performed is in operation and thereafter until all radioactive material have been removed from the Site and shall apply regardless of negligence of whatever degree (including gross negligence) and regardless of breach of contract and shall apply notwithstanding any other provisions of the Contract.
+
+15.9 Buyer acknowledges and declares that the provisions of the present Clause 15 - Nuclear Liability & Insurance benefit as well to any Subcontractors of any tier of Seller and that the said Subcontractors of any tier shall be entitled to directly enforce the provisions of Clause 15 toward the Buyer.
+
+15.10 The Parties recognize that the liability of Owner for Nuclear Damage is not defined under this Contract, Owner not being a party to the present Contract.
+
+It is recognized that Owner liability
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+for Nuclear Damage is defined under law by the “1963 Vienna Convention on Civil Liability for Nuclear Damage”, as amended. It is further recognized that the "2000 Bilateral Agreement on Third Party Liability for Nuclear Damage caused in connection with deliveries from the French Republic for Nuclear Installations in the Russian Federation” fully applies to the Contract to the benefit of Seller.
+
+Article 16. Limits of Liability
+
+16.1 (a) Seller’s total aggregate liability for all losses, claims or damages arising out of or in connection with the Contract, its performance or breach (including indemnity claims), whether such liability arises in contract shall not exceed fifteen percent (15%) of the Contract Price.
+
+(b) Seller’s total aggregate liability for all losses, claims or damages arising out of or in connection with the Contract, its performance or breach (including indemnity claims), whether such liability arises in tort (including negligence) or otherwise, shall not exceed fifteen percent (15%) of the Contract Price.
+
+(c) Overall cap of Seller’s liability regardless its ground shall in no case exceed fifteen percent (15%) of the Contract price.
+
+16.2 The rights, remedies and liabilities of the Parties as set out in the Contract shall be the sole and exclusive rights, remedies and liabilities in respect of the matter to which they relate and shall apply to the exclusion of any other
+
+
+rights, remedies or liabilities that might be available at law, whether express or implied.
+
+16.3 (a) Notwithstanding any other provisions in the Contract or the Applicable Law, except in respect of the Contractual Liquidated Damages provisions under the Sub-articles 13.1, 13.2, 13.3 and 13.4 of the Contract and Buyer's liability for late payment interest pursuant to Article 5.2.4, neither Party shall be liable to the other in contract for loss of profit, loss of revenue, loss of anticipated saving, loss of use, loss of production, loss of generating capacity, loss of contract, cost of replacement power or additional fuel, increase in operating costs, cost of capital or for any financial or economic loss or for any special, indirect, incidental or consequential damage whatsoever.
+
+(b) Notwithstanding any other provisions in the Contract or the Applicable Law, except in respect of the Contractual Liquidated Damages provisions under the Sub-articles 13.1, 13.2, 13.3 and 13.4 of the Contract and Buyer's liability for late payment interest pursuant to Article 5.2.4, neither Party shall be liable to the other whether by way of Compensation (as per Article 14) or breach of statutory duty or in tort (including negligence) or under any other legal theory for loss of revenue, loss of anticipated saving, loss of use, loss of production, loss of
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+generating capacity, loss of contract, cost of replacement power or additional fuel, increase in operating costs, cost of capital or for any financial or economic loss or for any special, indirect, incidental or consequential damage whatsoever.
+
+16.4 In the event Seller is liable for costs arising from damage occurring during installation, commissioning or testing, such liability is conditional upon Buyer having procured insurance coverage as specified in Article 17 of the Contract.
+
+16.5 Seller shall have no liability for the quality of work performed by the Buyer, Buyer’s other contractors, and/or Buyer’s Customer and/or Owner and/or third parties not under the control of Seller. Seller shall not be liable for approval or acceptance of work performed by Buyer or Buyer’s other contractors or for advice or information provided by Seller.
+
+Article 17. Insurance
+
+Buyer shall arrange, at its cost, insurance cover for onward carriage to the Owner’s Site.
+
+Article 18. Default, Suspension &
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract / March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+### Termination
+
+18.1 Duty to Mitigate
+
+18.1.1 Notwithstanding any other provision, right or remedy contained in the Contract, in the event of a default by either Party the other Party shall use its best e endeavors to mitigate the impact of such default to minimize any claim upon the delinquent Party.
+
+18.2 Termination – Suspension
+
+18.2.1 In the event of a material default by Seller, Buyer’s exclusive remedies shall be to serve written notice on Seller specifying the nature of the default and requesting Seller to implement corrective action. If Seller fails to commence implementation of corrective action within a reasonable period after receipt of such notice and thereafter fails to diligently pursue such corrective action to completion, then Buyer shall be entitled to unilaterally refuse to perform its obligations under the Contract (i.e. terminate the Contract) without recourse to the courts. In such a case Buyer shall be entitled to charge Seller for costs in excess of the Contract Price reasonably incurred by Buyer in completing any uncompleted portion of the Contract itself or having it performed by another contractor.
+
+18.2.2 Buyer shall be entitled to unilaterally refuse to perform its obligations under
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+the Contract (i.e. terminate the Contract) for reasons of delay provided that (i) such delay is directly attributable to the Seller, (ii) Seller has reached the cap for Delay Liquidated Damages, (iii) Seller failed to complete Delivery within an additional period agreed by the Parties further to have reached the cap for Delay Liquidated Damages, and provided that (iv) such delay directly caused termination of the Main Contract. It is agreed by the Parties that in all other circumstances of delay the Parties shall meet in order to mitigate as much as possible the effects of such delay under this Contract and the Main Contract.
+
+18.2.3 Subject to termination of the Main Contract, Buyer has the right to unilaterally refuse to perform its obligations under the Contract (i.e. terminate the Contract) only in case of material breach by Seller, by service of prior written notice to Seller. The Contract shall be considered terminated thirty (30) days after Seller’s receipt of such written notice. Upon receipt of such notification, Seller shall stop execution of Works. In such an event Seller shall be entitled to payment within thirty (30) days of the sum specified in the termination schedule in Exhibit 7 in respect of the Unit Price of terminated Units (less previous payments received from Buyer) relating to the month in which termination became effective. For that part of the Contract Price applicable to the Services, Seller shall be entitled to payment for any services performed but not paid for at the time of termination.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+If no termination schedule is specified, Seller shall be paid for (i) finished Equipment delivered or in a deliverable state (except for related transport cost) but not yet paid, (ii) its costs incurred in respect of Works in progress (including subcontracts and raw material supplies ordered in expectation of completing the Contract), provided that title on such Works passes to Buyer from Seller upon their payment, (iii) those costs to which Seller is committed at the time of termination. Payment shall be made within thirty (30) days of receipt of Seller’s invoice for these amounts.
+
+18.2.4 Seller shall be entitled to suspend the Contract (i) by immediate notice in writing in the event of the Buyer’s insolvency or (ii) thirty (30) days after service of notice in writing in the event of the Buyer’s material breach of the Contract (including failure to issue a certificate properly due to Seller or make or procure payments when due). Seller can unilaterally refuse to perform its obligations under the Contract (i.e. terminate the Contract), without recourse to the courts, by written notice in the event of prolonged suspension by either Party (other than for Seller’s default) of a duration longer than sixty (60) days.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+In such cases, Seller shall be entitled to recover all sums due, together with the substantiated costs of all Works performed and commitments entered into prior to or as a result of any such suspension or unilateral refusal to perform by Seller (including the costs of protection, preservation and maintenance of the Equipment), and the reasonable costs of demobilisation and re-mobilisation and the repatriation of its personnel. Seller shall further be entitled to an equitable adjustment to the Contract time schedule and to substantiated costs arising from any suspension ordered or caused by the Buyer.
+
+In the case of suspension, Seller shall not be obligated to resume performance until written agreement on the amount of costs and time required incurred resulting from the suspension and payment of such costs in full.
+
+Article 19. Changes in Law & Change Orders
+
+19.1 Buyer Changes
+
+19.1.1 Buyer may from time to time submit to Seller in writing a proposal of change to Seller’s Scope of Work or the
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+Delivery Schedule ("Change Proposal").
+
+19.1.2 Change Proposals shall have the following process:
+
+(a) Upon receipt of the Change Proposal, Seller shall within thirty (30) days submit to Buyer in writing a statement as to the effect, if any, which such Change Proposal would have on the Scope, Contract Price, Contract Schedule, Warranties, Performance Guarantee, and/or other provisions of this Contract ("Change Proposal Response").
+
+(b) Buyer must then respond in writing within ten (10) days of receipt of Seller's Change Proposal Response, commenting thereupon or agreeing to it.
+
+(c) The Parties must then agree a Change Order in the form set out in Exhibit 11. Change Orders shall (a) be mutually agreed in writing before commencement of work, (b) be limited to ± 15 % of the Contract Price in aggregate, (c) specify the scope, price and program of the change, (d) specify any effects on the program, performance guarantees, warranties and/or other Contract terms, (e) specify agreed payment terms analogous to those set out in Article 5, (f) specify agreed security of payment and (g) specify agreed procedures, notice
+
+Baltic NPP Unit 1 & Unit 2 - Equipment Supply Contract / March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+periods and documentation.
+
+19.1.3 No Change Order under Article 19.1 shall be valid or effective unless agreed upon and signed by both Parties. In the event the Parties are unable to agree on the terms of a Change Order, then Seller shall not be obligated to carry out the Change Order.
+
+19.2 Seller Changes
+
+19.2.1 Seller shall have the right to ask for an equitable adjustment to the Contract Price, to the Contract Schedule and to a Change Order if its costs or ability to perform its obligations under this Contract are affected by act or omission of any governmental body or agency, the Owner, Buyer and/or any other contractor of Owner or Buyer.
+
+19.2.2 Upon becoming aware of any of the circumstances described in Article 19.2.1, Seller shall as soon as reasonably practicable give written notice thereof to Buyer, and within thirty (30) days of such notice, Seller shall submit to Buyer in writing a Change Order, identifying the circumstances and setting forth the required changes to the Contract Price, costs, Contract Schedule, Warranties, Performance Guarantee, and other provisions of this Contract which Seller believes are reasonable and equitable in view of the circumstances.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+19.3 Change in Law
+
+In the event any change occurring after the Main Contract signature date in any law, norm, regulation, code standards or in the application or interpretation in respect thereof by a Governmental Instrumentality or by a Court, including any change in tax regulation, or in the event of any enactment or making of the same occurring after the Main Contract signature date, results in a delay in the performance of Contract’s obligation, in any change in the Works, and/or in an increase of Seller’s cost in performing its contractual obligations, Seller’s shall be entitled to an extension of time under the Contract and compensation of its resulting additional cost by the Buyer.
+
+Consequently, the amounts payable under this Contract by the Buyer to the Seller as well as the time for delivery and/or completion shown on the Contract Schedule shall be equitably adjusted to reflect the increase in the amount of such cost and the increase in time required to deliver the Equipment and/or complete the Works or Services. If required the Contract shall be adjusted as well to be in line with the Change in Law.
+
+Article 20. Confidentiality
+
+20.1 Each Party shall retain in strict confidence and shall not disclose to any third party any Confidential Information
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+communicated to it by the other Party pursuant to the Contract through drawings, reports or other means of communication. This confidentiality obligation shall last for a period of ten (10) years from the date of disclosure and shall not apply to information that is publicly available or obtained legally from a third party.
+
+20.2 The Parties acknowledge and agree that, in the event of any breach of this Confidentiality obligation, the Party to whom the information belongs ("Harmed Party") would be irreparably and immediately harmed and could not be made whole by monetary damages. Accordingly, it is agreed that, in addition to any other remedy to which it may be entitled at law, the Harmed Party shall be entitled to an injunction(s) (without the posting of any bond and without proof of actual damages) to prevent breaches or threatened breaches of this Confidentiality obligation and/or to compel specific performance thereof, and that neither the Party making the unauthorized disclosure ("Disclosing Party") nor its representatives will oppose the granting of such relief. The Disclosing Party also agrees to reimburse the Harmed Party for all costs and expenses, including reasonable attorneys' fees, incurred by the Harmed Party in attempting to enforce the obligations of the Disclosing Party or of its representatives hereunder.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+20.3 Each Party shall be entitled to use information obtained from the other Party pursuant to this Contract solely and exclusively for the purposes contemplated by this Contract, but not otherwise.
+
+20.4 Notwithstanding the foregoing, Confidential Information shall not include the following:
+
+(a) information that, at the time of disclosure by the disclosing Party, is publicly available, or information that later becomes publicly available through no breach of this Article 20 by the receiving Party;
+
+(b) information that the receiving Party can demonstrate was in its possession prior to disclosure by the disclosing Party;
+
+(c) information received by the receiving Party from a third party who, to the best of the receiving Party’s knowledge, did not acquire such information on a confidential basis either directly or indirectly from the disclosing Party;
+
+(d) information that the receiving Party can demonstrate was independently developed by it or for it and that was not obtained, in whole or in part, from the disclosing Party;
+
+(e) information that the disclosing Party authorizes the receiving Party to disclose; or
+
+(f) information which is required to be disclosed by legal process (but only to the extent of such requirement).
+
+Article 21. Intellectual Property Rights
+
+
+21.1 All Intellectual Property Rights in technical information and other information, whether in written, graphic, electronic or any other form, relating to the Work, owned, held or acquired by Seller prior to or during the preparation of Seller’s proposal/tender and/or in the course of performance of this Contract shall be and remain the property of Seller (“Seller’s IP”).
+
+21.2 All performance test results of Seller’s Equipment for tests performed pursuant to this Contract shall be considered as Seller’s IP, irrespective of who performs the tests or prepares the test reports.
+
+21.3 Seller’s IP shall be kept confidential by Buyer and its other contractors and shall not be copied, altered, modified, manipulated or disclosed by any of them. Seller’s IP shall not be used by Buyer, its employees, agents and subcontractors, as well as the Buyer’s Customer, Prime Contractor, Owner for any purpose other than the operation, maintenance and repair of the Equipment.
+
+21.4 Seller hereby grants Buyer a non-exclusive and non-transferable royalty free right to use Seller’s IP provided under the Contract for the life of the Equipment but solely for the purposes of its operation, maintenance and repair. As a sole exception to the non-transferable license, Seller authorizes Buyer to grant Buyer’s Customer, Prime Contractor, Owner a non-exclusive and non-transferable royalty free right to use Seller’s IP provided under the Contract for the life of the Equipment but solely for the
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+purposes of its operation, maintenance and repair.
+
+21.5 Buyer grants to Seller a non-exclusive royalty free right to use any information provided by Buyer under or in connection with the Contract for the purposes of performing Seller’s obligations under the Contract.
+
+21.6 For avoidance of any doubt, in no case shall the Seller be obliged to submit under the present Contract manufacturing drawings, shop drawings, source codes.
+
+Article 22. Subcontract
+
+22.1 Seller shall be free to subcontract any part of its Scope. In such case, Seller shall remain responsible towards Buyer for any subcontracted Work.
+
+22.2 (a) For Equipment identified as a Component, a list of approved subcontractors is set forth in Exhibit 9 (“Approved Subcontractors List”). Seller shall have discretion to choose subcontractors from this list.
+
+(b) All licensees and Affiliates of Seller are deemed approved.
+
+22.3 For suppliers and subcontractors of Components who are not included in the
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Approved Subcontractors List, the Buyer’s approval shall be necessary only for subcontracts in excess of fifty million (50,000,000.00) Euro ("Major Subcontract").
+
+22.4 (a) In the event that Seller is considering for a Major Subcontract the selection of a subcontractor not on the Approved Subcontractors List, Seller shall:
+
+(i) Notify Buyer in writing of its proposed subcontractor at the earliest practical point in Seller’s selection process and furnish to Buyer such information reasonably required to assess the proposed subcontractor with respect to Seller’s selection criteria (including copies of bid packages, but excluding price and payment information, furnished to the proposed subcontractor and the qualifications and experience of the proposed subcontractors); and
+
+(ii) Notify Buyer no less than ten (10) Business Days prior to the execution of a Major Subcontract with a subcontractor not on the Approved Subcontractors List.
+
+(b) Buyer, acting in good faith, may reasonably reject such proposed subcontractor for a Major Subcontract if the proposed subcontractor does not have the necessary financial or technical capability or is reliably reputed to be unsuitable for the position.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+(c) Buyer must expeditiously review the information provided by Seller reasonably and in good faith, and notify Seller of any rejection the reasons for the rejection, as soon as such a decision is made. If at the end of the ten (10) Business Day notice period described above, if Seller has not received written notice of Buyer’s rejection of the proposed subcontractor, then the proposed subcontractor is deemed approved and may be added to the Approved Subcontractors List. Seller may then execute such agreement with the proposed Major Subcontractor.
+
+(d) If the Buyer rejects any proposed subcontractor, and a replacement subcontractor is not available on commercially reasonable terms, any alternative arrangement will entitle Seller to a Change Order pursuant to Article 19.
+
+Article 23. Force Majeure
+
+23.1 A Party shall not be in default, and shall not be liable to the other Party for any loss or damage, as a result of delay or failure to perform any obligations hereunder, other than a payment obligation, if such delay or failure is caused by a Force Majeure event. Delays to Seller’s Subcontractor of any tier attributable to a Force Majeure event shall also be considered a Force Majeure event for Seller.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+23.2 If a Party seeks to invoke an event of Force Majeure, it shall give written notice to the other Party with particulars of the act or matter claimed as a Force Majeure event within seven (7) days after the occurrence thereof. The affected Party shall take all reasonable steps to remedy the failure to perform and to keep other Party informed of the steps being taken to mitigate the effects of the Force Majeure. The other Party shall also take all reasonable steps to mitigate any loss or damage suffered by it that is attributable to the effects of the affected Party’s delay or failure.
+
+23.3 The affected Party’s time for performing its obligations shall be extended by the length of time necessary to overcome the effects of the Force Majeure event.
+
+23.4 When delay caused by a Force Majeure event lasts for more than thirty (30) days the Parties shall meet in order to evaluate the effects of such Force Majeure event on performance under the Contract (time schedule, extra costs) and decide on mutually acceptable amendment.
+
+23.5 If the effects of a Force Majeure event last for more than ninety (90) days, either Party may unilaterally refuse to perform its obligations under the Contract, without recourse to the courts, by service of a thirty (30) days written notice to other Party. The
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract / March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+Contract shall be considered terminated thirty (30) days after a Party’s receipt of such written notice. In such cases, Seller shall be entitled to retain payments made or payable under the Contract prior to such refusal, together with payment for any work performed, delivered or in deliverable state to Buyer not included in such payment.
+
+Article 24. Applicable Law & Dispute Resolution
+
+24.1 Applicable Law
+
+24.1.1 The Contract shall be governed by the laws of Switzerland, excluding its conflict of law provisions.
+
+24.1.2 The provisions of the Vienna Convention (the United Nations Convention of Contracts for the International Sale of Goods, concluded in Vienna on 11.4.1980) shall not be applicable.
+
+24.2 Dispute Resolution
+
+24.2.1 The Parties must, in good faith, make all reasonable efforts to resolve any dispute that may arise under, out of or in connection with this Contract.
+
+Such dispute shall first be referred in writing to the project manager of each Party. If said project managers are unable to resolve the dispute within fifteen (15) days of such referral, the dispute shall be referred in writing to the vice presidents or general directors of each Party. If said vice presidents or general directors are unable to resolve the dispute within thirty (30) days of such
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+referral (or for such longer period as the Parties may agree), then either party may submit the dispute for arbitration.
+
+24.2.2 Any dispute arising under, out of or in connection with this Contract, or the breach, termination or invalidity thereof, which the Parties fail to settle amicably within thirty (30) days after the dispute has been brought to the attention of the other Party by way of formal notification, shall be finally settled by arbitration in accordance with the Rules of Arbitration of the International Chamber of Commerce, by 3 arbitrators appointed according to such Rules. The language of the proceedings shall be English and the place of arbitration shall be Geneva, Switzerland. Each Party agrees irrevocably and unconditionally that decision of the arbitration court shall be final and binding for both Parties.
+
+Article 25. Notice
+
+25.1 Notice under this Contract must be in documentary form and shall be effective when received by the Party to whom notice is given. Notice will be effective if given by personal service or if delivered by nationally recognized courier service (Federal Express, United Parcel Service or DHL) or by certified or registered mail postage prepaid return receipt requested, to the following addresses:
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+```
+To Alstom:
+ALSTOM Power Systems SA
+Address: 2 quai Michelet, 3 avenue André Malraux 92300 Levallois-Perret, France
+
+Attention: Didier Saison, Kaliningrad Project Director (Nuclear Business)
+
+With a copy to:
+Contracts Manager (Nuclear Business)
+
+Article 26. General Provisions
+
+26.1 The Contract shall be the entire agreement between the Parties in respect of the Project, to the exclusion of all other oral and written exchanges. Neither Party shall rely on any representations except those set out expressly in the Contract.
+
+26.2 If any provision of the Contract is declared invalid or unenforceable, all other provisions shall remain in force including all limitations and exclusions of liability. The Parties shall endeavor in good faith to agree on an alternative provision having an effect as close as possible to the original provision.
+
+26.3 This Contract is written in English and in Russian language, and English version shall prevail. The agreed language of the Contract
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+```
+
+
+shall be English, including all technical and commercial matters and correspondence and all disputes resolution. Any translation shall be for information only.
+
+26.4 No condition or other provision contained herein is intended to confer on any third party any benefit or right enforceable at the option of that third party, against either Seller or Buyer.
+
+26.5 Any amendment to this Contract including price and time schedule shall only be valid and binding upon the Parties if concluded in writing and signed by an authorized representative of each of the Parties and formally expressed as constituting an amendment hereto.
+
+26.6 This Contract may not be assigned by one Party in whole or in part to any third party without the prior written approval of the other Party.
+
+26.7 The rights and remedies of the Parties shall not be affected by any failure or delay in exercising any right or remedy or by the giving of any indulgence by any Party or by anything whatsoever except a specific waiver or release in writing. Any such waiver or release given shall not prejudice or affect any other rights or remedies of this Party. No single or partial exercise of any right or remedy prevents any further or other exercise thereof of any other right or remedy.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+No waiver of any provision of this Contract shall constitute a waiver or precedent in respect of that or any other provision at any other time or by any other Party.
+
+26.8 Articles 15 (Nuclear Liability & Insurance), 16 (Limits of Liability), 18 (Default, Suspension & Termination), 20 (Confidentiality) and 21 (Intellectual Property Rights) shall survive termination or expiration of this Contract.
+
+Article 27. Export Control
+
+27.1 The obligations of Seller under the Contract, including any obligation to deliver the Equipment, shall be subject to any applicable law or regulation applying to the country of origin of the Equipment or of any other country or international institutions having territorial effect prohibiting or restricting the use, manufacture and/or sale of the Equipment, including without limitation any law or regulation concerning the export, import or disclosure of materials, products, information or data. Buyer acknowledges that such laws and regulations may restrict the rights of Buyer to export, import, re-export the Equipment purchased and hereby agrees to comply with such laws and regulations.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+
+
+27.2 If requested by Seller, Buyer shall send to Seller an official statement Buyer’s Customer and/or Owner of the end-use of supplied Equipment or part thereof, as the case may be, which is subject to the said laws and regulations (in particular foreign export control regulations), substantially similar to the form End-User Certificate in Exhibit 10.
+
+27.3 Buyer hereby certifies and undertakes that the Equipment supplied or any part thereof or any information or technical data related to such Equipment will not be used in any way in the development or manufacture of weapons of any type or for any military purpose.
+
+Article 28. Legal Addresses and Banking Details of the Parties
+
+| BUYER: | POKUPA[UNREADABLE]: |
+|--------|-------------------|
+| ALSTOM Atomenergomash Limited Liability Company | [UNREADABLE] |
+| 2, Zheleznodorozhnaya St., Podolsk, Moscow Region, 142103, Russia | [UNREADABLE] |
+| OGRN 1075074009977 | OGRN 1075074009977 |
+| INN 5036083578 | INN 5036083578 |
+| KPP 503601001 | KPP 503601001 |
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+
+CONFIDENTIAL DOCUMENT
+
+
+```
+Bank details:
+Current Acc (Euro) 40702978540330003891
+At the Podolsk Branch No.2573 of Sberbank of Russia
+Corr/acc 30101810400000000225 at OPERU MGTU Bank of the RF
+RCBIC 044525225
+
+SELLER:
+ALSTOM Power Systems SA
+2 quai Michelet, 3 avenue André Malraux 92300 Levallois-Perret, France
+
+Bank details :
+BNP Paribas
+BP N°57, 92202 Neuilly Sur Seine France
+IBAN : FR76 3000 4004 0100 0201 1645 611
+BIC : BNPAFRPPPPKL
+
+The Contract is made on March 20th, 2012 in 2 (Two) copies being equally valid, one copy for each Party.
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012
+CONFIDENTIAL DOCUMENT
+```
+
+
+For and on behalf of Alstom Power Systems SA | For and on behalf of ALSTOM Atomenergomash LLC
+
+François Taveau | Alexander Tsvetkov
+Acting under the Power of Attorney n° 2011/12/143, dated December 14th, 2011 | General Director, acting under the Charter
+
+АЛЬСТОМ Пауэр Системс СА | Общество с ограниченной ответственностью «АЛЬСТОМ Атомэнергомаш»
+
+Франсуа Таво на основании доверенности №2011/12/143 от 14 декабря 2011г. | Генеральный Директор Александр Цветков на основании Устава
+
+Baltic NPP Unit 1 & Unit 2 – Equipment Supply Contract/ March 20th, 2012 | 87
+CONFIDENTIAL DOCUMENT
+Договор на поставку оборудования для энергоблоков 1 и 2 Балтийской АЭС 20 марта 2012 г.
+КОНФИДЕНЦИАЛЬНЫЙ ДОКУМЕНТ
+
+
