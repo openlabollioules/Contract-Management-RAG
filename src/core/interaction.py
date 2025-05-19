@@ -299,17 +299,18 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest")) -> None:
     context = "\n\n---\n\n".join(context_parts)
 
     # Create the prompt with context
-    prompt = f"""Tu es un assistant spécialisé dans l'analyse de contrats. 
-Voici le contexte pertinent extrait des documents. Pour chaque section, tu as soit un résumé avec le contenu détaillé disponible, soit directement le contenu original.
-Utilise d'abord les résumés pour avoir une vue d'ensemble, puis consulte les contenus détaillés si nécessaire pour plus de précision.
+    prompt = f"""You are an assistant specializing in contract analysis.
+    Here is the relevant context extracted from the documents. For each section, you either have a summary with the detailed content available or the original content itself.
+    First use the summaries to get an overview, then consult the detailed content if you need more precision.
 
-{context}
+    {context}
 
-Question de l'utilisateur : {query}
+    User’s question: {query}
 
-Réponds de manière précise en te basant sur le contexte fourni.
-Si tu utilises un résumé, vérifie dans le contenu détaillé pour t'assurer de la précision de ta réponse.
-Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
+    Provide a precise answer based on the context given.
+    If you use a summary, check the detailed content to ensure your answer’s accuracy.
+    If you can’t find the information in the context, state that clearly."""
+
 
     # Get response from Ollama
     response = ask_ollama(prompt, temperature, model)
