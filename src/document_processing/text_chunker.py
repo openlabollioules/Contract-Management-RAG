@@ -408,6 +408,41 @@ class TextChunker:
         # Limites pour éviter des valeurs extrêmes
         return max(0.4, min(0.8, base_threshold))
 
+    def _detect_dates(self, text: str) -> List[str]:
+        """
+        Detect dates in text using regex patterns.
+        Supports various date formats commonly found in contracts.
+
+        Args:
+            text: Text to analyze
+
+        Returns:
+            List of detected dates
+        """
+        print("detect_dates")
+        # Common date patterns in contracts
+        date_patterns = [
+            # DD/MM/YYYY or DD-MM-YYYY
+            r'\b(0?[1-9]|[12][0-9]|3[01])[/-](0?[1-9]|1[0-2])[/-](19|20)\d{2}\b',
+            # YYYY/MM/DD or YYYY-MM-DD
+            r'\b(19|20)\d{2}[/-](0?[1-9]|1[0-2])[/-](0?[1-9]|[12][0-9]|3[01])\b',
+            # Month DD, YYYY (e.g., "January 1, 2024")
+            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01]),\s+(?:19|20)\d{2}\b',
+            # DD Month YYYY (e.g., "1 January 2024")
+            r'\b(?:0?[1-9]|[12][0-9]|3[01])\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
+            # French date format (e.g., "le 1er janvier 2024")
+            r'\ble\s+(?:0?[1-9]|[12][0-9]|3[01])(?:er|ème)?\s+(?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(?:19|20)\d{2}\b',
+        ]
+
+        dates = []
+        for pattern in date_patterns:
+            matches = re.finditer(pattern, text, re.IGNORECASE)
+            for match in matches:
+                print(f"Date trouvée: {match.group(0)}")
+                dates.append(match.group(0))
+
+        return dates
+
     def chunk_text(
         self, text: str, doc_id: str = None, doc_metadata: dict = None
     ) -> List[Chunk]:
@@ -463,7 +498,6 @@ class TextChunker:
             references[reference] = True
 
         # Utilisation du SemanticChunker pour la segmentation sémantique
-        # Utiliser le chunker déjà configuré dans l'initialisation
         semantic_chunks = self.semantic_chunker.create_documents([text])[
             0
         ].page_content.split("\n\n")
@@ -508,6 +542,9 @@ class TextChunker:
                 if ref in chunk_text:
                     chunk_references.append(ref)
 
+            # Détection des dates dans le chunk
+            chunk_dates = self._detect_dates(chunk_text)
+
             # Création d'un identifiant unique pour le chunk
             chunk_id = f"{doc_id or 'doc'}_{i}"
 
@@ -533,6 +570,7 @@ class TextChunker:
             setattr(chunk, "references", chunk_references[:10])
             setattr(chunk, "position", i)
             setattr(chunk, "total_chunks", len(semantic_chunks))
+            setattr(chunk, "dates", chunk_dates)  # Add detected dates to metadata
 
             # Ajouter les métadonnées du document original en tant qu'attributs
             for key, value in doc_metadata.items():

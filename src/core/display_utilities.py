@@ -30,6 +30,12 @@ def display_chunks_details(chunks: List[Chunk]) -> None:
             f"Position: {getattr(chunk, 'position', 'N/A')}/{getattr(chunk, 'total_chunks', 'N/A')}"
         )
         logger.debug(f"Taille (mots): {len(chunk.content.split())}")
+        
+        # Display dates if present
+        dates = getattr(chunk, 'dates', [])
+        if dates:
+            logger.debug(f"Dates détectées: {', '.join(dates)}")
+        
         logger.debug("\nContenu:")
         logger.debug(chunk.content)
         logger.debug("-" * 40)
