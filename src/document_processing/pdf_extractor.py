@@ -626,7 +626,7 @@ def extract_pdf_text(pdf_path):
             "output_format": "markdown",
             "ocr": True,
             "ocr_engine": "tesseract",
-            "ocr_language": "fra+eng",
+            "ocr_language": "fra+eng+rus",
             "table_structure": True,
             "preserve_layout": True,
             "extract_images": True,

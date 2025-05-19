@@ -156,7 +156,7 @@ logger.debug("Instance globale _ollama_chat créée")
 
 
 def ask_ollama(prompt: str, temperature: float = float(os.getenv("TEMPERATURE", 0.5)), 
-model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest")) -> str:
+model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = 0) -> str:
     """
     Generate a response using Ollama LLM (backward compatibility)
 
@@ -164,15 +164,25 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest")) -> str:
         prompt: The input prompt
         temperature: The temperature to use (default: 0.5)
         model: The model to use (default: mistral-small3.1:latest)
+        context_window: Context window size in tokens (0 = use model default)
 
     Returns:
         The generated response
     """
     logger.info(f"ask_ollama appelé avec modèle: {model}, temperature: {temperature}")
+    if context_window > 0:
+        logger.info(f"Context window spécifié: {context_window} tokens")
     logger.debug(f"Changement de modèle de l'instance globale à: {model}")
     _ollama_chat.model = model
     logger.debug(f"Génération avec prompt: {prompt[:50]}...")
-    response = _ollama_chat.generate(prompt, temperature=temperature)
+    
+    # Add context window to options if specified
+    options = {'temperature': temperature}
+    if context_window > 0:
+        options['num_ctx'] = context_window
+    
+    response = _ollama_chat.generate(prompt, options=options)
+    
     logger.info(
         f"Réponse générée via ask_ollama (longueur: {len(response)} caractères)"
     )
