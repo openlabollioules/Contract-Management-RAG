@@ -2,6 +2,7 @@ import uuid
 from typing import Dict, List, Optional
 from pathlib import Path
 import os
+import re
 
 import chromadb
 from chromadb.config import Settings
@@ -263,17 +264,19 @@ class VectorDBInterface:
 
         logger.info(f"Ajout de {len(chunks)} documents à ChromaDB")
 
-        # Afficher les chunks
-        # print("\n📝 Affichage des chunks à ajouter:")
-        # print("=" * 80)
-        # for i, chunk in enumerate(chunks, 1):
-        #     print(f"\nChunk {i}/{len(chunks)}")
-        #     print("-" * 40)
-        #     print(f"Document: {chunk.get('metadata', {}).get('document_title', 'Sans titre')}")
-        #     print(f"Section: {chunk.get('metadata', {}).get('section_number', 'Non spécifiée')}")
-        #     print("\nContenu:")
-        #     print(chunk["content"])
-        #     print("-" * 40)
+        # Détecter les dates dans chaque chunk avant l'ajout à la base de données
+        for chunk in chunks:
+            # Détecter les dates dans le contenu du chunk
+            dates = self._detect_dates(chunk.get('content', ''))
+            if dates:
+                # Ajouter les dates aux métadonnées du chunk
+                if 'metadata' not in chunk:
+                    chunk['metadata'] = {}
+                # Convertir la liste de dates en string pour ChromaDB
+                chunk['metadata']['dates'] = '; '.join(dates)
+
+        # Afficher les chunks avec les dates détectées
+        print_chunks_with_dates(chunks)
 
         # Generate embeddings
         logger.debug("Génération des embeddings pour les chunks")
@@ -307,6 +310,40 @@ class VectorDBInterface:
         logger.info(
             f"Documents ajoutés avec succès (collection: {self.collection.name})"
         )
+
+    def _detect_dates(self, text: str) -> List[str]:
+        """
+        Detect dates in text using regex patterns.
+        Supports various date formats commonly found in contracts.
+
+        Args:
+            text: Text to analyze
+
+        Returns:
+            List of detected dates
+        """
+        # Common date patterns in contracts
+        date_patterns = [
+            # DD/MM/YYYY or DD-MM-YYYY
+            r'\b(0?[1-9]|[12][0-9]|3[01])[/-](0?[1-9]|1[0-2])[/-](19|20)\d{2}\b',
+            # YYYY/MM/DD or YYYY-MM-DD
+            r'\b(19|20)\d{2}[/-](0?[1-9]|1[0-2])[/-](0?[1-9]|[12][0-9]|3[01])\b',
+            # Month DD, YYYY (e.g., "January 1, 2024")
+            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01]),\s+(?:19|20)\d{2}\b',
+            # DD Month YYYY (e.g., "1 January 2024")
+            r'\b(?:0?[1-9]|[12][0-9]|3[01])\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
+            # French date format (e.g., "le 1er janvier 2024")
+            r'\ble\s+(?:0?[1-9]|[12][0-9]|3[01])(?:er|ème)?\s+(?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(?:19|20)\d{2}\b',
+        ]
+
+        dates = []
+        for pattern in date_patterns:
+            matches = re.finditer(pattern, text, re.IGNORECASE)
+            for match in matches:
+                logger.debug(f"Date trouvée: {match.group(0)}")
+                dates.append(match.group(0))
+
+        return dates
 
     def search(
         self, query: str, n_results: int = 5, filter_metadata: Optional[Dict] = None
@@ -443,3 +480,21 @@ class VectorDBInterface:
         except Exception as e:
             logger.error(f"Erreur lors de la récupération des documents: {e}")
             return {}
+
+def print_chunks_with_dates(chunks):
+    print("\n📝 Affichage des chunks avec dates:")
+    print("=" * 80)
+    for i, chunk in enumerate(chunks, 1):
+        print(f"\nChunk {i}/{len(chunks)}")
+        print("-" * 40)
+        print(f"Document: {chunk.get('metadata', {}).get('document_title', 'Sans titre')}")
+        print(f"Section: {chunk.get('metadata', {}).get('section_number', 'Non spécifiée')}")
+        
+        # Afficher les dates si présentes
+        dates = chunk.get('metadata', {}).get('dates', [])
+        if dates:
+            print(f"\n📅 Dates détectées: {', '.join(dates)}")
+        
+        print("\nContenu:")
+        print(chunk.get('content', ''))
+        print("-" * 40)
