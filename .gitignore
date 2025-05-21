@@ -89,3 +89,8 @@ Contract_management/
 CS-IN_contract_manual.pdf
 
 src/benchmark_results/
+
+document_processing/__pycache__/*
+
+core/__pycache__/*
+
