@@ -343,10 +343,10 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
             logger.info("\nRésumé utilisé:")
             logger.info(result["document"])
             logger.info("\nContenu original:")
-            logger.info(result.get("original_content", "Non disponible")[:200] + "...")
+            logger.info(result.get("original_content", "Non disponible") + "...")
         else:
             logger.info("\nContenu:")
-            logger.info(result["document"][:200] + "...")
+            logger.info(result["document"] + "...")
 
         logger.info("-" * 40)
 
