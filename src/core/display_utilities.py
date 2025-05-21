@@ -10,7 +10,7 @@ logger = setup_logger(__file__)
 
 def display_chunks_details(chunks: List[Chunk]) -> None:
     """
-    Affiche le contenu détaillé de chaque chunk avec ses métadonnées
+    Affiche les détails des chunks pour inspection.
 
     Args:
         chunks: Liste des chunks à afficher
@@ -18,231 +18,93 @@ def display_chunks_details(chunks: List[Chunk]) -> None:
     logger.info("📋 Détails des chunks:")
     logger.debug("=" * 80)
 
-    for i, chunk in enumerate(chunks, 1):
-        logger.debug(f"\nChunk {i}/{len(chunks)}")
+    for i, chunk in enumerate(chunks):
+        logger.debug(f"\nChunk {i+1}/{len(chunks)}")
         logger.debug("-" * 40)
-        logger.debug(f"Section: {chunk.section_number}")
-        logger.debug(f"Hiérarchie: {' -> '.join(chunk.hierarchy)}")
-        logger.debug(f"Document: {chunk.document_title}")
-        logger.debug(f"Chapitre: {chunk.chapter_title}")
-        logger.debug(f"Section parente: {chunk.parent_section}")
-        logger.debug(
-            f"Position: {getattr(chunk, 'position', 'N/A')}/{getattr(chunk, 'total_chunks', 'N/A')}"
-        )
-        logger.debug(f"Taille (mots): {len(chunk.content.split())}")
-        
-        # Display dates if present
-        dates = getattr(chunk, 'dates', [])
-        if dates:
-            logger.debug(f"Dates détectées: {', '.join(dates)}")
-        
+        logger.debug(f"Section: {chunk.section_number or 'None'}")
+        # Correction pour gérer le cas où hierarchy est None
+        if chunk.hierarchy:
+            hierarchy_str = " -> ".join(chunk.hierarchy)
+            logger.debug(f"Hiérarchie: {hierarchy_str}")
+        else:
+            logger.debug("Hiérarchie: Non définie")
+        logger.debug(f"Document: {chunk.document_title or 'Non spécifié'}")
+        logger.debug(f"Chapitre: {chunk.chapter_title or 'Non spécifié'}")
+        logger.debug(f"Section parente: {chunk.parent_section or 'None'}")
+
+        # Position info if available
+        if hasattr(chunk, "position") and hasattr(chunk, "total_chunks"):
+            logger.debug(f"Position: {chunk.position}/{chunk.total_chunks}")
+
+        # Additional info if available
+        if hasattr(chunk, "token_count"):
+            logger.debug(f"Taille (mots): {chunk.token_count}")
+
+        # Display references if available
+        if hasattr(chunk, "references") and chunk.references:
+            logger.debug(f"Références: {', '.join(chunk.references)}")
+
+        # Display dates if available
+        if hasattr(chunk, "dates") and chunk.dates:
+            logger.debug(f"Dates détectées: {', '.join(chunk.dates)}")
+            
         logger.debug("\nContenu:")
-        logger.debug(chunk.content)
+        logger.debug(chunk.content[:1500] + ("..." if len(chunk.content) > 1500 else ""))
         logger.debug("-" * 40)
 
 
-def display_removed_content(original_text: str, chunks: List[Chunk]) -> None:
+def display_removed_content(full_text: str, chunks: List[Chunk]) -> None:
     """
-    Affiche TOUTES les lignes du texte original qui ne sont pas présentes dans les chunks.
-    Utilise une comparaison ligne par ligne stricte.
+    Compare le texte original avec le contenu des chunks pour identifier
+    le contenu potentiellement supprimé ou non inclus.
 
     Args:
-        original_text: Texte original du document
-        chunks: Liste des chunks après découpage
+        full_text: Texte complet du document
+        chunks: Liste des chunks générés
     """
-    logger.info("🗑️ Contenu supprimé lors du découpage:")
-    logger.debug("=" * 80)
+    logger.info("\n🔍 Analyse du contenu supprimé ou modifié:")
 
-    # Extraire toutes les lignes du texte original, avec normalisation minimale
-    original_lines = []
-    for line in original_text.split("\n"):
-        line = line.strip()
-        if line:  # Ignorer les lignes vides
-            original_lines.append(line)
+    # Texte des chunks combinés
+    combined_chunks_text = " ".join([chunk.content for chunk in chunks])
 
-    # Extraire toutes les lignes des chunks
-    chunk_lines = []
-    for chunk in chunks:
-        for line in chunk.content.split("\n"):
-            line = line.strip()
-            if line:  # Ignorer les lignes vides
-                chunk_lines.append(line)
+    # Normaliser les textes pour la comparaison (supprimer espaces multiples, tabs, etc.)
+    full_text_normalized = re.sub(r'\s+', ' ', full_text).strip()
+    chunks_text_normalized = re.sub(r'\s+', ' ', combined_chunks_text).strip()
 
-    # Liste très restrictive de patterns qui correspondent uniquement à des titres
-    # Ces patterns doivent être strictement limités aux formats de titres courants dans les contrats
-    strict_title_patterns = [
-        # Titres markdown (# Titre)
-        r"^#+\s+\**[A-Z][A-Z\s]+\**$",
-        # Formats explicites de sections numérotées
-        r"^ARTICLE\s+[IVXLCDM]+\s*[:\.]",
-        r"^SECTION\s+[0-9]+\s*[:\.]",
-        r"^CHAPTER\s+[0-9]+\s*[:\.]",
-        r"^ANNEXE?\s+[A-Z]:\s*",
-        r"^APPENDIX\s+[A-Z]:\s*",
-        # Titres numérotés tout en majuscules (très spécifique)
-        r"^[0-9]+\.\s+[A-Z][A-Z\s]+$",
-        # Nouveaux patterns plus précis pour les titres de contrats
-        r"^#+\s+\**\d+\.\d+\s+[A-Z][A-Z\s]+\**$",  # ## 1.2 TITLE
-        r"^#+\s+\**\d+\.\d+\.\d+\s+[A-Z][A-Z\s]+\**$",  # ## 1.2.3 TITLE
-        r"^\*\*[A-Z][A-Z\s]+\*\*$",  # **TITLE**
-        r"^[A-Z][A-Z\s]+:$",  # TITLE:
-    ]
+    # Tokenisation simple des textes (division en mots)
+    full_text_words = set(full_text_normalized.lower().split())
+    chunks_words = set(chunks_text_normalized.lower().split())
 
-    logger.debug(f"Nombre de patterns de titre: {len(strict_title_patterns)}")
+    # Mots présents dans le texte original mais absents des chunks
+    missing_words = full_text_words - chunks_words
 
-    # Fonction pour vérifier si une ligne est un titre
-    def is_strict_title(line):
-        # Vérifier les patterns explicites de titre
-        for pattern in strict_title_patterns:
-            if re.match(pattern, line):
-                logger.debug(f"Titre trouvé avec pattern {pattern}: {line}")
-                return True
+    # Calcul du pourcentage de contenu préservé
+    if len(full_text_words) > 0:
+        preservation_percentage = (len(full_text_words.intersection(chunks_words)) / len(full_text_words)) * 100
+    else:
+        preservation_percentage = 100.0
 
-        # Vérifier le cas spécial pour "# N. TITLE"
-        if re.match(r"^#+\s+\**[0-9]+\.\s+[A-Z][A-Z\s]+\**$", line):
-            logger.debug(f"Titre spécial trouvé: {line}")
-            return True
+    logger.info(f"Pourcentage de préservation: {preservation_percentage:.2f}%")
+    logger.info(f"Nombre de mots manquants: {len(missing_words)} sur {len(full_text_words)}")
 
-        # Si le texte est court (<5 mots), tout en majuscules et pas de ponctuation finale,
-        # c'est probablement un titre
-        words = line.split()
-        if (
-            len(words) <= 5
-            and line.isupper()
-            and not line.endswith((".", "!", "?", ",", ";", ":", ")", "]"))
-        ):
-            logger.debug(f"Titre court en majuscules trouvé: {line}")
-            return True
-
-        return False
-
-    # Comparer chaque ligne originale avec les lignes des chunks
-    # Une ligne est considérée présente si elle est exactement dans les chunks (ou très légèrement différente)
-    def is_line_present(line, chunk_lines):
-        # Normalisation minimale
-        def normalize_for_comparison(text):
-            # Supprime juste les espaces en début/fin et réduit les espaces multiples
-            return re.sub(r"\s+", " ", text).strip()
-
-        normalized_line = normalize_for_comparison(line)
-
-        # Vérification exacte
-        for chunk_line in chunk_lines:
-            normalized_chunk_line = normalize_for_comparison(chunk_line)
-            if normalized_line == normalized_chunk_line:
-                return True
-
-            # Vérification avec légère tolérance pour les espaces/tirets/points
-            # Remplacer les caractères spéciaux par des espaces et comparer
-            clean_line = re.sub(r"[-_.,;:()]", " ", normalized_line)
-            clean_line = re.sub(r"\s+", " ", clean_line).strip()
-
-            clean_chunk = re.sub(r"[-_.,;:()]", " ", normalized_chunk_line)
-            clean_chunk = re.sub(r"\s+", " ", clean_chunk).strip()
-
-            if clean_line == clean_chunk:
-                return True
-
-        return False
-
-    # Trouver les lignes qui ne sont pas dans les chunks
-    missing_titles = []
-    missing_content = []
-
-    logger.debug(f"Nombre de lignes originales: {len(original_lines)}")
-    logger.debug(f"Nombre de lignes dans les chunks: {len(chunk_lines)}")
-
-    for i, line in enumerate(original_lines):
-        if not is_line_present(line, chunk_lines):
-            # Collecter le contexte (ligne précédente et suivante)
-            context = []
-            if i > 0:
-                context.append(f"Ligne précédente: {original_lines[i-1]}")
-
-            if i < len(original_lines) - 1:
-                context.append(f"Ligne suivante: {original_lines[i+1]}")
-
-            # Vérifier si c'est un titre
-            if is_strict_title(line):
-                context.append(f"TITRE supprimé: {line}")
-                missing_titles.append((context, line))
-            else:
-                context.append(f"LIGNE supprimée: {line}")
-                missing_content.append((context, line))
-
-    # Afficher les titres supprimés
-    if missing_titles:
-        logger.warning(f"Nombre de titres supprimés: {len(missing_titles)}")
-        logger.debug("\n📑 Titres supprimés:")
-        logger.debug("-" * 40)
-        for context, title in missing_titles:
-            for line in context:
-                logger.debug(f"- {line}")
-            logger.debug("-" * 40)
-
-    # Afficher les lignes de contenu supprimées
-    if missing_content:
-        logger.warning(f"\n📄 {len(missing_content)} lignes supprimées")
-        logger.debug("\n⚠️ Détail des lignes supprimées:")
-        logger.debug("-" * 40)
-        for context, content in missing_content:
-            for line in context:
-                logger.debug(f"- {line}")
-            logger.debug("-" * 40)
-
-    # Statistiques
-    logger.info(f"\n📊 Statistiques du traitement:")
-    logger.info(f"- Nombre total de titres supprimés: {len(missing_titles)}")
-    logger.info(f"- Nombre total de lignes supprimées: {len(missing_content)}")
-
-    if not missing_titles and not missing_content:
-        logger.info("Aucune ligne n'a été supprimée lors du découpage.")
+    # Afficher un échantillon de mots manquants (significatifs)
+    significant_missing = [w for w in missing_words if len(w) > 3]
+    if significant_missing:
+        sample = ', '.join(sorted(significant_missing)[:20])
+        logger.info(f"Échantillon de mots manquants: {sample}...")
 
 
-def display_semantic_split_chunks(
-    structure_chunks: List[Chunk], final_chunks: List[Chunk]
-) -> None:
+def display_semantic_split_chunks(chunks: List[str]) -> None:
     """
-    Affiche les chunks qui ont subi un découpage sémantique dans l'approche hybride
+    Affiche les chunks créés par division sémantique pour inspection.
 
     Args:
-        structure_chunks: Chunks initiaux après découpage structurel
-        final_chunks: Chunks finaux après découpage sémantique
+        chunks: Liste des chunks sémantiques à afficher
     """
-    logger.info("\n🔍 Chunks ayant subi un découpage sémantique:")
-    logger.debug("=" * 80)
-
-    # Identifier les chunks originaux qui ont été découpés
-    split_chunks = []
-    for original_chunk in structure_chunks:
-        # Compter combien de chunks finaux proviennent de ce chunk original
-        sub_chunks = [
-            c for c in final_chunks if c.section_number == original_chunk.section_number
-        ]
-        if len(sub_chunks) > 1:  # Si le chunk a été découpé
-            split_chunks.append((original_chunk, sub_chunks))
-
-    if not split_chunks:
-        logger.info("Aucun chunk n'a subi de découpage sémantique.")
-        return
-
-    logger.info(f"Nombre de chunks découpés sémantiquement: {len(split_chunks)}")
-
-    for original_chunk, sub_chunks in split_chunks:
-        logger.debug("\n" + "=" * 40)
-        logger.debug(f"Chunk original:")
-        logger.debug(f"Section: {original_chunk.section_number}")
-        logger.debug(f"Hiérarchie: {' -> '.join(original_chunk.hierarchy)}")
-        logger.debug(f"Taille originale: {len(original_chunk.content.split())} mots")
-        logger.debug("\nDécoupé en {len(sub_chunks)} sous-chunks:")
-
-        for i, sub_chunk in enumerate(sub_chunks, 1):
-            logger.debug(f"\nSous-chunk {i}/{len(sub_chunks)}:")
-            logger.debug(
-                f"Position: {getattr(sub_chunk, 'position', 'N/A')}/{getattr(sub_chunk, 'total_chunks', 'N/A')}"
-            )
-            logger.debug(f"Taille: {len(sub_chunk.content.split())} mots")
-            logger.debug(
-                f"Contenu: {sub_chunk.content[:200]}..."
-            )  # Afficher les 200 premiers caractères
-        logger.debug("=" * 40)
+    logger.info("\n📋 Chunks sémantiques:")
+    
+    for i, chunk in enumerate(chunks):
+        logger.debug(f"\nChunk sémantique {i+1}/{len(chunks)}")
+        logger.debug("-" * 40)
+        logger.debug(chunk[:1000] + ("..." if len(chunk) > 1000 else ""))
+        logger.debug("-" * 40)

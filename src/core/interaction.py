@@ -207,7 +207,7 @@ def merge_results(vector_results, graph_results):
 
 def chat_with_contract(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False, 
 temperature: float = float(os.getenv("TEMPERATURE", 0.5)), similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
-model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest")) -> None:
+model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = int(os.getenv("CONTEXT_WINDOW", 0))) -> None:
     """
     Chat with the contract using embeddings for context and Ollama for generation
 
@@ -313,7 +313,7 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest")) -> None:
 
 
     # Get response from Ollama
-    response = ask_ollama(prompt, temperature, model)
+    response = ask_ollama(prompt, temperature, model, context_window)
     logger.info("\n🤖 Réponse :")
     logger.info(response)
     print("\n🤖 Réponse :")

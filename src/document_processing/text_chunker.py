@@ -4,6 +4,7 @@ from typing import List, Optional
 import numpy as np
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_experimental.text_splitter import SemanticChunker
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from utils.logger import setup_logger
 
@@ -76,6 +77,13 @@ class TextChunker:
             breakpoint_threshold_amount=breakpoint_threshold_amount,
             number_of_chunks=number_of_chunks,
         )
+        
+        # Initialiser également un chunker récursif pour le post-traitement
+        self.recursive_chunker = RecursiveCharacterTextSplitter(
+            chunk_size=self.chunk_size,
+            chunk_overlap=self.chunk_overlap,
+            separators=["\n\n\n", "\n\n", "\n", " ", ""],
+        )
 
         # Paramètres juridiques
         self.preserve_legal_structure = preserve_legal_structure
@@ -99,6 +107,11 @@ class TextChunker:
             r"pursuant to (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
             r"as defined in (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
             r"in accordance with (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
+            r"as per (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
+            r"according to (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
+            r"as set forth in (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
+            r"as specified in (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
+            r"as stipulated in (?:Section|Article|Clause) (\d+(?:\.\d+)*)",
         ]
         logger.debug(
             f"Nombre de patterns de références croisées: {len(self.cross_ref_patterns)}"
@@ -127,21 +140,90 @@ class TextChunker:
         clause_starts = 0
         cross_refs = 0
         section_breaks = 0
+        list_items = 0
+        definitions = 0
 
-        for line in lines:
-            # Détecter les numéros de section comme X., X.Y., X.Y.Z. et les structures juridiques
+        # Patterns pour les éléments de liste dans les contrats juridiques (améliorés)
+        list_patterns = [
+            # Éléments de liste numérotés ou alphabétiques (parenthèses ou non)
+            r"^\s*(\([a-z]\)|\([ivx]+\)|[a-z]\)|[ivxlcdm]+\)|\([0-9]+\)|[0-9]+\)|\(\d+\.\d+\))",  # (a), (i), a), iv), (1), 1), (1.1)
+            # Tirets et puces diverses
+            r"^\s*(-|\*|\u2022|\u2023|\u25E6|\u2043|\u2219)\s",
+            # Éléments de liste avec lettres suivies d'un point
+            r"^\s*([A-Z]|[a-z]|[ivxlcdm]+|[IVXLCDM]+)\.(\s|$)",  # A., a., iv., IX.
+            # Éléments introduits par une lettre ou un chiffre et un espace
+            r"^\s*([a-z]|[A-Z]|[0-9])\s",  # a, b, c..., A, B, C..., 1, 2, 3...
+            # Éléments du type 1.1, 1.2, etc.
+            r"^\s*\d+\.\d+\s",
+        ]
+        
+        # Patterns spécifiques pour les définitions
+        definition_patterns = [
+            r'^\s*".*"\s+is|means|shall mean',
+            r'^\s*".*"\s+-\s+',
+            r'^\s*[""].*[""] i(?:s|s\s+a|s\s+the|s\s+defined\s+as)',
+            r'^\s*[Tt]he\s+term\s+[""].*[""]',
+        ]
+
+        # Marqueur de section précédente pour le contexte
+        prev_section_level = None
+        current_list_context = None
+
+        for i, line in enumerate(lines):
+            # Détecter les numéros de section et les structures juridiques principales
             if any(re.search(pattern, line) for pattern in self.legal_patterns):
                 # Ajouter un marqueur spécial pour indiquer un début de clause ou section
                 processed_lines.append("[CLAUSE_START]" + line)
                 clause_starts += 1
+                
+                # Réinitialiser le contexte de liste
+                current_list_context = None
+                
+                # Essayer de détecter le niveau de section
+                section_match = re.search(r"^(\d+(?:\.\d+)*)", line)
+                if section_match:
+                    prev_section_level = len(section_match.group(1).split('.'))
+                else:
+                    prev_section_level = None
+                    
+            # Détecter les définitions et termes définis
+            elif any(re.search(pattern, line, re.IGNORECASE) for pattern in definition_patterns):
+                processed_lines.append("[DEFINITION]" + line)
+                definitions += 1
+                
+            # Détecter les éléments de liste en tenant compte du contexte
+            elif any(re.match(pattern, line) for pattern in list_patterns):
+                # Déterminer le type de liste
+                if re.match(r"^\s*\([a-z]\)|^\s*[a-z]\)", line):
+                    list_type = "alpha"
+                elif re.match(r"^\s*\([ivx]+\)|^\s*[ivxlcdm]+\)", line):
+                    list_type = "roman"
+                elif re.match(r"^\s*\([0-9]+\)|^\s*[0-9]+\)", line):
+                    list_type = "numeric"
+                elif re.match(r"^\s*(-|\*|\u2022)", line):
+                    list_type = "bullet"
+                else:
+                    list_type = "generic"
+                
+                # Si c'est le début d'une nouvelle liste ou un changement de type
+                if current_list_context != list_type:
+                    processed_lines.append("[LIST_START:" + list_type + "]" + line)
+                    current_list_context = list_type
+                else:
+                    # Continuation de la liste actuelle
+                    processed_lines.append("[LIST_ITEM:" + list_type + "]" + line)
+                
+                list_items += 1
+                
             # Détecter les références croisées pour enrichissement contextuel
             elif any(re.search(pattern, line) for pattern in self.cross_ref_patterns):
                 # Marquer les références pour un traitement spécial
                 processed_lines.append("[CROSS_REF]" + line)
                 cross_refs += 1
+                
             # Patterns génériques de section comme dans la version précédente
             elif any(
-                pattern in line
+                re.match(pattern, line)
                 for pattern in [
                     r"^\d+\.\s",  # Format X.
                     r"^\d+\.\d+\.\s",  # Format X.Y.
@@ -151,11 +233,26 @@ class TextChunker:
                 # Ajouter un marqueur spécial pour indiquer un début de section important
                 processed_lines.append("[SECTION_BREAK]" + line)
                 section_breaks += 1
+                
+                # Mettre à jour le niveau de section
+                section_match = re.match(r"^(\d+(?:\.\d+)*)", line)
+                if section_match:
+                    prev_section_level = len(section_match.group(1).split('.'))
+                    
+            # Détecter les phrases finales de paragraphes pour éviter la coupure
+            elif line.strip().endswith(('.', ':', ';')) and i < len(lines) - 1 and lines[i+1].strip() and not lines[i+1].strip()[0].islower():
+                processed_lines.append("[PARAGRAPH_END]" + line)
+                
+            # Détecter les phrases longues qui pourraient contenir des clauses importantes
+            elif len(line.split()) > 20 and any(keyword in line.lower() for keyword in ["shall", "must", "will", "agree", "represent", "warrant", "indemnify", "liability"]):
+                processed_lines.append("[IMPORTANT_CLAUSE]" + line)
+                
             else:
                 processed_lines.append(line)
 
         logger.info(
-            f"Marqueurs ajoutés - Clauses: {clause_starts}, Références croisées: {cross_refs}, Sections: {section_breaks}"
+            f"Marqueurs ajoutés - Clauses: {clause_starts}, Éléments de liste: {list_items}, "
+            f"Références croisées: {cross_refs}, Sections: {section_breaks}, Définitions: {definitions}"
         )
         return "\n".join(processed_lines)
 
@@ -183,6 +280,7 @@ class TextChunker:
                 chunk_text.replace("[CLAUSE_START]", "")
                 .replace("[SECTION_BREAK]", "")
                 .replace("[CROSS_REF]", "")
+                .replace("[LIST_ITEM]", "")
             )
 
             # Détecter la première ligne pour essayer d'extraire un numéro de section
@@ -285,16 +383,34 @@ class TextChunker:
         """
         Extrait la hiérarchie à partir d'un numéro de section.
         Par exemple, pour "3.4.1", retourne ["3", "3.4", "3.4.1"]
+        Ou pour les formats comme (a), (i), etc., construit une hiérarchie appropriée.
 
         Args:
-            section_number: Numéro de section (ex: "3.4.1")
+            section_number: Numéro de section (ex: "3.4.1") ou identifiant de liste (ex: "(a)", "(i)")
 
         Returns:
             Liste de numéros de section représentant la hiérarchie
         """
         if not section_number:
             return []
+            
+        # Cas spécial pour les éléments de liste comme (a), (i), a), i), etc.
+        list_item_patterns = {
+            'alphabetic': r'^\(?([a-z])\)?$',             # (a), a)
+            'roman': r'^\(?([ivxlcdm]+)\)?$',             # (i), i), (iv), iv)
+            'numeric': r'^\(?(\d+)\)?$',                  # (1), 1)
+            'alphanumeric': r'^\(?(\d+\.\d+[a-z]*)\)?$'   # (1.2a), 1.2a)
+        }
+        
+        for list_type, pattern in list_item_patterns.items():
+            match = re.match(pattern, section_number, re.IGNORECASE)
+            if match:
+                item_value = match.group(1)
+                # Pour les listes, nous retournons simplement l'élément lui-même car nous n'avons pas
+                # d'informations sur la hiérarchie supérieure dans ce contexte
+                return [section_number]
 
+        # Cas standard pour les hiérarchies numériques (X.Y.Z)
         parts = section_number.split(".")
         hierarchy = []
         current = ""
@@ -464,167 +580,236 @@ class TextChunker:
         doc_metadata = doc_metadata or {}
         doc_title = doc_metadata.get("title", "Document sans titre")
 
-        # Détection des sections principales du document
-        section_pattern = r"^(?:\d+\.)+\s*(.*?)$|^(?:[A-Z][A-Z\s]+)[:.]"
-        section_headers = []
-        current_position = 0
-        for match in re.finditer(section_pattern, text, re.MULTILINE):
-            section_headers.append(
-                {
-                    "title": match.group(0).strip(),
-                    "position": match.start(),
-                    "level": (
-                        len(match.group(0).split(".")) - 1
-                        if match.group(0).count(".") > 0
-                        else 0
-                    ),
-                }
-            )
-
-        # Extraction des termes définis avec regex
-        defined_terms = {}
-        term_pattern = (
-            r'"([^"]+)"\s+(?:signifie|désigne|means|shall\s+mean|refers\s+to)'
-        )
-        for match in re.finditer(term_pattern, text, re.IGNORECASE):
-            term = match.group(1)
-            defined_terms[term] = True
-
-        # Extraction des références aux articles avec regex
-        references = {}
-        ref_pattern = r"(?:l\'article|section|clause|article)\s+(\d+(?:\.\d+)*)"
-        for match in re.finditer(ref_pattern, text, re.IGNORECASE):
-            reference = match.group(1)
-            references[reference] = True
-
-        # Utilisation du SemanticChunker pour la segmentation sémantique
-        semantic_chunks = self.semantic_chunker.create_documents([text])[
-            0
-        ].page_content.split("\n\n")
-
+        logger.info(f"Démarrage du découpage du document: {doc_title} ({len(text)} caractères)")
+        
+        # Prétraiter le texte pour marquer les sections importantes
+        if self.preserve_legal_structure:
+            processed_text = self._preprocess_text_with_section_markers(text)
+            logger.debug(f"Texte prétraité avec marqueurs de section")
+        else:
+            processed_text = text
+            
+        # Division initiale par grandes sections pour améliorer le découpage sémantique
+        logger.info("Division préliminaire par grandes sections...")
+        # Utiliser une expression régulière pour détecter les sections principales (titres de niveau 1 et 2)
+        main_section_breaks = re.split(r'((?:^|\n)#{1,2}\s+.*?)(?=(?:^|\n)#{1,2}\s+|\Z)|(?:^|\n)(?:\d+\.(?:\s|\n)+[A-Z].*?)(?=(?:^|\n)\d+\.(?:\s|\n)+[A-Z]|\Z)|(?:^|\n)(?:[A-Z][A-Z\s]+:)(?=(?:^|\n)[A-Z][A-Z\s]+:|\Z)', processed_text)
+        
+        main_sections = []
+        for section in main_section_breaks:
+            if section and section.strip():
+                main_sections.append(section)
+        
+        logger.info(f"Document divisé en {len(main_sections)} grandes sections")
+            
+        # Traiter chaque grande section séparément pour un meilleur découpage sémantique
+        all_chunks_text = []
+        
+        for section_idx, section_text in enumerate(main_sections):
+            logger.debug(f"Traitement de la section {section_idx+1}/{len(main_sections)} (taille: {len(section_text)})")
+            
+            # Si la section est suffisamment petite et inférieure à la taille maximale de chunk, la garder intacte
+            if len(section_text.split()) <= self.chunk_size * 0.8:
+                all_chunks_text.append(section_text)
+                continue
+                
+            # Utiliser le semantic chunker pour cette section
+            try:
+                section_chunks = self.semantic_chunker.split_text(section_text)
+                # Vérifier que le semantic chunker a bien divisé la section
+                if section_chunks and len(section_chunks) > 1:
+                    all_chunks_text.extend(section_chunks)
+                else:
+                    # Fallback au découpage récursif pour cette section
+                    fallback_chunks = self.recursive_chunker.split_text(section_text)
+                    all_chunks_text.extend(fallback_chunks)
+            except Exception as e:
+                logger.error(f"Erreur lors du découpage sémantique de la section {section_idx+1}: {e}")
+                # Fallback au découpage récursif
+                fallback_chunks = self.recursive_chunker.split_text(section_text)
+                all_chunks_text.extend(fallback_chunks)
+        
+        logger.info(f"Découpage initial: {len(all_chunks_text)} chunks générés")
+        
+        # Optimisation supplémentaire: fusion des chunks trop petits et préservation des listes
+        processed_chunks_text = []
+        
+        # Définir les patterns pour détecter les éléments de liste complets
+        list_patterns = {
+            'alpha': r"^\s*(?:\([a-z]\)|[a-z]\))",
+            'roman': r"^\s*(?:\([ivx]+\)|[ivxlcdm]+\))",
+            'numeric': r"^\s*(?:\([0-9]+\)|[0-9]+\))",
+            'bullet': r"^\s*(?:-|\*|\u2022)",
+        }
+        
+        # Fonction pour détecter le type de liste dans un chunk
+        def detect_list_type(chunk_text):
+            list_types = []
+            lines = chunk_text.split('\n')
+            
+            for line in lines:
+                if re.search(r"\[LIST_START:(\w+)\]", line):
+                    list_type = re.search(r"\[LIST_START:(\w+)\]", line).group(1)
+                    if list_type not in list_types:
+                        list_types.append(list_type)
+                elif re.search(r"\[LIST_ITEM:(\w+)\]", line):
+                    list_type = re.search(r"\[LIST_ITEM:(\w+)\]", line).group(1)
+                    if list_type not in list_types:
+                        list_types.append(list_type)
+            
+            return list_types
+        
+        # Fonction pour vérifier si un chunk contient des éléments importants
+        def is_important_chunk(chunk_text):
+            # Vérifier si le chunk contient des définitions importantes
+            if "[DEFINITION]" in chunk_text:
+                return True
+                
+            # Vérifier si le chunk contient des clauses importantes
+            if "[IMPORTANT_CLAUSE]" in chunk_text:
+                return True
+                
+            # Vérifier le contenu du chunk pour des mots-clés juridiques importants
+            important_keywords = ["shall", "must", "will not", "shall not", "represent", "warrant", 
+                                 "liability", "indemnify", "termination", "dispute", "governing law",
+                                 "force majeure", "confidential", "warranty"]
+            
+            for keyword in important_keywords:
+                if keyword in chunk_text.lower():
+                    return True
+                    
+            return False
+        
+        # Combiner les chunks de manière optimale
+        i = 0
+        while i < len(all_chunks_text):
+            current_chunk = all_chunks_text[i]
+            current_size = len(current_chunk.split())
+            
+            # 1. Si le chunk actuel est trop petit (moins de 25% de la taille cible)
+            if current_size < self.chunk_size * 0.25:
+                # Vérifier si c'est un chunk important malgré sa petite taille
+                if is_important_chunk(current_chunk):
+                    # Garder les chunks importants, même s'ils sont petits
+                    processed_chunks_text.append(current_chunk)
+                    i += 1
+                    continue
+                
+                # Si ce n'est pas le dernier chunk, essayer de fusionner avec le suivant
+                if i < len(all_chunks_text) - 1:
+                    next_chunk = all_chunks_text[i+1]
+                    next_size = len(next_chunk.split())
+                    
+                    # Si la fusion reste en dessous de la taille cible
+                    if current_size + next_size <= self.chunk_size:
+                        all_chunks_text[i+1] = current_chunk + "\n\n" + next_chunk
+                        i += 1
+                        continue
+                
+                # Si c'est le dernier chunk ou si la fusion dépasserait la taille cible
+                processed_chunks_text.append(current_chunk)
+                
+            # 2. Si le chunk est de taille moyenne (entre 25% et 75% de la taille cible)
+            elif current_size < self.chunk_size * 0.75:
+                # Vérifier si ce chunk démarre une liste
+                current_list_types = detect_list_type(current_chunk)
+                
+                # Si le chunk démarre une liste et qu'il y a un chunk suivant
+                if current_list_types and i < len(all_chunks_text) - 1:
+                    next_chunk = all_chunks_text[i+1]
+                    next_size = len(next_chunk.split())
+                    next_list_types = detect_list_type(next_chunk)
+                    
+                    # Si le prochain chunk continue avec le même type de liste
+                    if any(lt in next_list_types for lt in current_list_types) and current_size + next_size <= self.chunk_size:
+                        # Fusionner pour préserver la liste complète
+                        all_chunks_text[i+1] = current_chunk + "\n\n" + next_chunk
+                        i += 1
+                        continue
+                
+                processed_chunks_text.append(current_chunk)
+                
+            # 3. Si le chunk est de bonne taille
+            else:
+                processed_chunks_text.append(current_chunk)
+            
+            i += 1
+        
+        logger.info(f"Après fusion des petits chunks et préservation des listes: {len(processed_chunks_text)} chunks finaux")
+        
+        # Nettoyer les marqueurs spéciaux dans tous les chunks
+        clean_chunks_text = []
+        for chunk_text in processed_chunks_text:
+            # Supprimer tous les marqueurs ajoutés lors de la préparation
+            clean_text = (chunk_text
+                .replace("[CLAUSE_START]", "")
+                .replace("[SECTION_BREAK]", "")
+                .replace("[CROSS_REF]", "")
+                .replace("[PARAGRAPH_END]", "")
+                .replace("[IMPORTANT_CLAUSE]", "")
+                .replace("[DEFINITION]", ""))
+                
+            # Supprimer les marqueurs de liste avec leur type
+            clean_text = re.sub(r"\[LIST_START:\w+\]", "", clean_text)
+            clean_text = re.sub(r"\[LIST_ITEM:\w+\]", "", clean_text)
+            
+            clean_chunks_text.append(clean_text)
+            
         # Construction des chunks enrichis avec métadonnées
         chunks = []
-        for i, chunk_text in enumerate(semantic_chunks):
-            if not chunk_text.strip():  # Ignorer les chunks vides
-                continue
-
-            chunk_start = text.find(chunk_text)
-            if chunk_start == -1:  # Gestion des cas où le texte exact n'est pas trouvé
-                continue
-
-            # Détermination de la section courante pour ce chunk
-            current_section = None
-            section_hierarchy = []
-            for j in range(len(section_headers) - 1, -1, -1):
-                if section_headers[j]["position"] <= chunk_start:
-                    current_section = section_headers[j]["title"]
-                    # Construction de la hiérarchie des sections parentes
-                    current_level = section_headers[j]["level"]
-                    section_hierarchy = [current_section]
-                    for k in range(j - 1, -1, -1):
-                        if section_headers[k]["level"] < current_level:
-                            section_hierarchy.insert(0, section_headers[k]["title"])
-                            current_level = section_headers[k]["level"]
+        for i, chunk_text in enumerate(clean_chunks_text):
+            # Chercher un numéro de section dans les premières lignes
+            section_match = None
+            for pattern in [
+                r"[-\*]\s*(\d+(?:\.\d+)*)",  # Format: - 1.2
+                r"^(\d+(?:\.\d+)*)\s",       # Format: 1.2 au début de ligne
+                r"Article\s+(\d+(?:\.\d+)*)", # Format: Article 5
+                r"Section\s+(\d+(?:\.\d+)*)", # Format: Section 3
+                r"Clause\s+(\d+(?:\.\d+)*)",  # Format: Clause 7
+                r"^\s*(\([a-z]\)|\([ivx]+\)|[a-z]\)|[ivxlcdm]+\))", # Format: (a), (i), a), iv)
+            ]:
+                match = re.search(pattern, chunk_text, re.MULTILINE)
+                if match:
+                    section_match = match
                     break
-
-            # Détection du type de clause pour ce chunk
-            clause_type = self._detect_clause_type(chunk_text)
-
-            # Extraction des termes définis dans ce chunk spécifique
-            chunk_defined_terms = []
-            for term in defined_terms:
-                if term in chunk_text:
-                    chunk_defined_terms.append(term)
-
-            # Extraction des références dans ce chunk spécifique
-            chunk_references = []
-            for ref in references:
-                if ref in chunk_text:
-                    chunk_references.append(ref)
-
-            # Détection des dates dans le chunk
-            chunk_dates = self._detect_dates(chunk_text)
-
-            # Création d'un identifiant unique pour le chunk
-            chunk_id = f"{doc_id or 'doc'}_{i}"
-
-            # Construction du chunk final
+            
+            section_number = section_match.group(1) if section_match else None
+            
+            # Déterminer un titre de chapitre
+            chapter_title = None
+            lines = chunk_text.split("\n")
+            for line in lines[:5]:  # Regarder les 5 premières lignes
+                line = line.strip()
+                if line and 10 < len(line) < 100:
+                    # Rechercher un titre probable (motifs courants dans les contrats)
+                    if (line.isupper() or
+                        re.match(r"^\d+\.\s+[A-Z]", line) or
+                        re.match(r"^[A-Z][a-z]+\s+\d+", line) or
+                        re.match(r"^[-\*]\s*\d+\.\d+\s+[A-Z]", line)):
+                        chapter_title = line
+                        break
+            
+            # Si aucun titre n'a été trouvé, utiliser la première ligne non vide
+            if not chapter_title:
+                for line in lines:
+                    if line.strip():
+                        chapter_title = line.strip()[:100]
+                        break
+            
+            # Création du chunk avec toutes les métadonnées
             chunk = Chunk(
                 content=chunk_text,
-                section_number=section_hierarchy[0] if section_hierarchy else None,
+                section_number=section_number,
                 document_title=doc_title,
-                hierarchy=section_hierarchy,
-                parent_section=(
-                    section_hierarchy[-2] if len(section_hierarchy) > 1 else None
-                ),
-                chapter_title=current_section,
+                hierarchy=self._extract_hierarchy(section_number) if section_number else None,
+                parent_section=self._extract_parent_section(section_number) if section_number else None,
+                chapter_title=chapter_title,
             )
-
-            # Ajouter des métadonnées spécifiques en tant qu'attributs
-            setattr(chunk, "clause_type", clause_type)
-            setattr(chunk, "has_cross_references", "[CROSS_REF]" in chunk_text)
-            setattr(chunk, "chunk_index", i)
-            setattr(chunk, "doc_id", doc_id)
-            setattr(chunk, "chunk_id", chunk_id)
-            setattr(chunk, "defined_terms", chunk_defined_terms[:10])
-            setattr(chunk, "references", chunk_references[:10])
-            setattr(chunk, "position", i)
-            setattr(chunk, "total_chunks", len(semantic_chunks))
-            setattr(chunk, "dates", chunk_dates)  # Add detected dates to metadata
-
-            # Ajouter les métadonnées du document original en tant qu'attributs
-            for key, value in doc_metadata.items():
-                setattr(chunk, key, value)
-
+            
+            # Ajouter la position relative dans le document
+            setattr(chunk, "position", i + 1)
+            setattr(chunk, "total_chunks", len(clean_chunks_text))
+            
             chunks.append(chunk)
-
+        
+        logger.info(f"Création terminée: {len(chunks)} chunks avec métadonnées enrichies")
         return chunks
-
-    def hybrid_chunk_text(
-        self, text: str, document_title: Optional[str] = None
-    ) -> List[Chunk]:
-        """
-        Implémente un chunking hybride qui combine le découpage structurel et sémantique.
-
-        Args:
-            text: Texte à découper
-            document_title: Titre du document
-
-        Returns:
-            Liste de chunks avec métadonnées enrichies
-        """
-        # 1. Découpage structurel initial
-        structure_splitter = ContractSplitter(document_title=document_title)
-        initial_chunks = structure_splitter.split(text)
-
-        final_chunks = []
-
-        # 2. Traitement de chaque chunk structurel
-        for chunk in initial_chunks:
-            # Si le chunk est petit, le garder tel quel
-            if len(chunk.content.split()) <= 1024:  # ~1024 tokens
-                final_chunks.append(chunk)
-            else:
-                # Pour les sections longues, appliquer le chunking sémantique
-                # Préserver les métadonnées de la section
-                section_metadata = {
-                    "section_number": chunk.section_number,
-                    "hierarchy": chunk.hierarchy,
-                    "document_title": chunk.document_title,
-                    "parent_section": chunk.parent_section,
-                    "chapter_title": chunk.chapter_title,
-                }
-
-                # Appliquer le chunking sémantique
-                semantic_chunks = self.semantic_chunker.create_documents(
-                    [chunk.content]
-                )
-
-                # Convertir en objets Chunk avec métadonnées préservées
-                for semantic_chunk in semantic_chunks:
-                    new_chunk = Chunk(
-                        content=semantic_chunk.page_content, **section_metadata
-                    )
-                    final_chunks.append(new_chunk)
-
-        return final_chunks
