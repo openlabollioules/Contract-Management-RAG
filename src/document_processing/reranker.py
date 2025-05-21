@@ -12,7 +12,8 @@ class Reranker:
     """Handles reranking of search results using different models"""
     
     MODELS = {
-        "bge-reranker-large": "BAAI/bge-reranker-large"
+        #"bge-reranker-large": "BAAI/bge-reranker-large",
+        "mxbai-rerank-large-v2": "mixedbread-ai/mxbai-rerank-large-v2"
         # "Jina-ColBERT-v1": "jinaai/jina-embeddings-v2-base-en"
     }
     

@@ -221,7 +221,7 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     # Initialize managers
     embeddings_manager = TextVectorizer()
     chroma_manager = VectorDBInterface(embeddings_manager)
-    reranker_manager = Reranker("bge-reranker-large")
+    reranker_manager = Reranker("mxbai-rerank-large-v2")
 
     graph_manager = None
     knowledge_graph = None
