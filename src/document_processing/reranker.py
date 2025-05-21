@@ -63,23 +63,32 @@ class Reranker:
                 
             pairs.append((query, doc_text))
             
-        # Tokenize pairs
-        features = self.tokenizer(
-            pairs,
-            padding=True,
-            truncation=True,
-            return_tensors="pt",
-            max_length=512
-        ).to(self.device)
-        
-        # Get relevance scores
-        with torch.no_grad():
-            scores = self.model(**features).logits.squeeze()
+        # Process one document at a time to avoid batch processing issues
+        scores = []
+        for pair in pairs:
+            # Tokenize each pair individually
+            features = self.tokenizer(
+                [pair],  # Wrap in list to keep tokenizer API consistent
+                padding=True,
+                truncation=True,
+                return_tensors="pt",
+                max_length=512
+            ).to(self.device)
             
-            # Add logging for scores shape before sigmoid
-            logger.debug(f"Scores shape before sigmoid: {scores.shape}")
-            scores = torch.sigmoid(scores).cpu().numpy()
-            logger.debug(f"Scores shape after sigmoid: {scores.shape}, type: {type(scores)}")
+            # Get relevance score for this pair
+            with torch.no_grad():
+                score = self.model(**features).logits.squeeze()
+                # Si score est un tenseur avec plusieurs éléments, prendre le premier
+                if hasattr(score, "shape") and score.shape and score.shape[0] > 1:
+                    score = score[0]
+                score = torch.sigmoid(score).cpu().numpy()
+                # Si c'est toujours un tableau numpy avec plusieurs éléments, prendre le premier
+                if isinstance(score, np.ndarray) and score.size > 1:
+                    score = score[0]
+                scores.append(float(score))
+            
+        # Add logging for scores
+        logger.debug(f"Processed {len(scores)} documents with individual scoring")
             
         # Sort documents by score
         try:
@@ -88,13 +97,10 @@ class Reranker:
         except Exception as e:
             logger.error(f"Error creating scored_docs: {e}")
             logger.error(f"Documents: {documents}")
-            logger.error(f"Scores: {scores}, shape: {scores.shape if hasattr(scores, 'shape') else 'no shape'}")
-            # If scores is a scalar, convert to an array with one element
-            if not hasattr(scores, "__iter__"):
-                logger.info("Converting scalar score to array")
-                scores = np.array([scores])
-            scored_docs = list(zip(documents, [scores] * len(documents)))
-            
+            logger.error(f"Scores: {scores}")
+            # Fallback to returning the original documents without reranking
+            return documents
+        
         scored_docs.sort(key=lambda x: x[1], reverse=True)
         
         # Return top_k documents if specified
