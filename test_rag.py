@@ -35,20 +35,20 @@ TEST_QUESTIONS = {
         "Comment traduire la clause de responsabilité du contrat A vis-à-vis des fournisseurs et sous-traitants de Alstom ?",
     ],
     "questions chatGPT": [
-        "Pourrais-tu me préciser les dates importantes mentionnées dans le Contrat A ?",
-        "Peux-tu énumérer les dispositions du Contrat A susceptibles d'entraîner le versement d'indemnités ou de pénalités par le fournisseur ?",
-        "Pourrais-tu résumer les engagements de garantie prévus dans le Contrat A ?",
-        "Selon toi, quelle clause du Contrat A est la plus contraignante pour le fournisseur et pourquoi ? Quelle modification proposerais-tu pour la rendre moins défavorable ?",
-        "Quel risque de change découle, dans le Contrat A, du fait qu'une partie des prix soit fixée en roubles ?",
-        "Quelle puissance livrée est exigée d'après les spécifications du Contrat A ?",
-        "Quelles législations ou régimes juridiques le Contrat A déclare-t-il applicables ?",
-        "En tant que fournisseur, je dois adresser au client du Contrat A une lettre de notification de retard qui lui est imputable ; pourrais-tu me proposer un modèle de courrier ?",
-        "Rédige un avenant succinct prolongeant la date de fin du Contrat A de six mois.",
-        "À partir du Contrat A, peux-tu dresser la liste des documents que le fournisseur doit remettre au client ?",
-        "Pourrais-tu estimer les échéances associées aux actions documentaires listées précédemment ?",
-        "Quelles obligations du Contrat A doivent impérativement être reprises dans les contrats qu'ALSTOM conclura avec ses fournisseurs ou sous-traitants ?",
-        "Comment recommanderais-tu de transposer la clause de garantie du Contrat A dans les accords conclus entre Alstom et ses fournisseurs ou sous-traitants ?",
-        "Comment adapterais-tu la clause de responsabilité du Contrat A pour qu'elle s'applique aux fournisseurs ou sous-traitants d'Alstom ?"
+        "Could you indicate the key dates specified in Contract A?",
+        "Can you list the provisions in Contract A that may give rise to potential indemnities or penalties payable by the supplier?",
+        "Could you summarize the warranty obligations set out in Contract A?",
+        "In Contract A, which clause is the most problematic from the supplier’s perspective and why? How would you suggest amending that clause to make it less onerous for the supplier?",
+        "In Contract A, what is the foreign-exchange risk introduced by the fact that part of the pricing is denominated in rubles?",
+        "What is the guaranteed delivered power as specified in Contract A?",
+        "Which governing laws are mentioned in Contract A?",
+        "I represent the supplier. I would like to send a notice of delay letter to the client under Contract A regarding delays caused by them. Could you propose a template?",
+        "Draft a simplified amendment extending the end date of Contract A by six months.",
+        "Based on Contract A, can you list the actions the supplier must take in terms of documents to be provided to the client?",
+        "Could you estimate the deadlines associated with the list of actions mentioned above?",
+        "Which obligations in Contract A must be mandatorily flowed down into the contracts that ALSTOM will sign with its suppliers or subcontractors?",
+        "How would you translate the warranty clause of Contract A for ALSTOM’s suppliers and subcontractors?",
+        "How would you translate the liability clause of Contract A for ALSTOM’s suppliers and subcontractors?"
     ]
 }
 

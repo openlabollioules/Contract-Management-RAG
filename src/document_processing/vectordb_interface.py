@@ -8,6 +8,7 @@ import chromadb
 from chromadb.config import Settings
 
 from utils.logger import setup_logger
+from core.llm_service import LLMService
 
 from .text_vectorizer import TextVectorizer
 
@@ -21,6 +22,7 @@ class VectorDBInterface:
         embeddings_manager: TextVectorizer,
         persist_directory: str = "chroma_db",
         collection_name: str = "contracts",
+        llm_service = None
     ):
         """
         Initialize ChromaDB manager with an embeddings manager
@@ -29,9 +31,11 @@ class VectorDBInterface:
             embeddings_manager: Instance of TextVectorizer for generating embeddings
             persist_directory: Directory to persist ChromaDB data
             collection_name: Name of the collection to use
+            llm_service: LLM service for advanced text analysis
         """
         self.embeddings_manager = embeddings_manager
         self.persist_directory = persist_directory
+        self.llm_service = llm_service
         logger.info(
             f"Initialisation de VectorDBInterface (persist_directory={persist_directory}, collection={collection_name})"
         )
@@ -242,6 +246,113 @@ class VectorDBInterface:
             logger.error(f"Erreur lors de la suppression du document: {e}")
             return False
 
+    def _extract_keywords(self, text: str) -> list:
+        """
+        Extract keywords from text using LLM analysis.
+        Falls back to basic keyword detection if LLM is not available.
+
+        Args:
+            text: Text to analyze
+
+        Returns:
+            List of detected keywords
+        """
+        # If LLM service is not available, use fallback immediately
+        if not self.llm_service or not self.llm_service.client:
+            logger.debug("LLM service not available, using fallback keyword detection")
+            return self._extract_keywords_fallback(text)
+
+        try:
+            # Prepare the prompt for the LLM
+            prompt = f"""Analyze the following text and identify important keywords related to contracts, business terms, and legal concepts.
+            Focus on terms that would be relevant for contract management and legal analysis.
+            Return only the keywords, separated by commas.
+
+            Text to analyze:
+            {text}
+
+            Keywords:"""
+
+            # Get response from LLM
+            response = self.llm_service.generate(prompt)
+            
+            # Process the response to get keywords
+            if response:
+                # Split by comma and clean up each keyword
+                keywords = [kw.strip() for kw in response.split(',') if kw.strip()]
+                logger.debug(f"Keywords detected by LLM: {keywords}")
+                return keywords
+            else:
+                logger.warning("No keywords detected by LLM, using fallback")
+                return self._extract_keywords_fallback(text)
+
+        except Exception as e:
+            logger.error(f"Error in LLM keyword extraction: {str(e)}")
+            # Fallback to basic keyword detection if LLM fails
+            return self._extract_keywords_fallback(text)
+
+    def _extract_keywords_fallback(self, text: str) -> list:
+        """
+        Fallback method for keyword extraction using predefined terms.
+        Used when LLM analysis fails.
+
+        Args:
+            text: Text to analyze
+
+        Returns:
+            List of detected keywords without duplicates
+        """
+        # Dictionary to store terms and their translations
+        terms_dict = {
+            # Termes contractuels de base
+            "montant": "amount",
+            "échéance": "due date",
+            "livraison": "delivery",
+            "pénalité": "penalty",
+            "date": "date",
+            "contrat": "contract",
+            "signature": "signature",
+            "avenant": "amendment",
+            "résiliation": "termination",
+            "paiement": "payment",
+            "garantie": "warranty",
+            "obligation": "obligation",
+            "clause": "clause",
+            
+            # Nouveaux termes contractuels
+            "parties": "parties",
+            "objet du contrat": "scope of the contract",
+            "livraisons": "deliverables",
+            "frais": "fees",
+            "confidentialité": "confidentiality",
+            "propriété intellectuelle": "intellectual property",
+            "clause de résiliation": "termination clause",
+            "conformité légale": "legal compliance",
+            "support technique": "technical support",
+            "responsabilités": "responsibilities",
+            "délais": "milestones",
+            "résolution des litiges": "dispute resolution",
+            "force majeure": "force majeure",
+            "accès aux données": "data access",
+            "sécurité des données": "data security",
+            "licence": "license",
+            "exclusivité": "exclusivity",
+            "durée du contrat": "contract term",
+            "résiliation pour cause": "termination for cause"
+        }
+
+        # Set to store unique found terms
+        found_terms = set()
+
+        # Search for terms in text
+        for term_fr, term_en in terms_dict.items():
+            if re.search(rf"\b{term_fr}\b", text, re.IGNORECASE):
+                found_terms.add(term_fr)
+            if re.search(rf"\b{term_en}\b", text, re.IGNORECASE):
+                found_terms.add(term_en)
+
+        return list(found_terms)
+
     def add_documents(
         self,
         chunks: List[Dict],
@@ -274,6 +385,11 @@ class VectorDBInterface:
                     chunk['metadata'] = {}
                 # Convertir la liste de dates en string pour ChromaDB
                 chunk['metadata']['dates'] = '; '.join(dates)
+            keywords = self._extract_keywords(chunk.get('content', ''))
+            if keywords:
+                if 'metadata' not in chunk:
+                    chunk['metadata'] = {}
+                chunk['metadata']['keywords'] = ', '.join(keywords)
 
         # Afficher les chunks avec les dates détectées
         print_chunks_with_dates(chunks)
@@ -329,11 +445,19 @@ class VectorDBInterface:
             # YYYY/MM/DD or YYYY-MM-DD
             r'\b(19|20)\d{2}[/-](0?[1-9]|1[0-2])[/-](0?[1-9]|[12][0-9]|3[01])\b',
             # Month DD, YYYY (e.g., "January 1, 2024")
-            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01]),\s+(?:19|20)\d{2}\b',
+            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?,?\s+(?:19|20)\d{2}\b',
             # DD Month YYYY (e.g., "1 January 2024")
-            r'\b(?:0?[1-9]|[12][0-9]|3[01])\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
+            r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
             # French date format (e.g., "le 1er janvier 2024")
             r'\ble\s+(?:0?[1-9]|[12][0-9]|3[01])(?:er|ème)?\s+(?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(?:19|20)\d{2}\b',
+            # DD.MM.YYYY (e.g., "06.12.2007")
+            r'\b(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])\.(19|20)\d{2}\b',
+            # Month DDth YYYY (e.g., "September 30th 2012")
+            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:19|20)\d{2}\b',
+            # DDth Month YYYY (e.g., "22nd August 2017")
+            r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
+            # Month DDth, YYYY (e.g., "February 2nd, 2012")
+            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th),\s+(?:19|20)\d{2}\b'
         ]
 
         dates = []
@@ -481,20 +605,62 @@ class VectorDBInterface:
             logger.error(f"Erreur lors de la récupération des documents: {e}")
             return {}
 
+    def select_context(self, results: List[Dict], query: str) -> List[Dict]:
+        # Prioritize chunks with matching metadata
+        relevant_chunks = []
+        for result in results:
+            if (result['metadata'].get('keywords') and 
+                any(kw in query.lower() for kw in result['metadata']['keywords'].split(','))):
+                relevant_chunks.append(result)
+        
+        return relevant_chunks or results  # Fallback to all results if no metadata matches
+
 def print_chunks_with_dates(chunks):
-    print("\n📝 Affichage des chunks avec dates:")
+    print("\n📝 Affichage des chunks avec métadonnées:")
     print("=" * 80)
+    
+    # Compteur total de mots-clés
+    total_keywords = set()
+    
     for i, chunk in enumerate(chunks, 1):
         print(f"\nChunk {i}/{len(chunks)}")
         print("-" * 40)
-        print(f"Document: {chunk.get('metadata', {}).get('document_title', 'Sans titre')}")
-        print(f"Section: {chunk.get('metadata', {}).get('section_number', 'Non spécifiée')}")
+        
+        # Récupérer toutes les métadonnées
+        metadata = chunk.get('metadata', {})
+        
+        # Afficher les métadonnées de base
+        print(f"📄 Document: {metadata.get('document_title', 'Sans titre')}")
+        print(f"📑 Section: {metadata.get('section_number', 'Non spécifiée')}")
         
         # Afficher les dates si présentes
-        dates = chunk.get('metadata', {}).get('dates', [])
-        if dates:
-            print(f"\n📅 Dates détectées: {', '.join(dates)}")
+        if metadata.get('dates'):
+            print(f"\n📅 Dates détectées: {metadata['dates']}")
         
-        print("\nContenu:")
+        # Afficher les mots-clés si présents
+        if metadata.get('keywords'):
+            keywords = metadata['keywords'].split(', ')
+            total_keywords.update(keywords)
+            print(f"\n🔑 Mots-clés trouvés dans ce chunk:")
+            for kw in keywords:
+                print(f"  • {kw}")
+        
+        # Afficher toutes les autres métadonnées
+        other_metadata = {k: v for k, v in metadata.items() 
+                         if k not in ['document_title', 'section_number', 'dates', 'keywords']}
+        if other_metadata:
+            print("\n📋 Autres métadonnées:")
+            for key, value in other_metadata.items():
+                print(f"  • {key}: {value}")
+        
+        print("\n📝 Contenu:")
         print(chunk.get('content', ''))
         print("-" * 40)
+    
+    # Afficher le résumé des mots-clés à la fin
+    if total_keywords:
+        print("\n📊 Résumé des mots-clés trouvés:")
+        print("=" * 40)
+        for kw in sorted(total_keywords):
+            print(f"  • {kw}")
+        print(f"\nTotal des mots-clés uniques: {len(total_keywords)}")
