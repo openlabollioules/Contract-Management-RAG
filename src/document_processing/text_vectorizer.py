@@ -97,6 +97,7 @@ class TextVectorizer:
                         self.model_name,
                         cache_folder=str(self.models_dir),
                         local_files_only=True,
+                        trust_remote_code=True
                     )
                     logger.info(f"✅ Modèle chargé avec succès en mode hors ligne")
                 except Exception as e:
@@ -120,7 +121,9 @@ class TextVectorizer:
                         f"📥 Téléchargement du modèle {self.model_name} vers {self.models_dir}"
                     )
                     self.model = SentenceTransformer(
-                        self.model_name, cache_folder=str(self.models_dir)
+                        self.model_name, 
+                        cache_folder=str(self.models_dir),
+                        trust_remote_code=True
                     )
                     logger.info(f"✅ Modèle téléchargé avec succès")
 
@@ -134,7 +137,9 @@ class TextVectorizer:
                     f"🌐 Chargement du modèle {self.model_name} en mode en ligne"
                 )
                 self.model = SentenceTransformer(
-                    self.model_name, cache_folder=str(self.models_dir)
+                    self.model_name, 
+                    cache_folder=str(self.models_dir),
+                    trust_remote_code=True
                 )
                 logger.info(f"✅ Modèle chargé avec succès")
 
@@ -230,7 +235,9 @@ class TextVectorizer:
                 try:
                     # Télécharger le modèle
                     model_instance = SentenceTransformer(
-                        model, cache_folder=str(models_dir)
+                        model, 
+                        cache_folder=str(models_dir),
+                        trust_remote_code=True
                     )
                     # Forcer le téléchargement du tokenizer et des fichiers de configuration
                     _ = model_instance.tokenizer
