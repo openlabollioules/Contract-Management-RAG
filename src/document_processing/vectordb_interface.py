@@ -848,6 +848,47 @@ class VectorDBInterface:
         is_date_query = any(term in query.lower() for term in date_related_terms)
         dates_in_query = self._detect_dates(query) if is_date_query or any(char.isdigit() for char in query) else []
         
+        # Si aucun résultat n'est disponible mais que la requête contient des dates, effectuer une recherche directe par dates
+        if not results and dates_in_query:
+            logger.info(f"Pas de résultats par similarité, tentative de recherche directe par dates: {dates_in_query}")
+            date_filter_metadata = {}
+            
+            # Construire un filtre pour rechercher les documents contenant les dates de la requête
+            if len(dates_in_query) == 1:
+                # Pour une seule date, utiliser un filtre simple
+                date_filter_metadata["dates"] = {"$contains": dates_in_query[0]}
+            else:
+                # Pour plusieurs dates, créer un filtre OR optimisé
+                date_conditions = []
+                for date in dates_in_query:
+                    date_conditions.append({"dates": {"$contains": date}})
+                date_filter_metadata["$or"] = date_conditions
+            
+            # Effectuer une recherche directe par filtre de dates sans utiliser d'embedding
+            try:
+                direct_results = self.collection.get(where=date_filter_metadata, limit=20)
+                
+                if direct_results and len(direct_results["ids"]) > 0:
+                    logger.info(f"Recherche directe par dates a trouvé {len(direct_results['ids'])} résultats")
+                    # Convertir les résultats dans le même format que ceux de la recherche sémantique
+                    direct_formatted_results = []
+                    
+                    for i in range(len(direct_results["ids"])):
+                        direct_formatted_results.append({
+                            "id": direct_results["ids"][i],
+                            "document": direct_results["documents"][i],
+                            "metadata": direct_results["metadatas"][i],
+                            "distance": 1.0,  # Distance fictive maximale
+                            "is_summary": False,
+                            "contains_query_date": True  # Tous les résultats contiennent au moins une date de la requête
+                        })
+                    
+                    # Mettre à jour les résultats avec ces nouveaux résultats directs
+                    results = direct_formatted_results
+                    logger.info("Utilisation des résultats de la recherche directe par dates")
+            except Exception as e:
+                logger.error(f"Erreur lors de la recherche directe par dates: {e}")
+        
         # If there are matching dates in the results, prioritize them but don't exclude other results
         date_relevant_chunks = []
         non_date_chunks = []
@@ -886,6 +927,37 @@ class VectorDBInterface:
                 date_relevant_chunks.append(result)
             else:
                 non_date_chunks.append(result)
+        
+        # Si nous n'avons pas trouvé de chunks pertinents par date et que c'est une requête liée aux dates,
+        # effectuer une recherche supplémentaire dans la base de données
+        if not date_relevant_chunks and (is_date_query or dates_in_query) and results:
+            logger.info("Pas de chunks avec dates pertinentes trouvés dans les résultats initiaux, recherche élargie")
+            try:
+                # Créer un filtre qui recherche n'importe quelle date
+                date_exists_filter = {"dates": {"$exists": True}}
+                # Limiter aux 15 meilleurs résultats pour ne pas surcharger le contexte
+                date_results = self.collection.get(where=date_exists_filter, limit=15)
+                
+                if date_results and len(date_results["ids"]) > 0:
+                    logger.info(f"Recherche élargie a trouvé {len(date_results['ids'])} chunks avec dates")
+                    
+                    # Créer une liste d'IDs de résultats existants pour éviter les doublons
+                    existing_ids = {r["id"] for r in results}
+                    
+                    # Ajouter les résultats non dupliqués à date_relevant_chunks
+                    for i in range(len(date_results["ids"])):
+                        if date_results["ids"][i] not in existing_ids:
+                            date_relevant_chunks.append({
+                                "id": date_results["ids"][i],
+                                "document": date_results["documents"][i],
+                                "metadata": date_results["metadatas"][i],
+                                "distance": 1.0,  # Distance fictive maximale
+                                "is_summary": False,
+                                "from_expanded_search": True
+                            })
+                            existing_ids.add(date_results["ids"][i])
+            except Exception as e:
+                logger.error(f"Erreur lors de la recherche élargie de dates: {e}")
         
         # Check for keyword relevance in non-date chunks
         keyword_relevant_chunks = []
@@ -936,6 +1008,15 @@ class VectorDBInterface:
         max_results = min(20, len(combined_results))
         logger.info(f"Retournant {max_results} résultats combinés")
         
+        # Ajouter des statistiques détaillées sur les sources des résultats
+        expanded_search_results = sum(1 for r in combined_results[:max_results] if r.get('from_expanded_search', False))
+        direct_search_results = sum(1 for r in combined_results[:max_results] if r.get('contains_query_date', False))
+        
+        if expanded_search_results > 0:
+            logger.info(f"- {expanded_search_results} résultats proviennent de la recherche élargie")
+        if direct_search_results > 0:
+            logger.info(f"- {direct_search_results} résultats contiennent directement des dates de la requête")
+            
         # Return the combined and prioritized results
         return combined_results[:max_results]
 
