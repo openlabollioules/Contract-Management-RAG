@@ -861,44 +861,68 @@ class VectorDBInterface:
                 # Construire un filtre pour rechercher les documents contenant les dates de la requête
                 if len(dates_in_query) == 1:
                     # Pour une seule date, utiliser un filtre simple
-                    date_filter_metadata["dates"] = {"$contains": dates_in_query[0]}
+                    date_filter_metadata["dates"] = {"$eq": dates_in_query[0]}
                 else:
                     # Pour plusieurs dates, créer un filtre OR optimisé
                     date_conditions = []
                     for date in dates_in_query:
-                        date_conditions.append({"dates": {"$contains": date}})
+                        date_conditions.append({"dates": {"$eq": date}})
                     date_filter_metadata["$or"] = date_conditions
             else:
                 # Pour les requêtes liées aux dates sans dates spécifiques, 
-                # rechercher tous les documents qui ont un champ 'dates'
+                # ChromaDB ne supporte pas l'opérateur $exists ou $contains pour ce cas
+                # Utilisons une approche différente: récupérer tous les documents puis filtrer
                 logger.info("Recherche basée sur la présence du champ 'dates' dans les métadonnées")
-                date_filter_metadata["dates"] = {"$exists": True}
+                try:
+                    # Récupérer tous les documents et filtrer après
+                    all_docs = self.collection.get(limit=100)
+                    if all_docs and len(all_docs["ids"]) > 0:
+                        direct_formatted_results = []
+                        for i in range(len(all_docs["ids"])):
+                            # Vérifier si le document a un champ dates
+                            if "dates" in all_docs["metadatas"][i] and all_docs["metadatas"][i]["dates"]:
+                                direct_formatted_results.append({
+                                    "id": all_docs["ids"][i],
+                                    "document": all_docs["documents"][i],
+                                    "metadata": all_docs["metadatas"][i],
+                                    "distance": 1.0,  # Distance fictive maximale
+                                    "is_summary": False,
+                                    "from_metadata_search": True  # Indique que ce résultat vient d'une recherche par métadonnées
+                                })
+                        
+                        logger.info(f"Trouvé {len(direct_formatted_results)} documents avec champ 'dates'")
+                        results = direct_formatted_results
+                        return results  # Retourner directement ces résultats
+                except Exception as e:
+                    logger.error(f"Erreur lors de la récupération des documents avec dates: {e}")
+                    # En cas d'erreur, on continue le processus normal
             
             # Effectuer une recherche directe par filtre de dates sans utiliser d'embedding
-            try:
-                direct_results = self.collection.get(where=date_filter_metadata, limit=20)
-                
-                if direct_results and len(direct_results["ids"]) > 0:
-                    logger.info(f"Recherche directe par métadonnées 'dates' a trouvé {len(direct_results['ids'])} résultats")
-                    # Convertir les résultats dans le même format que ceux de la recherche sémantique
-                    direct_formatted_results = []
+            if date_filter_metadata:
+                try:
+                    direct_results = self.collection.get(where=date_filter_metadata, limit=20)
                     
-                    for i in range(len(direct_results["ids"])):
-                        direct_formatted_results.append({
-                            "id": direct_results["ids"][i],
-                            "document": direct_results["documents"][i],
-                            "metadata": direct_results["metadatas"][i],
-                            "distance": 1.0,  # Distance fictive maximale
-                            "is_summary": False,
-                            "contains_query_date": True if dates_in_query else False,  # Indique si contient une date spécifique
-                            "from_metadata_search": True  # Indique que ce résultat vient d'une recherche par métadonnées
-                        })
-                    
-                    # Mettre à jour les résultats avec ces nouveaux résultats directs
-                    results = direct_formatted_results
-                    logger.info("Utilisation des résultats de la recherche directe par métadonnées 'dates'")
-            except Exception as e:
-                logger.error(f"Erreur lors de la recherche directe par métadonnées 'dates': {e}")
+                    if direct_results and len(direct_results["ids"]) > 0:
+                        logger.info(f"Recherche directe par métadonnées 'dates' a trouvé {len(direct_results['ids'])} résultats")
+                        # Convertir les résultats dans le même format que ceux de la recherche sémantique
+                        direct_formatted_results = []
+                        
+                        for i in range(len(direct_results["ids"])):
+                            direct_formatted_results.append({
+                                "id": direct_results["ids"][i],
+                                "document": direct_results["documents"][i],
+                                "metadata": direct_results["metadatas"][i],
+                                "distance": 1.0,  # Distance fictive maximale
+                                "is_summary": False,
+                                "contains_query_date": True if dates_in_query else False,  # Indique si contient une date spécifique
+                                "from_metadata_search": True  # Indique que ce résultat vient d'une recherche par métadonnées
+                            })
+                        
+                        # Mettre à jour les résultats avec ces nouveaux résultats directs
+                        results = direct_formatted_results
+                        logger.info("Utilisation des résultats de la recherche directe par métadonnées 'dates'")
+                except Exception as e:
+                    logger.error(f"Erreur lors de la recherche directe par métadonnées 'dates': {e}")
         
         # If there are matching dates in the results, prioritize them but don't exclude other results
         date_relevant_chunks = []
@@ -954,30 +978,33 @@ class VectorDBInterface:
         if not date_relevant_chunks and (is_date_query or dates_in_query) and results:
             logger.info("Pas de chunks avec dates pertinentes trouvés dans les résultats initiaux, recherche élargie")
             try:
-                # Créer un filtre qui recherche n'importe quelle date
-                date_exists_filter = {"dates": {"$exists": True}}
-                # Limiter aux 15 meilleurs résultats pour ne pas surcharger le contexte
-                date_results = self.collection.get(where=date_exists_filter, limit=15)
+                # Utiliser une approche plus robuste: récupérer tous les documents puis filtrer
+                all_docs = self.collection.get(limit=100)  # Limiter à 100 pour éviter de surcharger
                 
-                if date_results and len(date_results["ids"]) > 0:
-                    logger.info(f"Recherche élargie a trouvé {len(date_results['ids'])} chunks avec dates")
+                if all_docs and len(all_docs["ids"]) > 0:
+                    logger.info(f"Récupération de {len(all_docs['ids'])} documents pour filtrage par dates")
                     
                     # Créer une liste d'IDs de résultats existants pour éviter les doublons
                     existing_ids = {r["id"] for r in results}
                     
-                    # Ajouter les résultats non dupliqués à date_relevant_chunks
-                    for i in range(len(date_results["ids"])):
-                        if date_results["ids"][i] not in existing_ids:
+                    # Filtrer pour ne garder que les documents avec des dates
+                    for i in range(len(all_docs["ids"])):
+                        if (all_docs["ids"][i] not in existing_ids and 
+                            "dates" in all_docs["metadatas"][i] and 
+                            all_docs["metadatas"][i]["dates"]):
+                            
                             date_relevant_chunks.append({
-                                "id": date_results["ids"][i],
-                                "document": date_results["documents"][i],
-                                "metadata": date_results["metadatas"][i],
+                                "id": all_docs["ids"][i],
+                                "document": all_docs["documents"][i],
+                                "metadata": all_docs["metadatas"][i],
                                 "distance": 1.0,  # Distance fictive maximale
                                 "is_summary": False,
                                 "from_expanded_search": True,
                                 "date_relevant_for_query": True  # Indique que le résultat est pertinent pour une requête liée aux dates
                             })
-                            existing_ids.add(date_results["ids"][i])
+                            existing_ids.add(all_docs["ids"][i])
+                    
+                    logger.info(f"Recherche élargie a trouvé {len(date_relevant_chunks)} chunks avec dates")
             except Exception as e:
                 logger.error(f"Erreur lors de la recherche élargie de dates: {e}")
         

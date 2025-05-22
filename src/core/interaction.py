@@ -302,6 +302,10 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
             f"Hiérarchie: {result['metadata'].get('hierarchy', 'Non spécifié')}"
         )
 
+        # Ajouter les dates si présentes dans les métadonnées
+        if result['metadata'].get('dates'):
+            header += f"\nDates: {result['metadata'].get('dates')}"
+
         # Contenu adapté selon le type (résumé ou original)
         if result.get("is_summary", False):
             content = (
@@ -324,11 +328,11 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
 
     {context}
 
-    User’s question: {query}
+    User's question: {query}
 
     Provide a precise answer based on the context given.
-    If you use a summary, check the detailed content to ensure your answer’s accuracy.
-    If you can’t find the information in the context, state that clearly."""
+    If you use a summary, check the detailed content to ensure your answer's accuracy.
+    If you can't find the information in the context, state that clearly."""
 
     # Get response from Ollama
     response = ask_ollama(prompt, temperature, model, context_window)
@@ -351,8 +355,13 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
             logger.info("📊 Source obtenue via le graphe de connaissances")
             logger.info(f"Relation: {result.get('relation_type', 'Non spécifié')}")
         logger.info("-" * 40)
-        logger.info(f"Hierarchie: {result["metadata"].get("hierarchy")}")
-        logger.info(f"Document: {result["metadata"].get("document_title")}")
+        logger.info(f"Hierarchie: {result['metadata'].get('hierarchy', 'Non spécifié')}")
+        logger.info(f"Document: {result['metadata'].get('document_title', 'Non spécifié')}")
+
+        # Afficher les dates si présentes
+        if result['metadata'].get('dates'):
+            logger.info(f"Dates: {result['metadata'].get('dates')}")
+            print(f"Dates: {result['metadata'].get('dates')}")
 
         logger.info(f"Distance: {result['distance']:.4f}")
 
@@ -371,9 +380,11 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     # Afficher les statistiques
     summaries = sum(1 for r in combined_results if r.get("is_summary", False))
     graph_sources = sum(1 for r in combined_results if r.get("source_type") == "graph")
+    date_sources = sum(1 for r in combined_results if r.get('metadata', {}).get('dates'))
     logger.info(f"\n📊 Statistiques des sources:")
     logger.info(f"- Total: {len(combined_results)}")
     logger.info(f"- Résumés: {summaries}")
     logger.info(f"- Contenus originaux: {len(combined_results) - summaries - graph_sources}")
     logger.info(f"- Sources du graphe: {graph_sources}")
+    logger.info(f"- Sources avec dates: {date_sources}")
     return response
