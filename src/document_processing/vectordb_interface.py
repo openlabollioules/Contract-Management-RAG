@@ -467,15 +467,15 @@ class VectorDBInterface:
             
             # Group 2: Complete dates (day, month, year)
             [
-                # Month DD, YYYY (e.g., "January 1, 2024")
-                r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?,?\s+(?:19|20)\d{2}\b',
-                # DD Month YYYY (e.g., "1 January 2024")
-                r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
-                # Month DDth YYYY (e.g., "September 30th 2012")
-                r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:19|20)\d{2}\b',
-                # DDth Month YYYY (e.g., "22nd August 2017")
-                r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
-                # Month DDth, YYYY (e.g., "February 2nd, 2012")
+            # Month DD, YYYY (e.g., "January 1, 2024")
+            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?,?\s+(?:19|20)\d{2}\b',
+            # DD Month YYYY (e.g., "1 January 2024")
+            r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
+            # Month DDth YYYY (e.g., "September 30th 2012")
+            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:19|20)\d{2}\b',
+            # DDth Month YYYY (e.g., "22nd August 2017")
+            r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
+            # Month DDth, YYYY (e.g., "February 2nd, 2012")
                 r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th),\s+(?:19|20)\d{2}\b',
                 # Abbreviated month formats (e.g., "Jan 1, 2024", "1 Jan 2024")
                 r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?,?\s+(?:19|20)\d{2}\b',
@@ -631,11 +631,11 @@ class VectorDBInterface:
                         date_filter_metadata["$or"] = existing_or + date_conditions
                     else:
                         date_filter_metadata["$or"] = date_conditions
-        
+
         # Generate query embedding
         logger.debug("Génération de l'embedding pour la requête")
         query_embedding = self.embeddings_manager.get_embeddings([query])[0]
-        
+
         # Perform two searches if date detection is active: one with date filter and one standard
         if dates_in_query:
             # First search with date filters

@@ -205,6 +205,41 @@ def merge_results(vector_results, graph_results):
     
     return combined_results
 
+def merge_date_results(similarity_results, date_results, n_context):
+    """
+    Combine results from similarity search with date-specific results,
+    keeping the TOP_K results from similarity search and adding date results as a complement.
+    
+    Args:
+        similarity_results: Results from standard similarity search
+        date_results: Results from date-specific search
+        n_context: Maximum number of results to return
+        
+    Returns:
+        List of combined results with dates as a complement
+    """
+    # Start with similarity results
+    combined_results = list(similarity_results)
+    
+    # Track document IDs to avoid duplicates
+    seen_ids = set(result.get('id', '') for result in similarity_results)
+    
+    # Add date results that aren't duplicates
+    for result in date_results:
+        result_id = result.get('id', '')
+        if result_id and result_id not in seen_ids:
+            seen_ids.add(result_id)
+            # Mark as date-specific result
+            result['from_date_search'] = True
+            combined_results.append(result)
+    
+    # Sort results - prioritizing similarity results first, then date results by their score
+    # This ensures that TOP_K similarity results are preserved at the top
+    combined_results.sort(key=lambda x: (x.get('from_date_search', False), x.get('distance', 1.0)))
+    
+    # Limit to requested number of results
+    return combined_results[:n_context]
+
 def chat_with_contract(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False, 
 temperature: float = float(os.getenv("TEMPERATURE", 0.5)), similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
 model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = int(os.getenv("CONTEXT_WINDOW", 0))) -> None:
@@ -247,16 +282,20 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     results = chroma_manager.search(query, n_results=n_context)
     logger.info(f"Found {len(results)} initial search results")
     
-    # For date-related queries, we don't apply the similarity threshold
+    # Standard filtering based on similarity threshold for non-date queries
+    filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
+    logger.info(f"After filtering by similarity threshold: {len(filtered_results)} results remain")
+
+    # For date-related queries, complement with date-specific results
     if is_date_query:
         logger.info("Date-related query detected, selecting relevant chunks with dates")
-        # Use select_context to prioritize chunks with dates
-        filtered_results = chroma_manager.select_context(results, query)
-        logger.info(f"After date-based selection: {len(filtered_results)} results with date information")
-    else:
-        # Standard filtering based on similarity threshold for non-date queries
-        filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
-        logger.info(f"After filtering: {len(filtered_results)} results remain")
+        # Get date-specific results
+        date_results = chroma_manager.select_context(results, query)
+        logger.info(f"Date-based selection found: {len(date_results)} results with date information")
+        
+        # Merge similarity results with date-specific results
+        filtered_results = merge_date_results(filtered_results, date_results, n_context * 2)
+        logger.info(f"After merging similarity and date results: {len(filtered_results)} total results")
 
     # If no results pass the threshold, use the original results
     if not filtered_results and results:
@@ -333,6 +372,9 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     Provide a precise answer based on the context given.
     If you use a summary, check the detailed content to ensure your answer's accuracy.
     If you can't find the information in the context, state that clearly."""
+
+    print(context)
+    return
 
     # Get response from Ollama
     response = ask_ollama(prompt, temperature, model, context_window)
