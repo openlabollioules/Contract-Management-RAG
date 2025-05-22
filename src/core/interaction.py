@@ -373,9 +373,6 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     If you use a summary, check the detailed content to ensure your answer's accuracy.
     If you can't find the information in the context, state that clearly."""
 
-    print(context)
-    return
-
     # Get response from Ollama
     response = ask_ollama(prompt, temperature, model, context_window)
     logger.info("\n🤖 Réponse :")
