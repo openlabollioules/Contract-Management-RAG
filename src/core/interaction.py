@@ -231,14 +231,33 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
         # Load or build the graph
         knowledge_graph = load_or_build_graph(chroma_manager, embeddings_manager)
 
+    # Check if this is a date-related query
+    date_related_terms = [
+        'date', 'échéance', 'délai', 'terme', 'expire', 'expiration', 'calendrier', 
+        'planning', 'horaire', 'jour', 'mois', 'année', 'trimestre', 'semestre',
+        'période', 'durée', 'temps', 'chronologie', 'deadline', 'livraison', 
+        'anniversaire', 'signature', 'préavis',
+        'deadline', 'calendar', 'schedule', 'day', 'month', 'year', 'quarter', 
+        'semester', 'period', 'duration', 'time', 'timeline', 'delivery', 
+        'anniversary', 'signature', 'notice'
+    ]
+    is_date_query = any(term in query.lower() for term in date_related_terms)
+
     # Get search results
     results = chroma_manager.search(query, n_results=n_context)
     logger.info(f"Found {len(results)} initial search results")
     
-    # Filter results based on similarity threshold
-    filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
-    logger.info(f"After filtering: {len(filtered_results)} results remain")
-    
+    # For date-related queries, we don't apply the similarity threshold
+    if is_date_query:
+        logger.info("Date-related query detected, selecting relevant chunks with dates")
+        # Use select_context to prioritize chunks with dates
+        filtered_results = chroma_manager.select_context(results, query)
+        logger.info(f"After date-based selection: {len(filtered_results)} results with date information")
+    else:
+        # Standard filtering based on similarity threshold for non-date queries
+        filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
+        logger.info(f"After filtering: {len(filtered_results)} results remain")
+
     # If no results pass the threshold, use the original results
     if not filtered_results and results:
         logger.warning("No results passed the similarity threshold. Using unfiltered results instead.")
@@ -310,7 +329,6 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     Provide a precise answer based on the context given.
     If you use a summary, check the detailed content to ensure your answer’s accuracy.
     If you can’t find the information in the context, state that clearly."""
-
 
     # Get response from Ollama
     response = ask_ollama(prompt, temperature, model, context_window)

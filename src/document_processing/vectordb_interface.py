@@ -429,51 +429,144 @@ class VectorDBInterface:
 
     def _detect_dates(self, text: str) -> List[str]:
         """
-        Detect dates in text using regex patterns.
-        Supports various date formats commonly found in contracts.
+        Detect dates in text using comprehensive regex patterns.
+        Supports a wide variety of date formats commonly found in contracts and documents.
 
         Args:
             text: Text to analyze
 
         Returns:
-            List of detected dates
+            List of detected dates without duplicates
         """
-        # Common date patterns in contracts
-        date_patterns = [
-            # DD/MM/YYYY or DD-MM-YYYY
-            r'\b(0?[1-9]|[12][0-9]|3[01])[/-](0?[1-9]|1[0-2])[/-](19|20)\d{2}\b',
-            # YYYY/MM/DD or YYYY-MM-DD
-            r'\b(19|20)\d{2}[/-](0?[1-9]|1[0-2])[/-](0?[1-9]|[12][0-9]|3[01])\b',
-            # Month DD, YYYY (e.g., "January 1, 2024")
-            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?,?\s+(?:19|20)\d{2}\b',
-            # DD Month YYYY (e.g., "1 January 2024")
-            r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
-            # French date format (e.g., "le 1er janvier 2024")
-            r'\ble\s+(?:0?[1-9]|[12][0-9]|3[01])(?:er|ème)?\s+(?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(?:19|20)\d{2}\b',
-            # DD.MM.YYYY (e.g., "06.12.2007")
-            r'\b(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])\.(19|20)\d{2}\b',
-            # Month DDth YYYY (e.g., "September 30th 2012")
-            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:19|20)\d{2}\b',
-            # DDth Month YYYY (e.g., "22nd August 2017")
-            r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
-            # Month DDth, YYYY (e.g., "February 2nd, 2012")
-            r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th),\s+(?:19|20)\d{2}\b'
+        # Process the text to avoid duplicate matches from overlapping patterns
+        # Apply patterns in order of specificity (most specific first) 
+        # and avoid adding overlapping matches
+        
+        # Track matched spans to avoid overlapping matches
+        matched_spans = []
+        unique_dates = set()
+        
+        # Group patterns by priority (specific formats first, general formats last)
+        pattern_groups = [
+            # Group 1: Most specific patterns (with context words)
+            [
+                # Dates with specific words (e.g., "Dated: January 1, 2024")
+                r'(?:dated|dated\s+as\s+of|as\s+of|effective\s+date|with\s+effect\s+from|en\s+date\s+du)[\s:]+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?,?\s+(?:19|20)\d{2}',
+                r'(?:dated|dated\s+as\s+of|as\s+of|effective\s+date|with\s+effect\s+from|en\s+date\s+du)[\s:]+(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?,?\s+(?:19|20)\d{2}',
+                
+                # Date spans (commonly found in contracts)
+                r'(?:from|du)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?,?\s+(?:19|20)\d{2}\s+(?:to|au|jusqu\'au)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?,?\s+(?:19|20)\d{2}',
+                
+                # Specific date references in contracts
+                r'\bsigned\s+on\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?,?\s+(?:19|20)\d{2}\b',
+                r'\bsigné\s+le\s+(?:0?[1-9]|[12][0-9]|3[01])(?:er|ère|ème|e|è)?\s+(?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre|jan|fév|mar|avr|mai|juin|juil|août|sept|oct|nov|déc)\.?\s+(?:19|20)\d{2}\b',
+                
+                # French date format (e.g., "le 1er janvier 2024")
+                r'\ble\s+(?:0?[1-9]|[12][0-9]|3[01])(?:er|ère|ème|e|è)?\s+(?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(?:19|20)\d{2}\b',
+            ],
+            
+            # Group 2: Complete dates (day, month, year)
+            [
+                # Month DD, YYYY (e.g., "January 1, 2024")
+                r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?,?\s+(?:19|20)\d{2}\b',
+                # DD Month YYYY (e.g., "1 January 2024")
+                r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
+                # Month DDth YYYY (e.g., "September 30th 2012")
+                r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:19|20)\d{2}\b',
+                # DDth Month YYYY (e.g., "22nd August 2017")
+                r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:19|20)\d{2}\b',
+                # Month DDth, YYYY (e.g., "February 2nd, 2012")
+                r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th),\s+(?:19|20)\d{2}\b',
+                # Abbreviated month formats (e.g., "Jan 1, 2024", "1 Jan 2024")
+                r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?,?\s+(?:19|20)\d{2}\b',
+                r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+(?:19|20)\d{2}\b',
+                
+                # French without "le" (e.g., "1er janvier 2024")
+                r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:er|ère|ème|e|è)?\s+(?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s+(?:19|20)\d{2}\b',
+                # French abbreviated months (e.g., "1er jan. 2024")
+                r'\b(?:0?[1-9]|[12][0-9]|3[01])(?:er|ère|ème|e|è)?\s+(?:jan|fév|mar|avr|mai|juin|juil|août|sept|oct|nov|déc)\.?\s+(?:19|20)\d{2}\b',
+            ],
+            
+            # Group 3: Numeric date formats
+            [
+                # DD/MM/YYYY or DD-MM-YYYY
+                r'\b(0?[1-9]|[12][0-9]|3[01])[/-](0?[1-9]|1[0-2])[/-](19|20)\d{2}\b',
+                # YYYY/MM/DD or YYYY-MM-DD (ISO format)
+                r'\b(19|20)\d{2}[/-](0?[1-9]|1[0-2])[/-](0?[1-9]|[12][0-9]|3[01])\b',
+                # DD.MM.YYYY (European format with dots)
+                r'\b(0?[1-9]|[12][0-9]|3[01])\.(0?[1-9]|1[0-2])\.(19|20)\d{2}\b',
+                # MM.DD.YYYY (US format with dots)
+                r'\b(0?[1-9]|1[0-2])\.(0?[1-9]|[12][0-9]|3[01])\.(19|20)\d{2}\b',
+            ],
+            
+            # Group 4: Partial dates (month/year or quarter/year)
+            [
+                # Quarter and year references (common in contracts)
+                r'\bQ[1-4]\s+(?:19|20)\d{2}\b',
+                r'\b(?:1st|2nd|3rd|4th|first|second|third|fourth)\s+quarter\s+(?:of\s+)?(?:19|20)\d{2}\b',
+                r'\b(?:1er|2e|3e|4e|premier|deuxième|troisième|quatrième)\s+trimestre\s+(?:de\s+)?(?:19|20)\d{2}\b',
+                
+                # Month and year only
+                r'\b(?:January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)\.?\s+(?:19|20)\d{2}\b',
+                r'\b(?:janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre|jan|fév|mar|avr|mai|juin|juil|août|sept|oct|nov|déc)\.?\s+(?:19|20)\d{2}\b',
+            ]
         ]
+        
+        # Process each pattern group in order
+        for group_idx, pattern_group in enumerate(pattern_groups):
+            for pattern in pattern_group:
+                matches = re.finditer(pattern, text, re.IGNORECASE)
+                for match in matches:
+                    # Get match span to check for overlaps
+                    start, end = match.span()
+                    date_str = match.group(0).strip()
+                    
+                    # Check if this match overlaps with any previously matched span
+                    overlaps = False
+                    for prev_start, prev_end in matched_spans:
+                        # Check for overlap
+                        if (start <= prev_end and end >= prev_start):
+                            overlaps = True
+                            # If this is a more specific pattern (earlier group), replace the previous match
+                            if group_idx == 0:  # Most specific patterns group
+                                # Remove any dates that might be contained in this span
+                                dates_to_remove = []
+                                for prev_date in unique_dates:
+                                    if prev_date in date_str:
+                                        dates_to_remove.append(prev_date)
+                                        
+                                for remove_date in dates_to_remove:
+                                    unique_dates.remove(remove_date)
+                                
+                                # Add this more specific match
+                                logger.debug(f"Date trouvée (spécifique): {date_str}")
+                                unique_dates.add(date_str)
+                                # Update the span
+                                matched_spans.remove((prev_start, prev_end))
+                                matched_spans.append((start, end))
+                            break
+                    
+                    # If no overlap, add this match
+                    if not overlaps:
+                        logger.debug(f"Date trouvée: {date_str}")
+                        unique_dates.add(date_str)
+                        matched_spans.append((start, end))
 
-        dates = []
-        for pattern in date_patterns:
-            matches = re.finditer(pattern, text, re.IGNORECASE)
-            for match in matches:
-                logger.debug(f"Date trouvée: {match.group(0)}")
-                dates.append(match.group(0))
-
-        return dates
+        # Convert to list and sort for consistent output
+        dates_list = sorted(list(unique_dates))
+        
+        # If dates were found, log them at a higher level
+        if dates_list:
+            logger.info(f"Dates détectées ({len(dates_list)}): {', '.join(dates_list)}")
+            
+        return dates_list
 
     def search(
         self, query: str, n_results: int = 5, filter_metadata: Optional[Dict] = None
     ) -> List[Dict]:
         """
         Search for similar documents. Handles both summarized and non-summarized chunks intelligently.
+        Automatically detects date-related queries and enhances results with date-specific filtering.
 
         Args:
             query: Search query
@@ -481,23 +574,125 @@ class VectorDBInterface:
             filter_metadata: Optional metadata filters
 
         Returns:
-            List of results with documents and metadata
+            List of results with documents and metadata, prioritizing date-relevant content when appropriate
         """
         logger.info(
             f"Recherche dans ChromaDB: '{query}' (n_results={n_results}, filtres={filter_metadata})"
         )
 
+        # Enhanced date-related terms detection - expanded with more terms
+        date_related_terms = [
+            # French terms
+            'date', 'échéance', 'délai', 'terme', 'expire', 'expiration', 'calendrier', 
+            'planning', 'horaire', 'jour', 'mois', 'année', 'trimestre', 'semestre',
+            'période', 'durée', 'temps', 'chronologie', 'deadline', 'livraison', 
+            'anniversaire', 'signature', 'préavis',
+            # English terms
+            'deadline', 'calendar', 'schedule', 'day', 'month', 'year', 'quarter', 
+            'semester', 'period', 'duration', 'time', 'timeline', 'delivery', 
+            'anniversary', 'signature', 'notice'
+        ]
+        
+        is_date_query = any(term in query.lower() for term in date_related_terms)
+
+        print(f" is date query : {is_date_query}")
+        
+        # Detect dates in the query - more aggressive detection for any query with numeric content
+        dates_in_query = []
+        date_filter_metadata = None
+        
+        # Check for digits that might be part of dates, or explicit date terms
+        if is_date_query or any(char.isdigit() for char in query):
+            logger.debug("Détection de dates dans la requête")
+            dates_in_query = self._detect_dates(query)
+
+            if dates_in_query:
+                logger.info(f"Dates détectées dans la requête: {dates_in_query}")
+                
+                # Create a copy of filter_metadata to avoid modifying the original
+                if filter_metadata is None:
+                    date_filter_metadata = {}
+                else:
+                    date_filter_metadata = filter_metadata.copy()
+                
+                # Build date filter - improved to handle multiple dates more effectively
+                if len(dates_in_query) == 1:
+                    # For a single date, use a simple contains filter
+                    date_filter_metadata["dates"] = {"$contains": dates_in_query[0]}
+                else:
+                    # For multiple dates, create a more optimized OR filter
+                    date_conditions = []
+                    for date in dates_in_query:
+                        date_conditions.append({"dates": {"$contains": date}})
+                    
+                    # If there are existing $or conditions, we need to handle them properly
+                    if "$or" in date_filter_metadata:
+                        existing_or = date_filter_metadata["$or"]
+                        date_filter_metadata["$or"] = existing_or + date_conditions
+                    else:
+                        date_filter_metadata["$or"] = date_conditions
+        
         # Generate query embedding
         logger.debug("Génération de l'embedding pour la requête")
         query_embedding = self.embeddings_manager.get_embeddings([query])[0]
-
-        # Search in ChromaDB
-        logger.debug(f"Requête dans la collection '{self.collection.name}'")
-        results = self.collection.query(
-            query_embeddings=[query_embedding],
-            n_results=n_results * 2,  # On récupère plus de résultats pour le post-traitement
-            where=filter_metadata,
-        )
+        
+        # Perform two searches if date detection is active: one with date filter and one standard
+        if dates_in_query:
+            # First search with date filters
+            logger.debug(f"Requête avec filtres de date dans la collection '{self.collection.name}'")
+            date_filtered_results = self.collection.query(
+                query_embeddings=[query_embedding],
+                n_results=n_results * 2,
+                where=date_filter_metadata,
+            )
+            
+            # Second search without date filters (standard)
+            logger.debug(f"Requête standard dans la collection '{self.collection.name}'")
+            standard_results = self.collection.query(
+                query_embeddings=[query_embedding],
+                n_results=n_results,
+                where=filter_metadata,
+            )
+            
+            # Combine results, prioritizing date-filtered ones
+            combined_ids = []
+            combined_docs = []
+            combined_metadatas = []
+            combined_distances = []
+            
+            # First add all date-filtered results
+            if len(date_filtered_results["ids"]) > 0 and len(date_filtered_results["ids"][0]) > 0:
+                combined_ids.extend(date_filtered_results["ids"][0])
+                combined_docs.extend(date_filtered_results["documents"][0])
+                combined_metadatas.extend(date_filtered_results["metadatas"][0])
+                combined_distances.extend(date_filtered_results["distances"][0])
+            
+            # Then add standard results that aren't already included
+            if len(standard_results["ids"]) > 0 and len(standard_results["ids"][0]) > 0:
+                for i, doc_id in enumerate(standard_results["ids"][0]):
+                    if doc_id not in combined_ids:
+                        combined_ids.append(doc_id)
+                        combined_docs.append(standard_results["documents"][0][i])
+                        combined_metadatas.append(standard_results["metadatas"][0][i])
+                        combined_distances.append(standard_results["distances"][0][i])
+            
+            # Create a results structure similar to what collection.query returns
+            results = {
+                "ids": [combined_ids],
+                "documents": [combined_docs],
+                "metadatas": [combined_metadatas],
+                "distances": [combined_distances]
+            }
+            
+            logger.info(f"Recherche combinée - {len(combined_ids)} résultats au total")
+        else:
+            # Standard search without date detection
+            logger.debug(f"Requête standard dans la collection '{self.collection.name}'")
+            results = self.collection.query(
+                query_embeddings=[query_embedding],
+                n_results=n_results * 2,  # Récupère plus de résultats pour le post-traitement
+                where=filter_metadata,
+            )
 
         # Format and process results
         logger.debug(
@@ -511,6 +706,12 @@ class VectorDBInterface:
             is_summary = metadata.get("is_summary", "false").lower() == "true"
             original_content = metadata.get("original_content", "")
 
+            # Check if this result contains any of the dates from the query
+            contains_query_date = False
+            if dates_in_query and 'dates' in metadata:
+                chunk_dates = metadata['dates'].split('; ')
+                contains_query_date = any(date in chunk_dates for date in dates_in_query)
+
             # Si c'est un résumé, on ajoute le contenu original aux métadonnées pour référence
             if is_summary:
                 result = {
@@ -519,7 +720,8 @@ class VectorDBInterface:
                     "metadata": metadata,
                     "distance": results["distances"][0][i],
                     "is_summary": True,
-                    "original_content": original_content
+                    "original_content": original_content,
+                    "contains_query_date": contains_query_date
                 }
                 formatted_results.append(result)
                 seen_originals.add(original_content)
@@ -531,18 +733,31 @@ class VectorDBInterface:
                     "document": results["documents"][0][i],
                     "metadata": metadata,
                     "distance": results["distances"][0][i],
-                    "is_summary": False
+                    "is_summary": False,
+                    "contains_query_date": contains_query_date
                 }
                 formatted_results.append(result)
 
-        # Trier par score de similarité et limiter au nombre demandé
-        formatted_results.sort(key=lambda x: x["distance"])
+        # Sort results, prioritizing documents with matching dates
+        if dates_in_query:
+            # First by date match, then by distance score
+            formatted_results.sort(key=lambda x: (not x.get("contains_query_date", False), x["distance"]))
+        else:
+            # Sort only by distance score
+            formatted_results.sort(key=lambda x: x["distance"])
+        
+        # Limit to requested number of results
         formatted_results = formatted_results[:n_results]
 
         logger.info(f"Recherche terminée, {len(formatted_results)} résultats")
+        
         # Log des statistiques sur les résumés vs originaux
         summaries = sum(1 for r in formatted_results if r.get("is_summary", False))
+        date_matches = sum(1 for r in formatted_results if r.get("contains_query_date", False))
+        
         logger.info(f"Répartition : {summaries} résumés, {len(formatted_results) - summaries} originaux")
+        if dates_in_query:
+            logger.info(f"Résultats contenant des dates de la requête : {date_matches}/{len(formatted_results)}")
         
         return formatted_results
 
@@ -606,14 +821,215 @@ class VectorDBInterface:
             return {}
 
     def select_context(self, results: List[Dict], query: str) -> List[Dict]:
-        # Prioritize chunks with matching metadata
-        relevant_chunks = []
-        for result in results:
-            if (result['metadata'].get('keywords') and 
-                any(kw in query.lower() for kw in result['metadata']['keywords'].split(','))):
-                relevant_chunks.append(result)
+        """
+        Select and prioritize the most relevant chunks based on query content.
+        Especially handles date-related queries with advanced prioritization.
         
-        return relevant_chunks or results  # Fallback to all results if no metadata matches
+        Args:
+            results: List of search results
+            query: Original search query
+            
+        Returns:
+            List of selected context chunks, prioritized based on relevance
+        """
+        # Expanded list of date-related terms for context selection
+        date_related_terms = [
+            # French terms
+            'date', 'échéance', 'délai', 'terme', 'expire', 'expiration', 'calendrier', 
+            'planning', 'horaire', 'jour', 'mois', 'année', 'trimestre', 'semestre',
+            'période', 'durée', 'temps', 'chronologie', 'deadline', 'livraison', 
+            'anniversaire', 'signature', 'préavis',
+            # English terms
+            'deadline', 'calendar', 'schedule', 'day', 'month', 'year', 'quarter', 
+            'semester', 'period', 'duration', 'time', 'timeline', 'delivery', 
+            'anniversary', 'signature', 'notice'
+        ]
+        
+        is_date_query = any(term in query.lower() for term in date_related_terms)
+        dates_in_query = self._detect_dates(query) if is_date_query or any(char.isdigit() for char in query) else []
+        
+        # If there are matching dates in the results, prioritize them but don't exclude other results
+        date_relevant_chunks = []
+        non_date_chunks = []
+        
+        # Separate date-relevant chunks from others
+        for result in results:
+            # Check if this result has dates that match the query
+            date_relevant = False
+            
+            if dates_in_query:
+                # First check "contains_query_date" flag set by the search method
+                if result.get('contains_query_date', False):
+                    date_relevant = True
+                # Then check dates in metadata if the flag isn't set
+                elif result['metadata'].get('dates'):
+                    chunk_dates = result['metadata']['dates'].split('; ')
+                    # Check for exact matches with any date in the query
+                    if any(query_date in chunk_dates for query_date in dates_in_query):
+                        date_relevant = True
+                    # Also check for partial date matches (e.g., just month+year)
+                    else:
+                        for query_date in dates_in_query:
+                            for chunk_date in chunk_dates:
+                                # Extract components from dates for partial matching
+                                if self._dates_partially_match(query_date, chunk_date):
+                                    date_relevant = True
+                                    break
+                            if date_relevant:
+                                break
+            # For date-related queries without specific dates, check if the chunk has any dates
+            elif is_date_query and result['metadata'].get('dates'):
+                date_relevant = True
+                
+            # Add to appropriate list
+            if date_relevant:
+                date_relevant_chunks.append(result)
+            else:
+                non_date_chunks.append(result)
+        
+        # Check for keyword relevance in non-date chunks
+        keyword_relevant_chunks = []
+        other_chunks = []
+        
+        for result in non_date_chunks:
+            # Check for keyword relevance
+            keyword_relevant = False
+            if result['metadata'].get('keywords') and any(
+                kw.lower() in query.lower() 
+                for kw in result['metadata']['keywords'].split(', ')):
+                keyword_relevant = True
+                keyword_relevant_chunks.append(result)
+            else:
+                other_chunks.append(result)
+        
+        # Sort each category by similarity
+        date_relevant_chunks.sort(key=lambda x: x.get('distance', float('inf')))
+        keyword_relevant_chunks.sort(key=lambda x: x.get('distance', float('inf')))
+        other_chunks.sort(key=lambda x: x.get('distance', float('inf')))
+        
+        # Log statistics
+        logger.info(f"Répartition des résultats:")
+        logger.info(f"- Chunks avec dates pertinentes: {len(date_relevant_chunks)}")
+        logger.info(f"- Chunks avec mots-clés pertinents: {len(keyword_relevant_chunks)}")
+        logger.info(f"- Autres chunks (similarité sémantique): {len(other_chunks)}")
+        
+        # Combine results - first date chunks, then keyword chunks, then remaining chunks by similarity
+        combined_results = []
+        
+        # Add date chunks first
+        combined_results.extend(date_relevant_chunks)
+        
+        # Add keyword chunks that aren't already included
+        combined_ids = {r['id'] for r in combined_results}
+        for chunk in keyword_relevant_chunks:
+            if chunk['id'] not in combined_ids:
+                combined_results.append(chunk)
+                combined_ids.add(chunk['id'])
+        
+        # Add remaining chunks by similarity until we reach the limit
+        for chunk in other_chunks:
+            if chunk['id'] not in combined_ids:
+                combined_results.append(chunk)
+                combined_ids.add(chunk['id'])
+        
+        # Limit to a reasonable number of results to avoid overwhelming the context
+        max_results = min(20, len(combined_results))
+        logger.info(f"Retournant {max_results} résultats combinés")
+        
+        # Return the combined and prioritized results
+        return combined_results[:max_results]
+
+    def _dates_partially_match(self, date1: str, date2: str) -> bool:
+        """
+        Check if two dates partially match (e.g., same month and year).
+        
+        Args:
+            date1: First date string
+            date2: Second date string
+            
+        Returns:
+            True if dates partially match, False otherwise
+        """
+        # Extract common components that might be in dates
+        months_fr = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
+                     'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre']
+        months_en = ['january', 'february', 'march', 'april', 'may', 'june', 
+                     'july', 'august', 'september', 'october', 'november', 'december']
+        
+        # Convert to lowercase for case-insensitive matching
+        date1_lower = date1.lower()
+        date2_lower = date2.lower()
+        
+        # Extract years - usually 4 digits
+        year_pattern = r'(19|20)\d{2}'
+        years1 = re.findall(year_pattern, date1_lower)
+        years2 = re.findall(year_pattern, date2_lower)
+        
+        # Extract months - check for textual and numeric months
+        # Check for French and English month names
+        months1_fr = [m for m in months_fr if m in date1_lower]
+        months2_fr = [m for m in months_fr if m in date2_lower]
+        months1_en = [m for m in months_en if m in date1_lower]
+        months2_en = [m for m in months_en if m in date2_lower]
+        
+        # Check for numeric months (1-12)
+        numeric_month_pattern = r'\b(0?[1-9]|1[0-2])\b'
+        numeric_months1 = re.findall(numeric_month_pattern, date1_lower)
+        numeric_months2 = re.findall(numeric_month_pattern, date2_lower)
+        
+        # Match based on components:
+        
+        # 1. If both dates have years, check if any year matches
+        if years1 and years2:
+            year_match = any(y1 == y2 for y1 in years1 for y2 in years2)
+            if not year_match:
+                return False  # Years present but don't match
+        else:
+            # If only one has years, this is not a blocking factor
+            year_match = True
+        
+        # 2. If both dates have textual months (in either language), check if any month matches
+        month_match = False
+        if (months1_fr and months2_fr):
+            month_match = any(m1 == m2 for m1 in months1_fr for m2 in months2_fr)
+        elif (months1_en and months2_en):
+            month_match = any(m1 == m2 for m1 in months1_en for m2 in months2_en)
+        # Cross-language matching (French to English)
+        elif months1_fr and months2_en:
+            for i, m_fr in enumerate(months_fr):
+                if m_fr in months1_fr and months_en[i] in months2_en:
+                    month_match = True
+                    break
+        # Cross-language matching (English to French)
+        elif months1_en and months2_fr:
+            for i, m_en in enumerate(months_en):
+                if m_en in months1_en and months_fr[i] in months2_fr:
+                    month_match = True
+                    break
+        # Numeric month matching
+        elif numeric_months1 and numeric_months2:
+            month_match = any(m1 == m2 for m1 in numeric_months1 for m2 in numeric_months2)
+        
+        # If months are present in both dates, they must match
+        if ((months1_fr or months1_en or numeric_months1) and 
+            (months2_fr or months2_en or numeric_months2)):
+            if not month_match:
+                return False
+        
+        # Check for explicit numeric day matching
+        day_pattern = r'\b(0?[1-9]|[12][0-9]|3[01])(st|nd|rd|th)?\b'
+        days1 = re.findall(day_pattern, date1_lower)
+        days2 = re.findall(day_pattern, date2_lower)
+        
+        # If both have days, they should match for a partial match
+        if days1 and days2:
+            day_match = any(d1[0] == d2[0] for d1 in days1 for d2 in days2)
+            if not day_match:
+                return False
+        
+        # If we've made it here, the dates are considered to partially match
+        # if at least one component (year or month) matched
+        return year_match or month_match
 
 def print_chunks_with_dates(chunks):
     print("\n📝 Affichage des chunks avec métadonnées:")
