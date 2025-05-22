@@ -848,28 +848,38 @@ class VectorDBInterface:
         is_date_query = any(term in query.lower() for term in date_related_terms)
         dates_in_query = self._detect_dates(query) if is_date_query or any(char.isdigit() for char in query) else []
         
-        # Si aucun résultat n'est disponible mais que la requête contient des dates, effectuer une recherche directe par dates
-        if not results and dates_in_query:
-            logger.info(f"Pas de résultats par similarité, tentative de recherche directe par dates: {dates_in_query}")
+        # Si aucun résultat n'est disponible mais que la requête est liée aux dates,
+        # effectuer une recherche directe basée sur l'existence du champ 'dates' dans les métadonnées
+        if not results and (is_date_query or dates_in_query):
+            logger.info(f"Pas de résultats par similarité, tentative de recherche directe par le champ 'dates'")
             date_filter_metadata = {}
             
-            # Construire un filtre pour rechercher les documents contenant les dates de la requête
-            if len(dates_in_query) == 1:
-                # Pour une seule date, utiliser un filtre simple
-                date_filter_metadata["dates"] = {"$contains": dates_in_query[0]}
+            if dates_in_query:
+                # Si des dates spécifiques sont détectées dans la requête
+                logger.info(f"Recherche directe avec dates spécifiques: {dates_in_query}")
+                
+                # Construire un filtre pour rechercher les documents contenant les dates de la requête
+                if len(dates_in_query) == 1:
+                    # Pour une seule date, utiliser un filtre simple
+                    date_filter_metadata["dates"] = {"$contains": dates_in_query[0]}
+                else:
+                    # Pour plusieurs dates, créer un filtre OR optimisé
+                    date_conditions = []
+                    for date in dates_in_query:
+                        date_conditions.append({"dates": {"$contains": date}})
+                    date_filter_metadata["$or"] = date_conditions
             else:
-                # Pour plusieurs dates, créer un filtre OR optimisé
-                date_conditions = []
-                for date in dates_in_query:
-                    date_conditions.append({"dates": {"$contains": date}})
-                date_filter_metadata["$or"] = date_conditions
+                # Pour les requêtes liées aux dates sans dates spécifiques, 
+                # rechercher tous les documents qui ont un champ 'dates'
+                logger.info("Recherche basée sur la présence du champ 'dates' dans les métadonnées")
+                date_filter_metadata["dates"] = {"$exists": True}
             
             # Effectuer une recherche directe par filtre de dates sans utiliser d'embedding
             try:
                 direct_results = self.collection.get(where=date_filter_metadata, limit=20)
                 
                 if direct_results and len(direct_results["ids"]) > 0:
-                    logger.info(f"Recherche directe par dates a trouvé {len(direct_results['ids'])} résultats")
+                    logger.info(f"Recherche directe par métadonnées 'dates' a trouvé {len(direct_results['ids'])} résultats")
                     # Convertir les résultats dans le même format que ceux de la recherche sémantique
                     direct_formatted_results = []
                     
@@ -880,14 +890,15 @@ class VectorDBInterface:
                             "metadata": direct_results["metadatas"][i],
                             "distance": 1.0,  # Distance fictive maximale
                             "is_summary": False,
-                            "contains_query_date": True  # Tous les résultats contiennent au moins une date de la requête
+                            "contains_query_date": True if dates_in_query else False,  # Indique si contient une date spécifique
+                            "from_metadata_search": True  # Indique que ce résultat vient d'une recherche par métadonnées
                         })
                     
                     # Mettre à jour les résultats avec ces nouveaux résultats directs
                     results = direct_formatted_results
-                    logger.info("Utilisation des résultats de la recherche directe par dates")
+                    logger.info("Utilisation des résultats de la recherche directe par métadonnées 'dates'")
             except Exception as e:
-                logger.error(f"Erreur lors de la recherche directe par dates: {e}")
+                logger.error(f"Erreur lors de la recherche directe par métadonnées 'dates': {e}")
         
         # If there are matching dates in the results, prioritize them but don't exclude other results
         date_relevant_chunks = []
@@ -898,28 +909,38 @@ class VectorDBInterface:
             # Check if this result has dates that match the query
             date_relevant = False
             
-            if dates_in_query:
-                # First check "contains_query_date" flag set by the search method
-                if result.get('contains_query_date', False):
-                    date_relevant = True
-                # Then check dates in metadata if the flag isn't set
-                elif result['metadata'].get('dates'):
-                    chunk_dates = result['metadata']['dates'].split('; ')
-                    # Check for exact matches with any date in the query
-                    if any(query_date in chunk_dates for query_date in dates_in_query):
+            # Si le résultat a un champ 'dates' dans ses métadonnées
+            if result['metadata'].get('dates'):
+                # Pour les requêtes avec des dates spécifiques
+                if dates_in_query:
+                    # First check "contains_query_date" flag set by the search method
+                    if result.get('contains_query_date', False):
                         date_relevant = True
-                    # Also check for partial date matches (e.g., just month+year)
                     else:
-                        for query_date in dates_in_query:
-                            for chunk_date in chunk_dates:
-                                # Extract components from dates for partial matching
-                                if self._dates_partially_match(query_date, chunk_date):
-                                    date_relevant = True
+                        chunk_dates = result['metadata']['dates'].split('; ')
+                        # Check for exact matches with any date in the query
+                        if any(query_date in chunk_dates for query_date in dates_in_query):
+                            date_relevant = True
+                        # Also check for partial date matches (e.g., just month+year)
+                        else:
+                            for query_date in dates_in_query:
+                                for chunk_date in chunk_dates:
+                                    # Extract components from dates for partial matching
+                                    if self._dates_partially_match(query_date, chunk_date):
+                                        date_relevant = True
+                                        break
+                                if date_relevant:
                                     break
-                            if date_relevant:
-                                break
-            # For date-related queries without specific dates, check if the chunk has any dates
-            elif is_date_query and result['metadata'].get('dates'):
+                # Pour les requêtes liées aux dates sans dates spécifiques
+                # tout chunk avec des dates est considéré comme pertinent
+                elif is_date_query:
+                    date_relevant = True
+                    # Ajouter un indicateur que le résultat contient des dates pertinentes pour la requête
+                    result['date_relevant_for_query'] = True
+            
+            # Si le résultat vient d'une recherche directe par métadonnées, 
+            # il est considéré comme pertinent pour les dates
+            if result.get('from_metadata_search', False):
                 date_relevant = True
                 
             # Add to appropriate list
@@ -929,7 +950,7 @@ class VectorDBInterface:
                 non_date_chunks.append(result)
         
         # Si nous n'avons pas trouvé de chunks pertinents par date et que c'est une requête liée aux dates,
-        # effectuer une recherche supplémentaire dans la base de données
+        # effectuer une recherche supplémentaire directement dans la base de données
         if not date_relevant_chunks and (is_date_query or dates_in_query) and results:
             logger.info("Pas de chunks avec dates pertinentes trouvés dans les résultats initiaux, recherche élargie")
             try:
@@ -953,7 +974,8 @@ class VectorDBInterface:
                                 "metadata": date_results["metadatas"][i],
                                 "distance": 1.0,  # Distance fictive maximale
                                 "is_summary": False,
-                                "from_expanded_search": True
+                                "from_expanded_search": True,
+                                "date_relevant_for_query": True  # Indique que le résultat est pertinent pour une requête liée aux dates
                             })
                             existing_ids.add(date_results["ids"][i])
             except Exception as e:
@@ -1011,11 +1033,17 @@ class VectorDBInterface:
         # Ajouter des statistiques détaillées sur les sources des résultats
         expanded_search_results = sum(1 for r in combined_results[:max_results] if r.get('from_expanded_search', False))
         direct_search_results = sum(1 for r in combined_results[:max_results] if r.get('contains_query_date', False))
+        metadata_search_results = sum(1 for r in combined_results[:max_results] if r.get('from_metadata_search', False))
+        date_relevant_results = sum(1 for r in combined_results[:max_results] if r.get('date_relevant_for_query', False))
         
         if expanded_search_results > 0:
             logger.info(f"- {expanded_search_results} résultats proviennent de la recherche élargie")
         if direct_search_results > 0:
             logger.info(f"- {direct_search_results} résultats contiennent directement des dates de la requête")
+        if metadata_search_results > 0:
+            logger.info(f"- {metadata_search_results} résultats proviennent de la recherche directe par métadonnées")
+        if date_relevant_results > 0:
+            logger.info(f"- {date_relevant_results} résultats sont pertinents pour une requête liée aux dates")
             
         # Return the combined and prioritized results
         return combined_results[:max_results]
