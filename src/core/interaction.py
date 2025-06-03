@@ -1178,7 +1178,7 @@ def process_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_g
         classification = route_and_execute(query, verbose=True)
         logger.info(f"Query classification result: {classification}")
         
-        if classification == "LLM":
+        if classification == "llm":
             # For LLM queries, use direct generation without context
             logger.info(f"Using direct LLM processing for query: {query}")
             # Create a simple prompt for the LLM

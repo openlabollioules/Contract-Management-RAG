@@ -889,7 +889,7 @@ def route_and_execute(query: str, verbose: bool = False, true_label: str = None)
 
     # Exécution
     # return {"RAG": call_rag, "LLM": call_llm}[final](query)
-    return final  # Return just the string "rag" or "llm"
+    return final.lower()  # Return just the string "rag" or "llm"
 
 def evaluate_classifier(test_data=None):
     """
