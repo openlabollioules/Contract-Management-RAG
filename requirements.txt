@@ -24,7 +24,7 @@ reportlab==4.3.1
 # Embeddings and Models
 onnxruntime==1.21.0
 sentence-transformers==4.0.2
-torch==2.6.0
+torch==2.7.0
 transformers==4.50.3
 
 # Utilities
