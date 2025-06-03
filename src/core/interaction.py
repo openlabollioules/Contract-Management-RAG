@@ -3,9 +3,13 @@ from document_processing.text_vectorizer import TextVectorizer
 from document_processing.vectordb_interface import VectorDBInterface
 from core.graph_manager import GraphManager
 from document_processing.reranker import Reranker
+from core.subquery_divider import define_subqueries
+from core.alternative_query_creator import generate_queries
 from utils.logger import setup_logger
 import os
 from dotenv import load_dotenv
+# Import the query classification
+from core.query_classification_v2 import route_and_execute
 
 # Configurer le logger pour ce module
 logger = setup_logger(__file__)
@@ -240,9 +244,256 @@ def merge_date_results(similarity_results, date_results, n_context):
     # Limit to requested number of results
     return combined_results[:n_context]
 
+def get_sources_for_query_with_alternatives(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False,
+                         similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
+                         use_alternatives: bool = True, model_name: str = 'mistral-small3.1') -> list:
+    """
+    Récupère les sources pertinentes en utilisant des requêtes alternatives pour améliorer la recherche
+
+    Args:
+        query: Question de l'utilisateur
+        n_context: Nombre de chunks pertinents à utiliser
+        use_graph: Utiliser le graphe de connaissances
+        similarity_threesold: Seuil de similarité pour le filtrage
+        use_alternatives: Utiliser des requêtes alternatives
+        model_name: Modèle à utiliser pour générer les alternatives
+
+    Returns:
+        list: Liste des sources pertinentes avec déduplication
+    """
+    logger.info(f"Recherche de sources pour: {query}")
+    
+    # Initialize managers
+    embeddings_manager = TextVectorizer()
+    chroma_manager = VectorDBInterface(embeddings_manager)
+    reranker_manager = Reranker("mxbai-rerank-large-v2")
+
+    graph_manager = None
+    knowledge_graph = None
+    if use_graph:
+        logger.info("Utilisation du graphe de connaissances pour enrichir le contexte...")
+        graph_manager = GraphManager(chroma_manager, embeddings_manager)
+        knowledge_graph = load_or_build_graph(chroma_manager, embeddings_manager)
+
+    # Structure pour suivre les doublons
+    seen_ids = set()
+    seen_content_hashes = set()
+    all_results = []
+    
+    # Commencer par la requête originale
+    logger.info("Recherche avec la requête originale...")
+    original_results = chroma_manager.search(query, n_results=n_context)
+    logger.info(f"Trouvé {len(original_results)} résultats pour la requête originale")
+    
+    # Ajouter les résultats originaux
+    for result in original_results:
+        result_id = result.get('id', '')
+        content = result.get('document', '')
+        content_hash = hash(content)
+        
+        if (result_id and result_id in seen_ids) or (content_hash in seen_content_hashes):
+            continue
+            
+        if result_id:
+            seen_ids.add(result_id)
+        seen_content_hashes.add(content_hash)
+        
+        result["source_query"] = "Original"
+        all_results.append(result)
+    
+    # Générer et utiliser des requêtes alternatives si demandé
+    if use_alternatives:
+        try:
+            logger.info("Génération de requêtes alternatives...")
+            alternative_queries = generate_queries(query, model_name)
+            logger.info(f"Généré {len(alternative_queries)} requêtes alternatives")
+            
+            # Calculer le nombre de résultats par requête alternative
+            remaining_slots = max(0, n_context * 2 - len(all_results))  # Permettre jusqu'à 2x plus de résultats
+            results_per_alt_query = max(1, remaining_slots // len(alternative_queries)) if alternative_queries else 0
+            
+            for i, alt_query in enumerate(alternative_queries, 1):
+                logger.info(f"Recherche avec requête alternative {i}: {alt_query}")
+                alt_results = chroma_manager.search(alt_query, n_results=results_per_alt_query)
+                
+                unique_alt_results = 0
+                for result in alt_results:
+                    result_id = result.get('id', '')
+                    content = result.get('document', '')
+                    content_hash = hash(content)
+                    
+                    if (result_id and result_id in seen_ids) or (content_hash in seen_content_hashes):
+                        continue
+                        
+                    if result_id:
+                        seen_ids.add(result_id)
+                    seen_content_hashes.add(content_hash)
+                    
+                    result["source_query"] = f"Alternative {i}: {alt_query[:50]}..."
+                    all_results.append(result)
+                    unique_alt_results += 1
+                
+                logger.info(f"Ajouté {unique_alt_results} nouveaux résultats uniques de la requête alternative {i}")
+                
+        except Exception as e:
+            logger.error(f"Erreur lors de la génération des requêtes alternatives: {e}")
+            logger.warning("Poursuite avec la requête originale uniquement")
+    
+    logger.info(f"Total de {len(all_results)} résultats uniques collectés")
+    
+    # Check if this is a date-related query
+    date_related_terms = [
+        'date', 'échéance', 'délai', 'terme', 'expire', 'expiration', 'calendrier', 
+        'planning', 'horaire', 'jour', 'mois', 'année', 'trimestre', 'semestre',
+        'période', 'durée', 'temps', 'chronologie', 'deadline', 'livraison', 
+        'anniversaire', 'signature', 'préavis',
+        'deadline', 'calendar', 'schedule', 'day', 'month', 'year', 'quarter', 
+        'semester', 'period', 'duration', 'time', 'timeline', 'delivery', 
+        'anniversary', 'signature', 'notice'
+    ]
+    is_date_query = any(term in query.lower() for term in date_related_terms)
+
+    # Standard filtering based on similarity threshold
+    filtered_results = [d for d in all_results if d['distance'] <= 1-similarity_threesold]
+    logger.info(f"Après filtrage par seuil de similarité: {len(filtered_results)} résultats restent")
+
+    # For date-related queries, complement with date-specific results
+    if is_date_query:
+        logger.info("Requête liée aux dates détectée, sélection de chunks pertinents avec dates")
+        date_results = chroma_manager.select_context(all_results, query)
+        logger.info(f"Sélection basée sur les dates trouvée: {len(date_results)} résultats avec informations de date")
+        
+        filtered_results = merge_date_results(filtered_results, date_results, n_context * 2)
+        logger.info(f"Après fusion des résultats de similarité et de date: {len(filtered_results)} résultats totaux")
+
+    # If no results pass the threshold, use the original results
+    if not filtered_results and all_results:
+        logger.warning("Aucun résultat n'a passé le seuil de similarité. Utilisation des résultats non filtrés à la place.")
+        filtered_results = all_results
+    
+    # Only attempt reranking if we have results
+    if filtered_results:
+        try:
+            # Limiter le nombre de résultats pour le reranking
+            rerank_limit = min(len(filtered_results), n_context * 3)  # Rerank jusqu'à 3x le nombre demandé
+            reranked_docs = reranker_manager.rerank(query, filtered_results[:rerank_limit], n_context)
+            logger.info(f"Reranking réussi de {len(reranked_docs)} documents")
+            filtered_results = reranked_docs
+        except Exception as e:
+            logger.error(f"Erreur lors du reranking: {e}")
+            logger.warning("Utilisation des résultats filtrés sans reranking")
+            # Limiter aux n_context meilleurs résultats par distance
+            filtered_results = sorted(filtered_results, key=lambda x: x.get('distance', 1.0))[:n_context]
+    else:
+        logger.warning("Aucun document disponible pour le reranking")
+    
+    # Use graph results if available
+    if use_graph and knowledge_graph and filtered_results:
+        graph_results = get_graph_augmented_results(knowledge_graph, filtered_results, n_additional=2)
+        combined_results = merge_results(filtered_results, graph_results)
+    else:
+        combined_results = filtered_results
+    
+    # Add query info to each result
+    for result in combined_results:
+        result["query"] = query
+    
+    return combined_results
+
+def get_sources_for_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False,
+                         similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6))) -> list:
+    """
+    Récupère uniquement les sources pertinentes pour une requête sans générer de réponse LLM
+
+    Args:
+        query: Question de l'utilisateur
+        n_context: Nombre de chunks pertinents à utiliser
+        use_graph: Utiliser le graphe de connaissances
+        similarity_threesold: Seuil de similarité pour le filtrage
+
+    Returns:
+        list: Liste des sources pertinentes
+    """
+    logger.info(f"Recherche de sources pour: {query}")
+
+    # Initialize managers
+    embeddings_manager = TextVectorizer()
+    chroma_manager = VectorDBInterface(embeddings_manager)
+    reranker_manager = Reranker("mxbai-rerank-large-v2")
+
+    graph_manager = None
+    knowledge_graph = None
+    if use_graph:
+        logger.info("Utilisation du graphe de connaissances pour enrichir le contexte...")
+        graph_manager = GraphManager(chroma_manager, embeddings_manager)
+        # Load or build the graph
+        knowledge_graph = load_or_build_graph(chroma_manager, embeddings_manager)
+
+    # Check if this is a date-related query
+    date_related_terms = [
+        'date', 'échéance', 'délai', 'terme', 'expire', 'expiration', 'calendrier', 
+        'planning', 'horaire', 'jour', 'mois', 'année', 'trimestre', 'semestre',
+        'période', 'durée', 'temps', 'chronologie', 'deadline', 'livraison', 
+        'anniversaire', 'signature', 'préavis',
+        'deadline', 'calendar', 'schedule', 'day', 'month', 'year', 'quarter', 
+        'semester', 'period', 'duration', 'time', 'timeline', 'delivery', 
+        'anniversary', 'signature', 'notice'
+    ]
+    is_date_query = any(term in query.lower() for term in date_related_terms)
+
+    # Get search results
+    results = chroma_manager.search(query, n_results=n_context)
+    logger.info(f"Found {len(results)} initial search results")
+    
+    # Standard filtering based on similarity threshold for non-date queries
+    filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
+    logger.info(f"After filtering by similarity threshold: {len(filtered_results)} results remain")
+
+    # For date-related queries, complement with date-specific results
+    if is_date_query:
+        logger.info("Date-related query detected, selecting relevant chunks with dates")
+        # Get date-specific results
+        date_results = chroma_manager.select_context(results, query)
+        logger.info(f"Date-based selection found: {len(date_results)} results with date information")
+        
+        # Merge similarity results with date-specific results
+        filtered_results = merge_date_results(filtered_results, date_results, n_context * 2)
+        logger.info(f"After merging similarity and date results: {len(filtered_results)} total results")
+
+    # If no results pass the threshold, use the original results
+    if not filtered_results and results:
+        logger.warning("No results passed the similarity threshold. Using unfiltered results instead.")
+        filtered_results = results
+    
+    # Only attempt reranking if we have results
+    if filtered_results:
+        try:
+            reranked_docs = reranker_manager.rerank(query, filtered_results, n_context)
+            logger.info(f"Successfully reranked {len(reranked_docs)} documents")
+            filtered_results = reranked_docs
+        except Exception as e:
+            logger.error(f"Error during reranking: {e}")
+            logger.warning("Using filtered results without reranking")
+    else:
+        logger.warning("No documents available for reranking")
+    
+    # Use graph results if available
+    if use_graph and knowledge_graph:
+        graph_results = get_graph_augmented_results(knowledge_graph, results, n_additional=2)
+        # Combine results (ensuring no duplicates)
+        combined_results = merge_results(filtered_results, graph_results)
+    else:
+        combined_results = filtered_results
+    
+    # Add query info to each result
+    for result in combined_results:
+        result["query"] = query
+    
+    return combined_results
+
 def chat_with_contract(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False, 
 temperature: float = float(os.getenv("TEMPERATURE", 0.5)), similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
-model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = int(os.getenv("CONTEXT_WINDOW", 0))) -> None:
+model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = int(os.getenv("CONTEXT_WINDOW", 0))) -> tuple:
     """
     Chat with the contract using embeddings for context and Ollama for generation
 
@@ -250,6 +501,9 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
         query: User's question
         n_context: Number of relevant chunks to use as context
         use_graph: Whether to use graph-based context expansion
+        
+    Returns:
+        tuple: (response, sources) where response is the LLM's answer and sources is a list of sources used
     """
     logger.info(f"\n💬 Chat: {query}")
 
@@ -329,7 +583,7 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
         print("\n🤖 Réponse :")
         print(no_results_response)
         logger.warning("No relevant documents found for the query")
-        return no_results_response
+        return no_results_response, []
     
     # Prepare context for the prompt
     context_parts = []
@@ -426,4 +680,521 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     logger.info(f"- Contenus originaux: {len(combined_results) - summaries - graph_sources}")
     logger.info(f"- Sources du graphe: {graph_sources}")
     logger.info(f"- Sources avec dates: {date_sources}")
-    return response
+    return response, combined_results
+
+def chat_with_contract_decomposed(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False, 
+temperature: float = float(os.getenv("TEMPERATURE", 0.5)), similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
+model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = int(os.getenv("CONTEXT_WINDOW", 0)),
+max_total_sources: int = 15) -> tuple:
+    """
+    Chat with the contract by decomposing the query into sub-queries, getting answers for each,
+    and then synthesizing a final response with all sources.
+
+    Args:
+        query: User's question
+        n_context: Number of relevant chunks to use as context
+        use_graph: Whether to use graph-based context expansion
+        temperature: Temperature for LLM generation
+        similarity_threesold: Threshold for similarity filtering
+        model: LLM model to use
+        context_window: Context window size for the LLM
+        max_total_sources: Maximum total number of sources to collect across all sub-queries
+    """
+    logger.info(f"\n💬 Requête complexe: {query}")
+    
+    # Structure pour suivre les doublons
+    seen_ids = set()
+    seen_content_hashes = set()
+    all_sources = []
+    
+    # Commencer par récupérer les sources pour la question principale
+    logger.info("Recherche de sources pour la question principale...")
+    
+    # Allocation plus équilibrée: environ 1/3 pour la question principale au lieu de 1/2
+    # avec un minimum de 2 sources et un maximum de n_context/3
+    main_question_sources = max(2, min(n_context // 3, 3))
+    
+    main_sources = get_sources_for_query(query, main_question_sources, use_graph, similarity_threesold)
+    logger.info(f"Trouvé {len(main_sources)} sources pour la question principale")
+    
+    # Filtrer et ajouter les sources principales
+    main_unique_sources = []
+    for source in main_sources:
+        source_id = source.get('id', '')
+        content = source.get('document', '')
+        content_hash = hash(content)
+        
+        # Vérifier si cette source est un doublon
+        if (source_id and source_id in seen_ids) or (content_hash in seen_content_hashes):
+            continue
+            
+        # Marquer comme vue
+        if source_id:
+            seen_ids.add(source_id)
+        seen_content_hashes.add(content_hash)
+        
+        # Ajouter la question principale à la source
+        source["sub_query"] = "Question principale"
+        main_unique_sources.append(source)
+        all_sources.append(source)
+    
+    logger.info(f"Après déduplication: {len(main_unique_sources)}/{len(main_sources)} sources uniques pour la question principale")
+    
+    # Ensuite, décomposer la requête en sous-questions
+    sub_queries = define_subqueries(query)
+    logger.info(f"Requête décomposée en {len(sub_queries.questions)} sous-questions")
+    
+    # Ajuster dynamiquement le nombre de sources par sous-requête
+    # Répartir les sources restantes entre les sous-questions
+    remaining_sources = max_total_sources - len(all_sources)
+    num_subqueries = len(sub_queries.questions)
+    
+    if num_subqueries > 0 and remaining_sources > 0:
+        # Garantir au moins 2 sources par sous-question si possible
+        sources_per_subquery = max(2, remaining_sources // num_subqueries)
+        
+        # Si le nombre calculé dépasse n_context, on le plafonne
+        # Cela permet d'éviter de demander trop de sources pour une seule sous-question
+        sources_per_subquery = min(sources_per_subquery, n_context // 2)
+        
+        logger.info(f"Sources par sous-requête: {sources_per_subquery} (total restant: {remaining_sources})")
+    else:
+        sources_per_subquery = 0
+        logger.info("Aucune source supplémentaire ne sera collectée pour les sous-requêtes")
+    
+    sub_questions_with_sources = []
+    
+    # Ajouter la question principale avec ses sources
+    sub_questions_with_sources.append({
+        "question": query,
+        "sources": main_unique_sources,
+        "is_main_question": True
+    })
+    
+    # Traiter les sous-questions seulement si on a de la place pour plus de sources
+    if sources_per_subquery > 0:
+        for i, sub_query in enumerate(sub_queries.questions, 1):
+            logger.info(f"\n🔍 Sous-question {i}/{num_subqueries}: {sub_query}")
+            
+            # Récupérer uniquement les sources sans générer de réponse
+            sources = get_sources_for_query(sub_query, sources_per_subquery, use_graph, similarity_threesold)
+            logger.info(f"Trouvé {len(sources)} sources pour la sous-question")
+            
+            # Filtrer les sources pour éviter les doublons
+            unique_sources_for_query = []
+            for source in sources:
+                source_id = source.get('id', '')
+                content = source.get('document', '')
+                content_hash = hash(content)
+                
+                # Vérifier si cette source est un doublon
+                if (source_id and source_id in seen_ids) or (content_hash in seen_content_hashes):
+                    logger.debug(f"Source dupliquée ignorée: {source_id}")
+                    continue
+                    
+                # Marquer comme vue
+                if source_id:
+                    seen_ids.add(source_id)
+                seen_content_hashes.add(content_hash)
+                
+                # Ajouter la sous-question à la source
+                source["sub_query"] = sub_query
+                unique_sources_for_query.append(source)
+                all_sources.append(source)
+            
+            logger.info(f"Après déduplication: {len(unique_sources_for_query)}/{len(sources)} sources uniques pour cette sous-question")
+            
+            # Stocker la sous-question avec ses sources uniques
+            sub_questions_with_sources.append({
+                "question": sub_query, 
+                "sources": unique_sources_for_query,
+                "is_main_question": False
+            })
+            
+            # Si on atteint le nombre maximum de sources, arrêter
+            if len(all_sources) >= max_total_sources:
+                logger.info(f"Nombre maximum de sources atteint ({max_total_sources})")
+                break
+    
+    logger.info(f"Total de {len(all_sources)} sources uniques collectées pour la question principale et les sous-questions")
+    
+    # Si aucune source n'a été trouvée
+    if not all_sources:
+        no_results_response = "Je n'ai pas trouvé d'information pertinente dans la base de connaissances pour répondre à votre question ou ses sous-questions. Pourriez-vous reformuler ou préciser votre demande?"
+        print("\n🤖 Réponse :")
+        print(no_results_response)
+        logger.warning("Aucune source pertinente trouvée pour les sous-questions")
+        return no_results_response, []
+    
+    # Préparer le contexte pour la synthèse finale
+    context_parts = []
+    for source in all_sources:
+        # En-tête avec les métadonnées
+        header = (
+            f"Document: {source['metadata'].get('document_title', 'Non spécifié')}\n"
+            f"Section: {source['metadata'].get('section_number', 'Non spécifié')}\n"
+            f"Hiérarchie: {source['metadata'].get('hierarchy', 'Non spécifié')}\n"
+            f"En réponse à: {source.get('sub_query', 'Question principale')}"
+        )
+
+        # Ajouter les dates si présentes dans les métadonnées
+        if source['metadata'].get('dates'):
+            header += f"\nDates: {source['metadata'].get('dates')}"
+
+        # Contenu adapté selon le type
+        if source.get("is_summary", False):
+            content = (
+                f"\nRésumé:\n{source['document']}\n"
+                f"Contenu détaillé si nécessaire:\n{source.get('original_content', 'Non disponible')}"
+            )
+        else:
+            content = f"\nContenu:\n{source['document']}"
+
+        # Ajouter la source au contexte
+        context_parts.append(f"{header}\n{content}")
+
+    # Joindre toutes les parties du contexte
+    context = "\n\n---\n\n".join(context_parts)
+    
+    # Estimer la taille du contexte en tokens
+    # Une estimation courante est d'environ 4 caractères par token en moyenne pour les langues européennes
+    context_token_estimate = len(context) / 4
+    
+    # Réserve pour le prompt (instructions, question, etc.) - environ 1000 tokens
+    prompt_overhead = 1000
+    available_context_tokens = context_window - prompt_overhead
+    
+    # Vérifier si le contexte est trop grand et l'ajuster si nécessaire
+    if context_token_estimate > available_context_tokens:
+        logger.warning(f"Contexte trop grand: ~{int(context_token_estimate)} tokens estimés > {available_context_tokens} disponibles")
+        
+        # Stratégie d'ajustement: réduire proportionnellement le contenu de chaque source
+        reduction_ratio = available_context_tokens / context_token_estimate
+        logger.info(f"Réduction du contexte à {int(reduction_ratio * 100)}% de sa taille originale")
+        
+        # Reconstruire le contexte avec contenu réduit
+        adjusted_context_parts = []
+        for source in all_sources:
+            # Conserver l'en-tête complet
+            header = (
+                f"Document: {source['metadata'].get('document_title', 'Non spécifié')}\n"
+                f"Section: {source['metadata'].get('section_number', 'Non spécifié')}\n"
+                f"Hiérarchie: {source['metadata'].get('hierarchy', 'Non spécifié')}\n"
+                f"En réponse à: {source.get('sub_query', 'Question principale')}"
+            )
+            
+            if source['metadata'].get('dates'):
+                header += f"\nDates: {source['metadata'].get('dates')}"
+                
+            # Réduire proportionnellement le contenu
+            content = source.get('document', '')
+            max_content_length = int(len(content) * reduction_ratio)
+            if len(content) > max_content_length:
+                content = content[:max_content_length] + " [...]"
+                
+            adjusted_part = f"{header}\n\nContenu:\n{content}"
+            adjusted_context_parts.append(adjusted_part)
+            
+        # Reconstruire le contexte
+        context = "\n\n---\n\n".join(adjusted_context_parts)
+        new_token_estimate = len(context) / 4
+        logger.info(f"Taille de contexte ajustée: ~{int(new_token_estimate)} tokens estimés")
+    
+    # Extraire la liste des sous-questions (sans la question principale)
+    sub_questions_list = [q["question"] for q in sub_questions_with_sources if not q.get("is_main_question", False)]
+    
+    # Créer le prompt pour la synthèse finale
+    final_prompt = f"""Tu es un assistant spécialisé dans l'analyse de contrats.
+
+J'ai décomposé la question de l'utilisateur en plusieurs sous-questions:
+{", ".join(sub_questions_list)}
+
+Voici les extraits pertinents de documents pour répondre à la question principale et aux sous-questions:
+
+{context}
+
+Question principale de l'utilisateur: {query}
+
+En utilisant uniquement les informations fournies dans ces extraits de documents, synthétise une réponse complète et cohérente 
+à la question principale. Organise ta réponse de manière logique et structurée. Si certaines sous-questions ne peuvent pas être 
+répondues avec les informations disponibles, indique-le clairement.
+"""
+    
+    # Obtenir la synthèse finale
+    final_response = ask_ollama(final_prompt, temperature, model, context_window)
+    
+    # Afficher la réponse finale
+    logger.info("\n🤖 Réponse synthétisée:")
+    logger.info(final_response)
+    print("\n🤖 Réponse synthétisée:")
+    print(final_response)
+    
+    # Afficher toutes les sources utilisées
+    print(f"\n📚 Sources utilisées ({len(all_sources)} au total):")
+    print("=" * 80)
+    
+    # Afficher les sources regroupées par sous-question
+    sources_by_query = {}
+    for source in all_sources:
+        sub_query = source.get("sub_query", "Question principale")
+        if sub_query not in sources_by_query:
+            sources_by_query[sub_query] = []
+        sources_by_query[sub_query].append(source)
+    
+    # Afficher d'abord les sources pour la question principale
+    if "Question principale" in sources_by_query:
+        main_sources = sources_by_query["Question principale"]
+        print(f"\n--- Sources pour la question principale ({len(main_sources)} sources) ---")
+        
+        for i, source in enumerate(main_sources, 1):
+            print(f"\nSource {i}/{len(main_sources)}")
+            
+            # Afficher les informations de la source
+            print(f"Document: {source['metadata'].get('document_title', 'Non spécifié')}")
+            print(f"Hiérarchie: {source['metadata'].get('hierarchy', 'Non spécifié')}")
+            
+            # Afficher les dates si présentes
+            if source['metadata'].get('dates'):
+                print(f"Dates: {source['metadata'].get('dates')}")
+                
+            # Afficher un extrait du contenu
+            content_preview = source['document'][:200] + "..." if len(source['document']) > 200 else source['document']
+            print(f"Extrait: {content_preview}")
+            print("-" * 40)
+    
+    # Puis les sources pour chaque sous-question
+    for sub_query, sources in sources_by_query.items():
+        if sub_query == "Question principale":
+            continue  # Déjà affiché
+            
+        print(f"\n--- Sources pour: '{sub_query}' ({len(sources)} sources) ---")
+        
+        for i, source in enumerate(sources, 1):
+            print(f"\nSource {i}/{len(sources)}")
+            
+            # Afficher les informations de la source
+            print(f"Document: {source['metadata'].get('document_title', 'Non spécifié')}")
+            print(f"Hiérarchie: {source['metadata'].get('hierarchy', 'Non spécifié')}")
+            
+            # Afficher les dates si présentes
+            if source['metadata'].get('dates'):
+                print(f"Dates: {source['metadata'].get('dates')}")
+                
+            # Afficher un extrait du contenu
+            content_preview = source['document'][:200] + "..." if len(source['document']) > 200 else source['document']
+            print(f"Extrait: {content_preview}")
+            print("-" * 40)
+    
+    return final_response, all_sources
+
+def chat_with_contract_alternatives(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False, 
+temperature: float = float(os.getenv("TEMPERATURE", 0.5)), similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
+model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = int(os.getenv("CONTEXT_WINDOW", 0)),
+use_alternatives: bool = True) -> tuple:
+    """
+    Chat with the contract using alternative queries to improve retrieval
+
+    Args:
+        query: User's question
+        n_context: Number of relevant chunks to use as context
+        use_graph: Whether to use graph-based context expansion
+        temperature: Temperature for LLM generation
+        similarity_threesold: Threshold for similarity filtering
+        model: LLM model to use
+        context_window: Context window size for the LLM
+        use_alternatives: Whether to use alternative queries for better retrieval
+        
+    Returns:
+        tuple: (response, sources) where response is the LLM's answer and sources is a list of sources used
+    """
+    logger.info(f"\n💬 Chat avec requêtes alternatives: {query}")
+
+    # Get sources using alternative queries
+    combined_results = get_sources_for_query_with_alternatives(
+        query, n_context, use_graph, similarity_threesold, use_alternatives, model.split(':')[0]
+    )
+    
+    # Check if we have any results to use
+    if not combined_results:
+        no_results_response = "Je n'ai pas trouvé d'information pertinente dans la base de connaissances pour répondre à votre question. Pourriez-vous reformuler ou préciser votre demande?"
+        print("\n🤖 Réponse :")
+        print(no_results_response)
+        logger.warning("No relevant documents found for the query")
+        return no_results_response, []
+    
+    # Prepare context for the prompt
+    context_parts = []
+    for result in combined_results:
+        # En-tête avec les métadonnées
+        header = (
+            f"Document: {result['metadata'].get('document_title', 'Non spécifié')}\n"
+            f"Section: {result['metadata'].get('section_number', 'Non spécifié')}\n"
+            f"Hiérarchie: {result['metadata'].get('hierarchy', 'Non spécifié')}\n"
+            f"Source de recherche: {result.get('source_query', 'Original')}"
+        )
+
+        # Ajouter les dates si présentes dans les métadonnées
+        if result['metadata'].get('dates'):
+            header += f"\nDates: {result['metadata'].get('dates')}"
+
+        # Contenu adapté selon le type (résumé ou original)
+        if result.get("is_summary", False):
+            content = (
+                f"\nRésumé:\n{result['document']}\n"
+                f"Contenu détaillé si nécessaire:\n{result.get('original_content', 'Non disponible')}"
+            )
+        else:
+            content = f"\nContenu:\n{result['document']}"
+
+        # Ajouter la source au contexte
+        context_parts.append(f"{header}\n{content}")
+
+    # Joindre toutes les parties du contexte
+    context = "\n\n---\n\n".join(context_parts)
+
+    # Create the prompt with context
+    prompt = f"""You are an assistant specializing in contract analysis.
+    Here is the relevant context extracted from the documents using multiple search strategies (original query + alternative formulations).
+    For each section, you either have a summary with the detailed content available or the original content itself.
+    First use the summaries to get an overview, then consult the detailed content if you need more precision.
+
+    {context}
+
+    User's question: {query}
+
+    Provide a precise answer based on the context given.
+    If you use a summary, check the detailed content to ensure your answer's accuracy.
+    If you can't find the information in the context, state that clearly."""
+
+    # Get response from Ollama
+    response = ask_ollama(prompt, temperature, model, context_window)
+    logger.info("\n🤖 Réponse :")
+    logger.info(response)
+    print("\n🤖 Réponse :")
+    print(response)
+    print("\n📚 Sources (avec requêtes alternatives) :")
+    print("=" * 80)
+
+    # Display sources with metadata
+    logger.info("\n📚 Sources (avec requêtes alternatives) :")
+    logger.info("=" * 80)
+    
+    # Group sources by search query
+    sources_by_query = {}
+    for result in combined_results:
+        source_query = result.get('source_query', 'Original')
+        if source_query not in sources_by_query:
+            sources_by_query[source_query] = []
+        sources_by_query[source_query].append(result)
+    
+    # Display sources grouped by query type
+    for query_type, sources in sources_by_query.items():
+        logger.info(f"\n--- Sources de: {query_type} ({len(sources)} sources) ---")
+        print(f"\n--- Sources de: {query_type} ({len(sources)} sources) ---")
+        
+        for i, result in enumerate(sources, 1):
+            logger.info("\n" + "-" * 40)
+            logger.info(f"\nSource {i}/{len(sources)}")
+            
+            # Afficher le type de source (résumé ou original)
+            if result.get("source_type") == "graph":
+                logger.info("📊 Source obtenue via le graphe de connaissances")
+                logger.info(f"Relation: {result.get('relation_type', 'Non spécifié')}")
+                print("📊 Source obtenue via le graphe de connaissances")
+                print(f"Relation: {result.get('relation_type', 'Non spécifié')}")
+            
+            logger.info("-" * 40)
+            logger.info(f"Hierarchie: {result['metadata'].get('hierarchy', 'Non spécifié')}")
+            logger.info(f"Document: {result['metadata'].get('document_title', 'Non spécifié')}")
+            print(f"Hierarchie: {result['metadata'].get('hierarchy', 'Non spécifié')}")
+            print(f"Document: {result['metadata'].get('document_title', 'Non spécifié')}")
+
+            # Afficher les dates si présentes
+            if result['metadata'].get('dates'):
+                logger.info(f"Dates: {result['metadata'].get('dates')}")
+                print(f"Dates: {result['metadata'].get('dates')}")
+
+            logger.info(f"Distance: {result['distance']:.4f}")
+            print(f"Distance: {result['distance']:.4f}")
+
+            # Afficher le contenu
+            if result.get("is_summary", False):
+                logger.info("\nRésumé utilisé:")
+                logger.info(result["document"][:200] + "...")
+                print(f"Contenu: {result['document'][:200]}...")
+            else:
+                logger.info("\nContenu:")
+                logger.info(result["document"][:200] + "...")
+                print(f"Contenu: {result['document'][:200]}...")
+
+            logger.info("-" * 40)
+
+    # Afficher les statistiques
+    original_sources = len(sources_by_query.get('Original', []))
+    alternative_sources = sum(len(sources) for query_type, sources in sources_by_query.items() if query_type != 'Original')
+    graph_sources = sum(1 for r in combined_results if r.get("source_type") == "graph")
+    date_sources = sum(1 for r in combined_results if r.get('metadata', {}).get('dates'))
+    
+    logger.info(f"\n📊 Statistiques des sources:")
+    logger.info(f"- Total: {len(combined_results)}")
+    logger.info(f"- Sources requête originale: {original_sources}")
+    logger.info(f"- Sources requêtes alternatives: {alternative_sources}")
+    logger.info(f"- Sources du graphe: {graph_sources}")
+    logger.info(f"- Sources avec dates: {date_sources}")
+    
+    print(f"\n📊 Statistiques des sources:")
+    print(f"- Total: {len(combined_results)}")
+    print(f"- Sources requête originale: {original_sources}")
+    print(f"- Sources requêtes alternatives: {alternative_sources}")
+    print(f"- Sources du graphe: {graph_sources}")
+    print(f"- Sources avec dates: {date_sources}")
+    
+    return response, combined_results
+
+def process_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False, 
+                 temperature: float = float(os.getenv("TEMPERATURE", 0.5)), 
+                 similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
+                 model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), 
+                 context_window: int = int(os.getenv("CONTEXT_WINDOW", 0)),
+                 use_classification: bool = True) -> tuple:
+    """
+    Process a user query by first classifying it as RAG or LLM and then routing to the appropriate handler.
+    
+    Args:
+        query: User's question
+        n_context: Number of relevant chunks to use as context
+        use_graph: Whether to use graph-based context expansion
+        temperature: Temperature for LLM generation
+        similarity_threesold: Threshold for similarity filtering
+        model: LLM model to use
+        context_window: Context window size for the LLM
+        use_classification: Whether to use query classification (if False, always use RAG)
+        
+    Returns:
+        tuple: (response, sources) where response is the LLM's answer and sources is a list of sources used
+    """
+    if use_classification:
+        # Classify the query as either "RAG" or "LLM"
+        classification = route_and_execute(query, verbose=True)
+        logger.info(f"Query classification result: {classification}")
+        
+        if classification == "LLM":
+            # For LLM queries, use direct generation without context
+            logger.info(f"Using direct LLM processing for query: {query}")
+            # Create a simple prompt for the LLM
+            prompt = f"""You are a contract analysis assistant. 
+            Answer the following question about contracts to the best of your ability, based on general knowledge.
+            If you're uncertain, mention that you don't have specific contract details.
+            
+            Question: {query}
+            """
+            response = ask_ollama(prompt, temperature, model, context_window)
+            logger.info("\n🤖 Réponse :")
+            logger.info(response)
+            print("\n🤖 Réponse :")
+            print(response)
+            return response, []  # No sources for LLM-only processing
+        
+    # If classification is "RAG" or classification is disabled, use RAG processing
+    logger.info(f"Using RAG processing for query: {query}")
+    return chat_with_contract(query, n_context, use_graph, temperature, similarity_threesold, model, context_window)

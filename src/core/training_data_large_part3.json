@@ -1,0 +1,62 @@
+[
+    {
+        "question": "Quels sont les pourcentages de réduction appliqués aux factures en cas de manquement aux SLA ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quelle est la liste des documents à soumettre pour l'audit annuel selon le contrat A ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Où est définie la procédure de remontée d'incidents dans le contrat A ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quels sont les niveaux d'escalade définis dans le contrat A pour les problèmes critiques ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Combien d'exemplaires originaux du contrat A doivent être signés ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quelles sont les modalités de versement de l'acompte selon le contrat A ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quels sont les formats de fichiers acceptés pour les livrables selon l'annexe technique ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quelles sont les exigences d'archivage documentaire mentionnées dans le contrat A ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quelle est la procédure de validation des livrables stipulée dans le contrat A ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quels sont les critères de recevabilité d'une réclamation selon le contrat A ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Dans quel article trouve-t-on la définition des termes techniques du contrat A ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quelle est la fréquence des comités de pilotage prévue dans le contrat A ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Combien de temps les données doivent-elles être conservées après la fin du contrat ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quelles sont les coordonnées du responsable technique désigné dans le contrat A ?",
+        "label": "RAG"
+    },
+    {
+        "question": "Quelle est la liste des sites concernés par le contrat A ?",
+        "label": "RAG"
+    }
+]

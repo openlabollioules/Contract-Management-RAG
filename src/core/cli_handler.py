@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 from core.contract_processor import process_contract
 from core.document_manager import (delete_document, document_exists,
                                    get_existing_documents)
-from core.interaction import chat_with_contract, search_contracts
+from core.interaction import chat_with_contract, chat_with_contract_decomposed, chat_with_contract_alternatives, search_contracts, process_query
 from utils.logger import setup_logger
 
 # Configurer le logger pour ce module
@@ -21,6 +21,9 @@ def print_usage() -> None:
     )
     print("Options:")
     print("  --chat                 Mode chat interactif avec les contrats")
+    print("  --advanced-chat        Mode chat avec décomposition des requêtes complexes")
+    print("  --alternatives-chat    Mode chat utilisant des requêtes alternatives")
+    print("  --graph-chat           Mode chat utilisant le graphe de connaissances")
     print("  --search <query>       Recherche dans les contrats")
     print(
         "  --force                Force le retraitement des documents même s'ils existent déjà"
@@ -44,6 +47,12 @@ def print_usage() -> None:
     )
     print("  Chat with all contracts:        python main.py --chat")
     print(
+        "  Advanced chat:                  python main.py --advanced-chat"
+    )
+    print(
+        "  Alternatives chat:              python main.py --alternatives-chat"
+    )
+    print(
         "  Search in contracts:            python main.py contract1.pdf contract2.pdf --search payment terms"
     )
 
@@ -60,6 +69,8 @@ def parse_arguments() -> Dict[str, Any]:
         "force": False,
         "delete": False,
         "chat": False,
+        "advanced_chat": False,
+        "alternatives_chat": False,
         "graph-chat": False,
         "search": False,
         "search_query": "",
@@ -86,6 +97,14 @@ def parse_arguments() -> Dict[str, Any]:
     if "--chat" in argv:
         args["chat"] = True
         argv.remove("--chat")
+
+    if "--advanced-chat" in argv:
+        args["advanced_chat"] = True
+        argv.remove("--advanced-chat")
+
+    if "--alternatives-chat" in argv:
+        args["alternatives_chat"] = True
+        argv.remove("--alternatives-chat")
 
     if "--graph-chat" in argv:
         args["graph-chat"] = True
@@ -173,7 +192,90 @@ def handle_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        response = chat_with_contract(query, use_graph=False)
+        response = process_query(query, use_graph=False)
+
+
+def handle_advanced_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
+    """
+    Gère le mode chat interactif avancé avec décomposition des requêtes
+
+    Args:
+        filepaths: Liste des chemins de fichiers à traiter avant le chat
+        force_reprocess: Si True, force le retraitement des documents
+    """
+    # Traiter les documents restants avant d'entrer en mode chat
+    if filepaths:
+        # Vérifier les documents existants
+        existing_docs = get_existing_documents(filepaths, force_reprocess)
+
+        # Si des documents existent déjà, afficher une erreur et quitter
+        if existing_docs:
+            logger.error(
+                "\n❌ ERREUR : Les documents suivants existent déjà dans la base de données :"
+            )
+            for doc in existing_docs:
+                logger.error(f"   - {doc}")
+            logger.error("\nPour forcer le retraitement, utilisez l'option --force")
+            logger.error("Pour supprimer ces documents, utilisez l'option --delete")
+            sys.exit(1)
+
+        # Sinon, traiter tous les documents (sauf les flags)
+        for filepath in filepaths:
+            if not filepath.startswith("--"):
+                logger.info(f"\n📄 Traitement du contrat: {filepath}")
+                process_contract(filepath)
+
+    # Entrer en mode chat interactif avancé
+    logger.info("\n🧠 Mode chat avancé activé (décomposition des requêtes). Tapez 'exit' pour quitter.")
+    print("\n💡 Ce mode décompose automatiquement les questions complexes en sous-questions pour une meilleure précision.")
+    
+    while True:
+        query = input("\nVotre question : ")
+        if query.lower() == "exit":
+            break
+        response, sources = chat_with_contract_decomposed(query, use_graph=False)
+
+
+def handle_alternatives_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
+    """
+    Gère le mode chat interactif avec requêtes alternatives
+
+    Args:
+        filepaths: Liste des chemins de fichiers à traiter avant le chat
+        force_reprocess: Si True, force le retraitement des documents
+    """
+    # Traiter les documents restants avant d'entrer en mode chat
+    if filepaths:
+        # Vérifier les documents existants
+        existing_docs = get_existing_documents(filepaths, force_reprocess)
+
+        # Si des documents existent déjà, afficher une erreur et quitter
+        if existing_docs:
+            logger.error(
+                "\n❌ ERREUR : Les documents suivants existent déjà dans la base de données :"
+            )
+            for doc in existing_docs:
+                logger.error(f"   - {doc}")
+            logger.error("\nPour forcer le retraitement, utilisez l'option --force")
+            logger.error("Pour supprimer ces documents, utilisez l'option --delete")
+            sys.exit(1)
+
+        # Sinon, traiter tous les documents (sauf les flags)
+        for filepath in filepaths:
+            if not filepath.startswith("--"):
+                logger.info(f"\n📄 Traitement du contrat: {filepath}")
+                process_contract(filepath)
+
+    # Entrer en mode chat interactif avec requêtes alternatives
+    logger.info("\n🔍 Mode chat avec requêtes alternatives activé. Tapez 'exit' pour quitter.")
+    print("\n💡 Ce mode génère automatiquement des requêtes alternatives pour améliorer la recherche.")
+    
+    while True:
+        query = input("\nVotre question : ")
+        if query.lower() == "exit":
+            break
+        response, sources = chat_with_contract_alternatives(query, use_graph=False)
+
 
 def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
     """
@@ -213,6 +315,7 @@ def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
             break
         response = chat_with_contract(query, use_graph=True)
         
+
 def handle_search_mode(
     filepaths: List[str], search_query: str, force_reprocess: bool
 ) -> None:
@@ -302,6 +405,16 @@ def process_arguments(args: Dict[str, Any]) -> None:
     # Mode chat
     if args["chat"]:
         handle_chat_mode(args["filepaths"], args["force"])
+        return
+
+    # Mode chat avancé
+    if args["advanced_chat"]:
+        handle_advanced_chat_mode(args["filepaths"], args["force"])
+        return
+
+    # Mode alternatives chat
+    if args["alternatives_chat"]:
+        handle_alternatives_chat_mode(args["filepaths"], args["force"])
         return
 
     # Mode graph-chat
