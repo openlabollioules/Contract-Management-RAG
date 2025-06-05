@@ -93,4 +93,6 @@ src/benchmark_results/
 document_processing/__pycache__/*
 
 core/__pycache__/*
+chroma_db-1/*
+Details/*
 
