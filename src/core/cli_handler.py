@@ -1,15 +1,21 @@
 import logging
 import sys
 from typing import Any, Dict, List
+from pathlib import Path
 
 from core.contract_processor import process_contract
 from core.document_manager import (delete_document, document_exists,
                                    get_existing_documents)
 from core.interaction import chat_with_contract, chat_with_contract_decomposed, chat_with_contract_alternatives, search_contracts, process_query
 from utils.logger import setup_logger
-
+from core.history_func import setup_history_database
+from dotenv import load_dotenv
+import os
 # Configurer le logger pour ce module
 logger = setup_logger(__file__)
+
+dotenv_path = Path(__file__).parent.parent.parent / "config.env"
+load_dotenv(dotenv_path)
 
 
 def print_usage() -> None:
@@ -33,6 +39,8 @@ def print_usage() -> None:
     )
     print("  --debug                Active le mode debug avec logs détaillés")
     print("  --summarize-chunks     Résume chaque chunk avant de l'ajouter à la base de données")
+    print("  --hybrid               Active la recherche hybride (BM25 + sémantique)")
+    print("  --no-hybrid            Désactive la recherche hybride (utilise uniquement la recherche sémantique)")
     print("Examples:")
     print("  Process one contract:           python main.py contract.pdf")
     print(
@@ -55,6 +63,9 @@ def print_usage() -> None:
     print(
         "  Search in contracts:            python main.py contract1.pdf contract2.pdf --search payment terms"
     )
+    print(
+        "  Chat with hybrid search:        python main.py --chat --hybrid"
+    )
 
 
 def parse_arguments() -> Dict[str, Any]:
@@ -76,6 +87,8 @@ def parse_arguments() -> Dict[str, Any]:
         "search_query": "",
         "filepaths": [],
         "summarize_chunks": False,
+        "classification": False,
+        "hybrid": bool(os.getenv("USE_HYBRID", "True").lower() == "true"),  # Par défaut, utiliser la valeur de USE_HYBRID dans l'environnement
     }
 
     # Copier les arguments sans le nom du script
@@ -113,6 +126,14 @@ def parse_arguments() -> Dict[str, Any]:
     if "--summarize-chunks" in argv:
         args["summarize_chunks"] = True
         argv.remove("--summarize-chunks")
+        
+    if "--hybrid" in argv:
+        args["hybrid"] = True
+        argv.remove("--hybrid")
+    
+    if "--no-hybrid" in argv:
+        args["hybrid"] = False
+        argv.remove("--no-hybrid")
 
     if "--search" in argv and argv.index("--search") + 1 < len(argv):
         args["search"] = True
@@ -121,6 +142,10 @@ def parse_arguments() -> Dict[str, Any]:
         args["search_query"] = " ".join(argv[search_index + 1 :])
         # Ne garder que ce qui précède --search pour les fichiers
         argv = argv[:search_index]
+
+    if "--classification" in argv:
+        args["classification"] = True
+        argv.remove("--classification")
 
     # Le reste des arguments sont des chemins de fichiers
     args["filepaths"] = [path for path in argv if not path.startswith("--")]
@@ -156,13 +181,15 @@ def handle_delete_mode(filepaths: List[str]) -> None:
             )
 
 
-def handle_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
+def handle_chat_mode(filepaths: List[str], force_reprocess: bool, classification: bool, use_hybrid: bool) -> None:
     """
     Gère le mode chat interactif
 
     Args:
         filepaths: Liste des chemins de fichiers à traiter avant le chat
         force_reprocess: Si True, force le retraitement des documents
+        classification: Si True, utilise la classification des requêtes
+        use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
     """
     # Traiter les documents restants avant d'entrer en mode chat
     if filepaths:
@@ -188,20 +215,26 @@ def handle_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
 
     # Entrer en mode chat interactif
     logger.info("\n💬 Mode chat activé. Tapez 'exit' pour quitter.")
+    if use_hybrid:
+        logger.info("🔍 Recherche hybride (BM25 + sémantique) activée")
+    else:
+        logger.info("🔍 Recherche sémantique standard activée")
+        
     while True:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        response = process_query(query, use_graph=False)
+        response = process_query(query, use_graph=False, use_classification=classification, use_hybrid=use_hybrid)
 
 
-def handle_advanced_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
+def handle_advanced_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybrid: bool) -> None:
     """
     Gère le mode chat interactif avancé avec décomposition des requêtes
 
     Args:
         filepaths: Liste des chemins de fichiers à traiter avant le chat
         force_reprocess: Si True, force le retraitement des documents
+        use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
     """
     # Traiter les documents restants avant d'entrer en mode chat
     if filepaths:
@@ -229,6 +262,11 @@ def handle_advanced_chat_mode(filepaths: List[str], force_reprocess: bool) -> No
     logger.info("\n🧠 Mode chat avancé activé (décomposition des requêtes). Tapez 'exit' pour quitter.")
     print("\n💡 Ce mode décompose automatiquement les questions complexes en sous-questions pour une meilleure précision.")
     
+    if use_hybrid:
+        logger.info("🔍 Recherche hybride (BM25 + sémantique) activée")
+    else:
+        logger.info("🔍 Recherche sémantique standard activée")
+    
     while True:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
@@ -236,13 +274,14 @@ def handle_advanced_chat_mode(filepaths: List[str], force_reprocess: bool) -> No
         response, sources = chat_with_contract_decomposed(query, use_graph=False)
 
 
-def handle_alternatives_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
+def handle_alternatives_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybrid: bool) -> None:
     """
     Gère le mode chat interactif avec requêtes alternatives
 
     Args:
         filepaths: Liste des chemins de fichiers à traiter avant le chat
         force_reprocess: Si True, force le retraitement des documents
+        use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
     """
     # Traiter les documents restants avant d'entrer en mode chat
     if filepaths:
@@ -270,6 +309,11 @@ def handle_alternatives_chat_mode(filepaths: List[str], force_reprocess: bool) -
     logger.info("\n🔍 Mode chat avec requêtes alternatives activé. Tapez 'exit' pour quitter.")
     print("\n💡 Ce mode génère automatiquement des requêtes alternatives pour améliorer la recherche.")
     
+    if use_hybrid:
+        logger.info("🔍 Recherche hybride (BM25 + sémantique) activée")
+    else:
+        logger.info("🔍 Recherche sémantique standard activée")
+    
     while True:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
@@ -277,13 +321,14 @@ def handle_alternatives_chat_mode(filepaths: List[str], force_reprocess: bool) -
         response, sources = chat_with_contract_alternatives(query, use_graph=False)
 
 
-def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
+def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybrid: bool) -> None:
     """
     Gère le mode chat interactif avec le graphe de connaissances
 
     Args:
         filepaths: Liste des chemins de fichiers à traiter avant le chat
         force_reprocess: Si True, force le retraitement des documents
+        use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
     """
     # Traiter les documents restants avant d'entrer en mode chat
     if filepaths:
@@ -309,15 +354,21 @@ def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool) -> None:
 
     # Entrer en mode chat interactif avec graphe
     logger.info("\n🔍 Mode chat augmenté par graphe de connaissances activé. Tapez 'exit' pour quitter.")
+    
+    if use_hybrid:
+        logger.info("🔍 Recherche hybride (BM25 + sémantique) activée")
+    else:
+        logger.info("🔍 Recherche sémantique standard activée")
+        
     while True:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        response = chat_with_contract(query, use_graph=True)
+        response = chat_with_contract(query, use_graph=True, use_hybrid=use_hybrid)
         
 
 def handle_search_mode(
-    filepaths: List[str], search_query: str, force_reprocess: bool
+    filepaths: List[str], search_query: str, force_reprocess: bool, use_hybrid: bool
 ) -> None:
     """
     Gère le mode de recherche dans les documents
@@ -326,6 +377,7 @@ def handle_search_mode(
         filepaths: Liste des chemins de fichiers à traiter avant la recherche
         search_query: Requête de recherche
         force_reprocess: Si True, force le retraitement des documents
+        use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
     """
     # Vérifier les documents existants
     existing_docs = get_existing_documents(filepaths, force_reprocess)
@@ -349,7 +401,7 @@ def handle_search_mode(
 
     # Effectuer la recherche
     if search_query:
-        search_contracts(search_query)
+        search_contracts(search_query, use_hybrid=use_hybrid)
     else:
         logger.info("Erreur: Aucune requête de recherche fournie après --search")
         sys.exit(1)
@@ -392,6 +444,7 @@ def process_arguments(args: Dict[str, Any]) -> None:
     Args:
         args: Dictionnaire contenant les options et valeurs extraites des arguments
     """
+
     # Configurer le niveau de log si mode debug
     if args["debug"]:
         logging.getLogger().setLevel(logging.DEBUG)
@@ -401,30 +454,39 @@ def process_arguments(args: Dict[str, Any]) -> None:
     if args["delete"]:
         handle_delete_mode(args["filepaths"])
         return
+    
+    setup_history_database(os.getenv("HISTORY_DB_FILE"))
 
     # Mode chat
     if args["chat"]:
-        handle_chat_mode(args["filepaths"], args["force"])
+
+        if args["classification"]:
+            classification = True
+        else:
+            classification = False
+
+        logger.info(f"Classification: {classification}")
+        handle_chat_mode(args["filepaths"], args["force"], classification, args["hybrid"])
         return
 
     # Mode chat avancé
     if args["advanced_chat"]:
-        handle_advanced_chat_mode(args["filepaths"], args["force"])
+        handle_advanced_chat_mode(args["filepaths"], args["force"], args["hybrid"])
         return
 
     # Mode alternatives chat
     if args["alternatives_chat"]:
-        handle_alternatives_chat_mode(args["filepaths"], args["force"])
+        handle_alternatives_chat_mode(args["filepaths"], args["force"], args["hybrid"])
         return
 
     # Mode graph-chat
     if args["graph-chat"]:
-        handle_graph_chat_mode(args["filepaths"], args["force"])
+        handle_graph_chat_mode(args["filepaths"], args["force"], args["hybrid"])
         return
 
     # Mode recherche
     if args["search"]:
-        handle_search_mode(args["filepaths"], args["search_query"], args["force"])
+        handle_search_mode(args["filepaths"], args["search_query"], args["force"], args["hybrid"])
         return
 
     # Mode traitement par défaut

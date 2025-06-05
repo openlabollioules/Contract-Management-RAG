@@ -72,6 +72,18 @@ def parse_arguments():
         default="all",
         help="Which RAG mode to test: classic, graph, advanced, alternatives, or all"
     )
+    parser.add_argument(
+        "--classic-classification",
+        choices=["on", "off", "both"],
+        default="off",
+        help="Test classic mode with classification (on), without (off), or both"
+    )
+    parser.add_argument(
+        "--hybrid",
+        choices=["on", "off", "both"],
+        default="off",
+        help="Test with hybrid search (BM25 + semantic) (on), without (off), or both"
+    )
     return parser.parse_args()
 
 def extract_subqueries(output: str) -> List[str]:
@@ -93,7 +105,7 @@ def extract_subqueries(output: str) -> List[str]:
     
     return subqueries
 
-def run_test(question: str, use_graph: bool = False, use_advanced: bool = False, use_alternatives: bool = False) -> Tuple[str, float, List[Dict], str]:
+def run_test(question: str, use_graph: bool = False, use_advanced: bool = False, use_alternatives: bool = False, with_classification: bool = False, use_hybrid: bool = False) -> Tuple[str, float, List[Dict], str]:
     """
     Run test with a single question using either graph, advanced, alternatives or basic RAG on the entire database
     
@@ -102,6 +114,8 @@ def run_test(question: str, use_graph: bool = False, use_advanced: bool = False,
         use_graph: Whether to use graph-based RAG
         use_advanced: Whether to use advanced (decomposition) RAG
         use_alternatives: Whether to use alternatives (multiple queries) RAG
+        with_classification: Whether to add --classification for classic mode
+        use_hybrid: Whether to use hybrid search (BM25 + semantic)
     
     Returns:
         Tuple of (answer, response_time, sources, error_logs)
@@ -118,8 +132,39 @@ def run_test(question: str, use_graph: bool = False, use_advanced: bool = False,
     else:
         mode = "--chat"
     
+    # Add flags
+    extra_flags = []
+    
+    # Add --classification if requested and in classic mode
+    if mode == "--chat" and with_classification:
+        extra_flags.append("--classification")
+
+    # Add hybrid search flag (BM25)
+    if use_hybrid:
+        extra_flags.append("--hybrid")
+    elif use_hybrid is False:  # Explicitly disabled
+        extra_flags.append("--no-hybrid")
+    
+    extra_flags_str = " " + " ".join(extra_flags) if extra_flags else ""
+
+    # Print a clear, human-friendly test mode
+    mode_name = []
+    if mode == "--chat":
+        mode_name.append("Classic")
+        if with_classification:
+            mode_name.append("Classification")
+        if use_hybrid:
+            mode_name.append("BM25")
+    else:
+        mode_name.append(mode.replace("--", "").replace("-chat", "").replace("_", " ").title())
+        if use_hybrid:
+            mode_name.append("BM25")
+    
+    mode_display = " + ".join(mode_name)
+    print(f"Testing with {mode_display} Chat...\n")
+    
     # Run the command and capture output
-    cmd = f'echo "{question}" | python src/main.py {mode}'
+    cmd = f'echo "{question}" | python src/main.py {mode}{extra_flags_str}'
     process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = process.communicate()
     
@@ -167,6 +212,7 @@ def run_test(question: str, use_graph: bool = False, use_advanced: bool = False,
         source["is_graph"] = False
         source["is_advanced"] = use_advanced
         source["is_alternatives"] = use_alternatives
+        source["is_hybrid"] = use_hybrid
         source["type"] = "vector"
         source["relation_type"] = None
         source["sub_query"] = source.get("sub_query", None)  # Preserve sub-query info if present
@@ -194,6 +240,21 @@ def run_test(question: str, use_graph: bool = False, use_advanced: bool = False,
             source["is_graph"] = True
             source["type"] = "graph"
             
+        # For hybrid search, check for BM25 score indicators
+        if use_hybrid:
+            if "bm25_score" in source:
+                source["is_hybrid"] = True
+            elif "Score BM25:" in content:
+                source["is_hybrid"] = True
+                # Try to extract BM25 score
+                bm25_lines = [line for line in content.split('\n') if "Score BM25:" in line]
+                if bm25_lines:
+                    try:
+                        bm25_score = bm25_lines[0].split("Score BM25:", 1)[1].strip()
+                        source["bm25_score"] = float(bm25_score)
+                    except:
+                        pass
+        
         # For advanced mode, try to find subquery info in source content if not already set
         if use_advanced and not source.get("sub_query"):
             for subq in subqueries:
@@ -236,6 +297,38 @@ def run_test(question: str, use_graph: bool = False, use_advanced: bool = False,
                             sorted_sources[i]["is_graph"] = True
                             sorted_sources[i]["type"] = "graph"
                             sorted_sources[i]["relation_type"] = "unknown_relation"
+                except:
+                    pass
+        except:
+            pass
+    
+    # Also check for hybrid source count if using hybrid search
+    if "📊 Statistiques des sources:" in error_text and use_hybrid:
+        try:
+            stats_section = error_text.split("📊 Statistiques des sources:", 1)[1].strip()
+            stats_lines = stats_section.split('\n')
+            
+            # Extract declared hybrid sources count
+            hybrid_count_line = next((line for line in stats_lines if "Sources via recherche hybride:" in line), None)
+            if hybrid_count_line:
+                try:
+                    declared_count = int(hybrid_count_line.split(":", 1)[1].strip())
+                    
+                    # Mark appropriate number of sources as hybrid
+                    hybrid_source_count = sum(1 for s in sources if s.get("is_hybrid", False))
+                    
+                    # If the count doesn't match what we've found, mark additional sources
+                    if declared_count > hybrid_source_count:
+                        # Sort remaining sources by distance
+                        remaining_sources = [s for s in sources if not s.get("is_hybrid", False)]
+                        sorted_sources = sorted(
+                            remaining_sources,
+                            key=lambda x: float(x.get("distance", 999)) if isinstance(x.get("distance"), (int, float)) else 999
+                        )
+                        
+                        # Mark additional sources as hybrid sources
+                        for i in range(min(declared_count - hybrid_source_count, len(sorted_sources))):
+                            sorted_sources[i]["is_hybrid"] = True
                 except:
                     pass
         except:
@@ -671,6 +764,8 @@ def run_test_suite(args):
     OUTPUT_DIR = args.output_dir
     DESCRIPTION = args.description
     TEST_MODE = args.mode
+    CLASSIC_CLASSIFICATION = args.classic_classification
+    HYBRID_MODE = args.hybrid
     
     # Ensure output directory exists
     os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -685,8 +780,48 @@ def run_test_suite(args):
     else:
         modes_to_test = [TEST_MODE]
     
-    # Initialize metrics for each mode
+    # For classic mode, handle classification and hybrid variants
+    expanded_modes = []
     for mode in modes_to_test:
+        if mode == "classic":
+            # Classic has different variants for classification and hybrid
+            class_variants = []
+            if CLASSIC_CLASSIFICATION == "both":
+                class_variants.extend([False, True])
+            elif CLASSIC_CLASSIFICATION == "on":
+                class_variants.append(True)
+            else:  # off
+                class_variants.append(False)
+                
+            hybrid_variants = []
+            if HYBRID_MODE == "both":
+                hybrid_variants.extend([False, True])
+            elif HYBRID_MODE == "on":
+                hybrid_variants.append(True)
+            else:  # off
+                hybrid_variants.append(False)
+                
+            # Expand classic mode into all combinations
+            for class_var in class_variants:
+                for hybrid_var in hybrid_variants:
+                    mode_name = "classic"
+                    if class_var:
+                        mode_name += "_classification"
+                    if hybrid_var:
+                        mode_name += "_bm25"
+                    expanded_modes.append(mode_name)
+        elif mode == "graph" or mode == "advanced" or mode == "alternatives":
+            # Non-classic modes can also have hybrid option
+            if HYBRID_MODE == "both":
+                expanded_modes.append(mode)
+                expanded_modes.append(f"{mode}_bm25")
+            elif HYBRID_MODE == "on":
+                expanded_modes.append(f"{mode}_bm25")
+            else:  # off
+                expanded_modes.append(mode)
+    
+    # Initialize metrics for each mode
+    for mode in expanded_modes:
         results[mode] = []
         metrics[mode] = {"total_time": 0, "question_count": 0}
     
@@ -695,7 +830,9 @@ def run_test_suite(args):
         "description": DESCRIPTION,
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
         "test_mode": TEST_MODE,
-        "output_dir": OUTPUT_DIR
+        "output_dir": OUTPUT_DIR,
+        "classic_classification": CLASSIC_CLASSIFICATION,
+        "hybrid_mode": HYBRID_MODE
     }
     
     # Use both question sets
@@ -707,20 +844,24 @@ def run_test_suite(args):
             print(f"\nQ{i}: {question}")
             
             # Test with each selected mode
-            for mode in modes_to_test:
-                print(f"  Testing with {mode.capitalize()} Chat...")
+            for mode in expanded_modes:
+                print(f"  Testing with {mode.replace('_', ' ').title()} Chat...")
                 
                 # Set appropriate flags
-                use_graph = (mode == "graph")
-                use_advanced = (mode == "advanced")
-                use_alternatives = (mode == "alternatives")
+                use_graph = mode.startswith("graph")
+                use_advanced = mode.startswith("advanced")
+                use_alternatives = mode.startswith("alternatives")
+                with_classification = "_classification" in mode
+                use_hybrid = "_bm25" in mode
                 
                 # Run the test
                 answer, time_taken, sources, errors = run_test(
                     question, 
                     use_graph=use_graph, 
                     use_advanced=use_advanced,
-                    use_alternatives=use_alternatives
+                    use_alternatives=use_alternatives,
+                    with_classification=with_classification,
+                    use_hybrid=use_hybrid
                 )
                 
                 # Update metrics
@@ -729,24 +870,30 @@ def run_test_suite(args):
                 
                 # Display error logs if any
                 if errors:
-                    print(f"  [!] Errors detected in {mode.capitalize()} Chat:")
+                    print(f"  [!] Errors detected in {mode.replace('_', ' ').capitalize()} Chat:")
                     print(f"  {errors.replace(chr(10), chr(10)+'  ')}")
                 
                 # Display sources summary
-                print(f"  Sources - {mode.capitalize()} ({len(sources)}):")
+                print(f"  Sources - {mode.replace('_', ' ').capitalize()} ({len(sources)}):")
                 
                 # Special source info based on mode
-                if mode == "graph":
+                if use_graph:
                     graph_count = sum(1 for s in sources if s.get("type") == "graph" or s.get("is_graph", False))
                     special_info = f"{graph_count} from graph"
-                elif mode == "advanced":
+                elif use_advanced:
                     sub_queries_count = len(set(s.get("sub_query") for s in sources if s.get("sub_query") is not None))
                     special_info = f"from {sub_queries_count} sub-queries"
-                elif mode == "alternatives":
+                elif use_alternatives:
                     alt_queries_count = len(set(s.get("source_query") for s in sources if s.get("source_query") is not None and s.get("source_query") != "Original"))
                     special_info = f"from {alt_queries_count + 1} query variations"
                 else:
                     special_info = ""
+                
+                # Add hybrid info if using BM25
+                if use_hybrid:
+                    hybrid_count = sum(1 for s in sources if s.get("is_hybrid", False))
+                    hybrid_info = f"{hybrid_count} from hybrid search"
+                    special_info = f"{hybrid_info}, {special_info}" if special_info else hybrid_info
                 
                 # Display source preview
                 for idx, source in enumerate(sources[:5], 1):  # Display first 5 sources
@@ -757,13 +904,18 @@ def run_test_suite(args):
                     source_info = f"   {idx}. {doc[:30]}... [Distance: {distance}"
                     
                     # Add mode-specific info
-                    if mode == "graph" and (source.get("type") == "graph" or source.get("is_graph", False)):
+                    if use_graph and (source.get("type") == "graph" or source.get("is_graph", False)):
                         relation = source.get("relation_type", "N/A")
                         source_info += f", Graph: ✓, Relation: {relation}"
-                    elif mode == "advanced" and source.get("sub_query"):
+                    elif use_advanced and source.get("sub_query"):
                         source_info += f", Sub-query: {source.get('sub_query')[:20]}..."
-                    elif mode == "alternatives" and source.get("source_query"):
+                    elif use_alternatives and source.get("source_query"):
                         source_info += f", Query: {source.get('source_query')[:20]}..."
+                    
+                    # Add hybrid-specific info
+                    if use_hybrid and source.get("is_hybrid", False):
+                        bm25_score = source.get("bm25_score", "N/A")
+                        source_info += f", BM25: ✓, Score: {bm25_score}"
                     
                     source_info += f", Hierarchy: {hierarchy[:20]}...]"
                     print(source_info)
@@ -788,7 +940,7 @@ def run_test_suite(args):
                 # Write results in real-time
                 write_results_in_real_time(result, OUTPUT_DIR, mode)
                 
-                print(f"  Response time - {mode.capitalize()}: {time_taken:.2f}s")
+                print(f"  Response time - {mode.replace('_', ' ').capitalize()}: {time_taken:.2f}s")
     
     # Calculate averages
     for mode in metrics:
@@ -827,6 +979,7 @@ def generate_summary(results, metrics, config):
     """Generate a human-readable summary of test results"""
     OUTPUT_DIR = config.get("output_dir", "test_results_full_db")
     TEST_MODE = config.get("test_mode", "all")
+    HYBRID_MODE = config.get("hybrid_mode", "off")
     
     with open(f"{OUTPUT_DIR}/summary.md", "w") as f:
         if TEST_MODE == "all":
@@ -846,114 +999,77 @@ def generate_summary(results, metrics, config):
         f.write("## Test Configuration\n\n")
         f.write(f"- **Date:** {config['timestamp']}\n")
         f.write(f"- **Test Mode:** {TEST_MODE}\n")
-        if config['description']:
+        f.write(f"- **Classification Mode:** {config.get('classic_classification', 'off')}\n")
+        f.write(f"- **Hybrid Search (BM25):** {HYBRID_MODE}\n")
+        if config.get('description', ''):
             f.write(f"- **Description:** {config['description']}\n")
         f.write("\n")
         
         # Overall metrics
         f.write("## Overall Metrics\n\n")
         
-        if TEST_MODE == "all":
-            # Check which modes actually have data
-            available_modes = [mode for mode in ["classic", "graph", "advanced", "alternatives"] if mode in metrics and metrics[mode]["question_count"] > 0]
-            
-            if len(available_modes) == 4:  # All modes
-                f.write("| Metric | Classic Chat | GraphRAG Chat | Advanced Chat | Alternatives Chat |\n")
-                f.write("|--------|-------------|---------------|---------------|-------------------|\n")
-                # Ensure avg_time exists for all modes
-                for mode in ['classic', 'graph', 'advanced', 'alternatives']:
-                    if mode in metrics and 'avg_time' not in metrics[mode] and metrics[mode]["question_count"] > 0:
-                        metrics[mode]["avg_time"] = metrics[mode]["total_time"] / metrics[mode]["question_count"]
-                classic_avg = metrics['classic'].get('avg_time', 0.0)
-                graph_avg = metrics['graph'].get('avg_time', 0.0)
-                advanced_avg = metrics['advanced'].get('avg_time', 0.0)
-                alternatives_avg = metrics['alternatives'].get('avg_time', 0.0)
-                f.write(f"| Average Response Time | {classic_avg:.2f}s | {graph_avg:.2f}s | {advanced_avg:.2f}s | {alternatives_avg:.2f}s |\n")
-                f.write(f"| Total Questions | {metrics['classic']['question_count']} | {metrics['graph']['question_count']} | {metrics['advanced']['question_count']} | {metrics['alternatives']['question_count']} |\n\n")
-            elif len(available_modes) == 3 and "alternatives" not in available_modes:  # Original 3 modes
-                f.write("| Metric | Classic Chat | GraphRAG Chat | Advanced Chat |\n")
-                f.write("|--------|-------------|---------------|---------------|\n")
-                # Ensure avg_time exists for all modes
-                for mode in ['classic', 'graph', 'advanced']:
-                    if mode in metrics and 'avg_time' not in metrics[mode] and metrics[mode]["question_count"] > 0:
-                        metrics[mode]["avg_time"] = metrics[mode]["total_time"] / metrics[mode]["question_count"]
-                classic_avg = metrics['classic'].get('avg_time', 0.0)
-                graph_avg = metrics['graph'].get('avg_time', 0.0)
-                advanced_avg = metrics['advanced'].get('avg_time', 0.0)
-                f.write(f"| Average Response Time | {classic_avg:.2f}s | {graph_avg:.2f}s | {advanced_avg:.2f}s |\n")
-                f.write(f"| Total Questions | {metrics['classic']['question_count']} | {metrics['graph']['question_count']} | {metrics['advanced']['question_count']} |\n\n")
+        # Dynamic table based on available modes
+        header = "| Metric |"
+        separator = "|--------|"
+        time_row = "| Average Response Time |"
+        count_row = "| Total Questions |"
+        
+        # Collect available modes and sort them in a sensible order
+        available_modes = [mode for mode in results.keys() if metrics[mode]["question_count"] > 0]
+        
+        # Sort modes in a logical order: classic variants first, then other modes
+        def mode_sort_key(mode):
+            # Return a tuple for sorting (primary sort key, secondary sort key)
+            if mode.startswith("classic"):
+                return (0, mode)  # Classic modes first
+            elif mode.startswith("graph"):
+                return (1, mode)  # Graph modes second
+            elif mode.startswith("advanced"):
+                return (2, mode)  # Advanced modes third
+            elif mode.startswith("alternatives"):
+                return (3, mode)  # Alternatives modes fourth
             else:
-                # Dynamic table based on available modes
-                header = "| Metric |"
-                separator = "|--------|"
-                time_row = "| Average Response Time |"
-                count_row = "| Total Questions |"
+                return (4, mode)  # Others last
                 
-                for mode in available_modes:
-                    mode_name = mode.replace("_", " ").title() + " Chat"
-                    header += f" {mode_name} |"
-                    separator += "---------------|"
-                    # Ensure avg_time exists, calculate if needed
-                    if 'avg_time' not in metrics[mode] and metrics[mode]["question_count"] > 0:
-                        metrics[mode]["avg_time"] = metrics[mode]["total_time"] / metrics[mode]["question_count"]
-                    avg_time = metrics[mode].get('avg_time', 0.0)
-                    time_row += f" {avg_time:.2f}s |"
-                    count_row += f" {metrics[mode]['question_count']} |"
+        available_modes.sort(key=mode_sort_key)
+        
+        # Build table header and rows
+        for mode in available_modes:
+            # Display mode name nicely
+            if "_bm25" in mode and "_classification" in mode:
+                mode_name = mode.replace("_bm25", " + BM25").replace("_classification", " + Classification")
+            elif "_bm25" in mode:
+                mode_name = mode.replace("_bm25", " + BM25")
+            elif "_classification" in mode:
+                mode_name = mode.replace("_classification", " + Classification")
+            else:
+                mode_name = mode.replace("_", " ").title()
                 
-                f.write(header + "\n")
-                f.write(separator + "\n")
-                f.write(time_row + "\n")
-                f.write(count_row + "\n\n")
+            # Add " Chat" suffix if it's not already there
+            if not mode_name.endswith(" Chat"):
+                mode_name += " Chat"
                 
-        elif TEST_MODE == "classic":
-            f.write("| Metric | Classic Chat |\n")
-            f.write("|--------|-------------|\n")
+            header += f" {mode_name} |"
+            separator += "---------------|"
+            
             # Ensure avg_time exists, calculate if needed
-            if 'avg_time' not in metrics['classic'] and metrics['classic']["question_count"] > 0:
-                metrics['classic']["avg_time"] = metrics['classic']["total_time"] / metrics['classic']["question_count"]
-            avg_time = metrics['classic'].get('avg_time', 0.0)
-            f.write(f"| Average Response Time | {avg_time:.2f}s |\n")
-            f.write(f"| Total Questions | {metrics['classic']['question_count']} |\n\n")
-        elif TEST_MODE == "graph":
-            f.write("| Metric | GraphRAG Chat |\n")
-            f.write("|--------|---------------|\n")
-            # Ensure avg_time exists, calculate if needed
-            if 'avg_time' not in metrics['graph'] and metrics['graph']["question_count"] > 0:
-                metrics['graph']["avg_time"] = metrics['graph']["total_time"] / metrics['graph']["question_count"]
-            avg_time = metrics['graph'].get('avg_time', 0.0)
-            f.write(f"| Average Response Time | {avg_time:.2f}s |\n")
-            f.write(f"| Total Questions | {metrics['graph']['question_count']} |\n\n")
-        elif TEST_MODE == "advanced":
-            f.write("| Metric | Advanced Chat |\n")
-            f.write("|--------|---------------|\n")
-            # Ensure avg_time exists, calculate if needed
-            if 'avg_time' not in metrics['advanced'] and metrics['advanced']["question_count"] > 0:
-                metrics['advanced']["avg_time"] = metrics['advanced']["total_time"] / metrics['advanced']["question_count"]
-            avg_time = metrics['advanced'].get('avg_time', 0.0)
-            f.write(f"| Average Response Time | {avg_time:.2f}s |\n")
-            f.write(f"| Total Questions | {metrics['advanced']['question_count']} |\n\n")
-        elif TEST_MODE == "alternatives":
-            f.write("| Metric | Alternatives Chat |\n")
-            f.write("|--------|-------------------|\n")
-            # Ensure avg_time exists, calculate if needed
-            if 'avg_time' not in metrics['alternatives'] and metrics['alternatives']["question_count"] > 0:
-                metrics['alternatives']["avg_time"] = metrics['alternatives']["total_time"] / metrics['alternatives']["question_count"]
-            avg_time = metrics['alternatives'].get('avg_time', 0.0)
-            f.write(f"| Average Response Time | {avg_time:.2f}s |\n")
-            f.write(f"| Total Questions | {metrics['alternatives']['question_count']} |\n\n")
+            if 'avg_time' not in metrics[mode] and metrics[mode]["question_count"] > 0:
+                metrics[mode]["avg_time"] = metrics[mode]["total_time"] / metrics[mode]["question_count"]
+            avg_time = metrics[mode].get('avg_time', 0.0)
+            time_row += f" {avg_time:.2f}s |"
+            count_row += f" {metrics[mode]['question_count']} |"
+        
+        f.write(header + "\n")
+        f.write(separator + "\n")
+        f.write(time_row + "\n")
+        f.write(count_row + "\n\n")
         
         # Group results by category
         categorized_results = {}
         for category in ["questions T", "questions chatGPT"]:
             categorized_results[category] = {}
-            if "classic" in results:
-                categorized_results[category]["classic"] = []
-            if "graph" in results:
-                categorized_results[category]["graph"] = []
-            if "advanced" in results:
-                categorized_results[category]["advanced"] = []
-            if "alternatives" in results:
-                categorized_results[category]["alternatives"] = []
+            for mode in available_modes:
+                categorized_results[category][mode] = []
             
         # Sort results by category and mode
         for mode in results:
@@ -964,290 +1080,167 @@ def generate_summary(results, metrics, config):
         
         # Per-category summaries
         for category, cat_results in categorized_results.items():
+            if not any(cat_results.values()):  # Skip empty categories
+                continue
+                
             f.write(f"## {category}\n\n")
             
-            # Calculate metrics based on test mode
-            if TEST_MODE == "all" and "classic" in cat_results and "graph" in cat_results and "advanced" in cat_results:
-                # Safely calculate metrics with zero-length protection
-                classic_len = max(1, len(cat_results["classic"]))
-                graph_len = max(1, len(cat_results["graph"]))
-                advanced_len = max(1, len(cat_results["advanced"]))
-                
-                classic_time = sum(q["chat"]["time"] for q in cat_results["classic"])
-                classic_sources = sum(len(q["chat"]["sources"]) for q in cat_results["classic"])
-                classic_avg_time = classic_time / classic_len
-                classic_avg_sources = classic_sources / classic_len
-                
-                graph_time = sum(q["chat"]["time"] for q in cat_results["graph"])
-                graph_sources = sum(len(q["chat"]["sources"]) for q in cat_results["graph"])
-                graph_avg_time = graph_time / graph_len
-                graph_avg_sources = graph_sources / graph_len
-                
-                advanced_time = sum(q["chat"]["time"] for q in cat_results["advanced"])
-                advanced_sources = sum(len(q["chat"]["sources"]) for q in cat_results["advanced"])
-                advanced_avg_time = advanced_time / advanced_len
-                advanced_avg_sources = advanced_sources / advanced_len
-                
-                # Count graph sources
-                graph_from_graph = sum(
-                    sum(1 for s in q["chat"]["sources"] if s.get("type") == "graph") 
-                    for q in cat_results["graph"]
-                )
-                graph_from_graph_avg = graph_from_graph / graph_len
-                
-                f.write("### Performance Metrics\n\n")
-                f.write("| Metric | Classic Chat | GraphRAG Chat | Advanced Chat |\n")
-                f.write("|--------|-------------|---------------|---------------|\n")
-                f.write(f"| Average Response Time | {classic_avg_time:.2f}s | {graph_avg_time:.2f}s | {advanced_avg_time:.2f}s |\n")
-                f.write(f"| Average Sources Used | {classic_avg_sources:.1f} | {graph_avg_sources:.1f} | {advanced_avg_sources:.1f} |\n")
-                f.write(f"| Average Graph Sources | N/A | {graph_from_graph_avg:.1f} | N/A |\n\n")
+            # Calculate metrics per category
+            f.write("### Performance Metrics\n\n")
             
-            elif TEST_MODE == "classic" and "classic" in cat_results and cat_results["classic"]:
-                # Safely calculate with zero-length protection
-                classic_len = max(1, len(cat_results["classic"]))
-                
-                classic_time = sum(q["chat"]["time"] for q in cat_results["classic"])
-                classic_sources = sum(len(q["chat"]["sources"]) for q in cat_results["classic"])
-                classic_avg_time = classic_time / classic_len
-                classic_avg_sources = classic_sources / classic_len
-                
-                f.write("### Performance Metrics\n\n")
-                f.write("| Metric | Classic Chat |\n")
-                f.write("|--------|-------------|\n")
-                f.write(f"| Average Response Time | {classic_avg_time:.2f}s |\n")
-                f.write(f"| Average Sources Used | {classic_avg_sources:.1f} |\n\n")
-                
-            elif TEST_MODE == "graph" and "graph" in cat_results and cat_results["graph"]:
-                # Safely calculate with zero-length protection
-                graph_len = max(1, len(cat_results["graph"]))
-                
-                graph_time = sum(q["chat"]["time"] for q in cat_results["graph"])
-                graph_sources = sum(len(q["chat"]["sources"]) for q in cat_results["graph"])
-                graph_avg_time = graph_time / graph_len
-                graph_avg_sources = graph_sources / graph_len
-                
-                # Count graph sources
-                graph_from_graph = sum(
-                    sum(1 for s in q["chat"]["sources"] if s.get("type") == "graph") 
-                    for q in cat_results["graph"]
-                )
-                graph_from_graph_avg = graph_from_graph / graph_len
-                
-                f.write("### Performance Metrics\n\n")
-                f.write("| Metric | GraphRAG Chat |\n")
-                f.write("|--------|---------------|\n")
-                f.write(f"| Average Response Time | {graph_avg_time:.2f}s |\n")
-                f.write(f"| Average Sources Used | {graph_avg_sources:.1f} |\n")
-                f.write(f"| Average Graph Sources | {graph_from_graph_avg:.1f} |\n\n")
+            # Create a dynamic table for this category's metrics
+            cat_header = "| Metric |"
+            cat_separator = "|--------|"
+            cat_time_row = "| Average Response Time |"
+            cat_sources_row = "| Average Sources Used |"
+            cat_graph_row = "| Average Graph Sources |"
+            cat_hybrid_row = "| Average Hybrid Sources |"
             
-            elif TEST_MODE == "advanced" and "advanced" in cat_results and cat_results["advanced"]:
-                # Safely calculate with zero-length protection
-                advanced_len = max(1, len(cat_results["advanced"]))
+            for mode in available_modes:
+                # Skip modes with no data in this category
+                if not cat_results[mode]:
+                    continue
+                    
+                # Display mode name nicely as before
+                if "_bm25" in mode and "_classification" in mode:
+                    mode_name = mode.replace("_bm25", " + BM25").replace("_classification", " + Classification")
+                elif "_bm25" in mode:
+                    mode_name = mode.replace("_bm25", " + BM25")
+                elif "_classification" in mode:
+                    mode_name = mode.replace("_classification", " + Classification")
+                else:
+                    mode_name = mode.replace("_", " ").title()
+                    
+                # Add " Chat" suffix if it's not already there
+                if not mode_name.endswith(" Chat"):
+                    mode_name += " Chat"
                 
-                advanced_time = sum(q["chat"]["time"] for q in cat_results["advanced"])
-                advanced_sources = sum(len(q["chat"]["sources"]) for q in cat_results["advanced"])
-                advanced_avg_time = advanced_time / advanced_len
-                advanced_avg_sources = advanced_sources / advanced_len
+                cat_header += f" {mode_name} |"
+                cat_separator += "---------------|"
                 
-                f.write("### Performance Metrics\n\n")
-                f.write("| Metric | Advanced Chat |\n")
-                f.write("|--------|---------------|\n")
-                f.write(f"| Average Response Time | {advanced_avg_time:.2f}s |\n")
-                f.write(f"| Average Sources Used | {advanced_avg_sources:.1f} |\n\n")
+                # Safely calculate metrics for this mode in this category
+                results_len = max(1, len(cat_results[mode]))
+                
+                # Time metrics
+                time_sum = sum(q["chat"]["time"] for q in cat_results[mode])
+                avg_time = time_sum / results_len
+                cat_time_row += f" {avg_time:.2f}s |"
+                
+                # Sources metrics
+                sources_sum = sum(len(q["chat"]["sources"]) for q in cat_results[mode])
+                avg_sources = sources_sum / results_len
+                cat_sources_row += f" {avg_sources:.1f} |"
+                
+                # Graph sources (if applicable)
+                if mode.startswith("graph") or "_bm25" in mode:  # Graph mode or any mode with BM25
+                    graph_sum = sum(
+                        sum(1 for s in q["chat"]["sources"] if s.get("type") == "graph" or s.get("is_graph", False))
+                        for q in cat_results[mode]
+                    )
+                    avg_graph = graph_sum / results_len
+                    cat_graph_row += f" {avg_graph:.1f} |"
+                else:
+                    cat_graph_row += " N/A |"
+                
+                # Hybrid sources (if applicable)
+                if "_bm25" in mode:  # Any mode with BM25
+                    hybrid_sum = sum(
+                        sum(1 for s in q["chat"]["sources"] if s.get("is_hybrid", False))
+                        for q in cat_results[mode]
+                    )
+                    avg_hybrid = hybrid_sum / results_len
+                    cat_hybrid_row += f" {avg_hybrid:.1f} |"
+                else:
+                    cat_hybrid_row += " N/A |"
             
-            elif TEST_MODE == "alternatives" and "alternatives" in cat_results and cat_results["alternatives"]:
-                # Safely calculate with zero-length protection
-                alternatives_len = max(1, len(cat_results["alternatives"]))
-                
-                alternatives_time = sum(q["chat"]["time"] for q in cat_results["alternatives"])
-                alternatives_sources = sum(len(q["chat"]["sources"]) for q in cat_results["alternatives"])
-                alternatives_avg_time = alternatives_time / alternatives_len
-                alternatives_avg_sources = alternatives_sources / alternatives_len
-                
-                f.write("### Performance Metrics\n\n")
-                f.write("| Metric | Alternatives Chat |\n")
-                f.write("|--------|-------------------|\n")
-                f.write(f"| Average Response Time | {alternatives_avg_time:.2f}s |\n")
-                f.write(f"| Average Sources Used | {alternatives_avg_sources:.1f} |\n\n")
+            # Write the table
+            f.write(cat_header + "\n")
+            f.write(cat_separator + "\n")
+            f.write(cat_time_row + "\n")
+            f.write(cat_sources_row + "\n")
+            f.write(cat_graph_row + "\n")
+            f.write(cat_hybrid_row + "\n\n")
             
             # Write individual question results
-            if TEST_MODE == "all":
-                for i, result in enumerate(cat_results["classic"], 1):
-                    graph_result = cat_results["graph"][i-1]  # corresponding graph result
-                    advanced_result = cat_results["advanced"][i-1]  # corresponding advanced result
+            for i, question_index in enumerate(range(len(cat_results[available_modes[0]])), 1):
+                # Check if all modes have this question (they should, but check anyway)
+                if not all(question_index < len(cat_results[mode]) for mode in available_modes):
+                    continue
+                
+                # Get the question from the first mode (should be the same across all)
+                sample_mode = available_modes[0]
+                if question_index >= len(cat_results[sample_mode]):
+                    continue
                     
-                    f.write(f"### Question {i}: {result['question']}\n\n")
+                question_text = cat_results[sample_mode][question_index]["question"]
+                f.write(f"### Question {i}: {question_text}\n\n")
+                
+                # Write results for each mode
+                for mode in available_modes:
+                    if question_index >= len(cat_results[mode]):
+                        continue
+                        
+                    result = cat_results[mode][question_index]
                     
-                    # Classic chat result
-                    f.write(f"**Classic Chat** ({result['chat']['time']:.2f}s, {len(result['chat']['sources'])} sources):\n")
+                    # Format mode name nicely as before
+                    if "_bm25" in mode and "_classification" in mode:
+                        mode_display = mode.replace("_bm25", " + BM25").replace("_classification", " + Classification")
+                    elif "_bm25" in mode:
+                        mode_display = mode.replace("_bm25", " + BM25")
+                    elif "_classification" in mode:
+                        mode_display = mode.replace("_classification", " + Classification")
+                    else:
+                        mode_display = mode.replace("_", " ").title()
+                    
+                    # Add source counts
+                    source_count = len(result['chat']['sources'])
+                    graph_count = sum(1 for s in result['chat']['sources'] if s.get("type") == "graph" or s.get("is_graph", False))
+                    hybrid_count = sum(1 for s in result['chat']['sources'] if s.get("is_hybrid", False))
+                    
+                    source_info = f"{source_count} sources"
+                    if "_bm25" in mode and hybrid_count > 0:
+                        source_info += f", {hybrid_count} hybrid"
+                    if mode.startswith("graph") and graph_count > 0:
+                        source_info += f", {graph_count} graph"
+                    
+                    # Write the result
+                    f.write(f"**{mode_display} Chat** ({result['chat']['time']:.2f}s, {source_info}):\n")
                     f.write(f"```\n{result['chat']['answer']}\n```\n\n")
                     
-                    # Classic chat errors (if any)
+                    # Add errors if any
                     if 'errors' in result['chat'] and result['chat']['errors']:
-                        f.write(f"**Classic Chat Errors:**\n")
+                        f.write(f"**{mode_display} Chat Errors:**\n")
                         f.write(f"```\n{result['chat']['errors']}\n```\n\n")
                     
-                    # Classic chat sources (top 5)
-                    f.write(f"**Classic Chat Sources (top 5 of {len(result['chat']['sources'])}):**\n\n")
+                    # Add sources preview
+                    f.write(f"**{mode_display} Chat Sources (top 5 of {source_count}):**\n\n")
                     for idx, source in enumerate(result['chat']['sources'][:5], 1):
                         doc = source.get("document", "Unknown")
                         distance = source.get("distance", "N/A")
-                        is_summary = "Yes" if source.get("is_summary", False) else "No"
-                        f.write(f"{idx}. **Document:** {doc} **Distance:** {distance} **Summary:** {is_summary}\n")
+                        
+                        source_text = f"{idx}. **Document:** {doc} **Distance:** {distance}"
+                        
+                        # Add source-specific information
+                        if source.get("is_graph", False) or source.get("type") == "graph":
+                            relation = source.get("relation_type", "N/A")
+                            source_text += f" **Graph:** Yes, **Relation:** {relation}"
+                        
+                        if source.get("is_hybrid", False):
+                            bm25_score = source.get("bm25_score", "N/A")
+                            source_text += f" **BM25:** Yes, **Score:** {bm25_score}"
+                            
+                        if source.get("sub_query"):
+                            subquery = source.get("sub_query", "")[:30]
+                            source_text += f" **Sub-query:** {subquery}..."
+                            
+                        if source.get("source_query"):
+                            source_query = source.get("source_query", "")[:30]
+                            source_text += f" **Source Query:** {source_query}..."
+                        
+                        f.write(f"{source_text}\n")
+                    
                     f.write("\n")
-                    
-                    # Graph chat result
-                    f.write(f"**GraphRAG Chat** ({graph_result['chat']['time']:.2f}s, {len(graph_result['chat']['sources'])} sources):\n")
-                    f.write(f"```\n{graph_result['chat']['answer']}\n```\n\n")
-                    
-                    # Graph chat errors (if any)
-                    if 'errors' in graph_result['chat'] and graph_result['chat']['errors']:
-                        f.write(f"**GraphRAG Chat Errors:**\n")
-                        f.write(f"```\n{graph_result['chat']['errors']}\n```\n\n")
-                    
-                    # Graph chat sources (top 5)
-                    graph_source_count = sum(1 for s in graph_result['chat']['sources'] if s.get("type") == "graph" or s.get("is_graph", False))
-                    f.write(f"**GraphRAG Chat Sources (top 5 of {len(graph_result['chat']['sources'])}, {graph_source_count} from graph):**\n\n")
-                    for idx, source in enumerate(graph_result['chat']['sources'][:5], 1):
-                        doc = source.get("document", "Unknown")
-                        distance = source.get("distance", "N/A")
-                        is_summary = "Yes" if source.get("is_summary", False) else "No"
-                        is_graph = "Yes" if source.get("type") == "graph" or source.get("is_graph", False) else "No"
-                        relation = source.get("relation_type", "N/A") if is_graph == "Yes" else "N/A"
-                        hierarchy = source.get("hierarchy", "unknown")
-                        
-                        f.write(f"{idx}. **Document:** {doc} **Distance:** {distance} **Graph:** {is_graph}")
-                        if is_graph == "Yes":
-                            f.write(f" **Relation:** {relation}")
-                        f.write(f" **Hierarchy:** {hierarchy}\n")
-                    
-                    # Advanced chat result
-                    f.write(f"**Advanced Chat** ({advanced_result['chat']['time']:.2f}s, {len(advanced_result['chat']['sources'])} sources):\n")
-                    f.write(f"```\n{advanced_result['chat']['answer']}\n```\n\n")
-                    
-                    # Advanced chat errors (if any)
-                    if 'errors' in advanced_result['chat'] and advanced_result['chat']['errors']:
-                        f.write(f"**Advanced Chat Errors:**\n")
-                        f.write(f"```\n{advanced_result['chat']['errors']}\n```\n\n")
-                    
-                    # Advanced chat sources (top 5)
-                    advanced_source_count = sum(1 for s in advanced_result['chat']['sources'] if s.get("type") == "graph" or s.get("is_graph", False))
-                    f.write(f"**Advanced Chat Sources (top 5 of {len(advanced_result['chat']['sources'])}, {advanced_source_count} from graph):**\n\n")
-                    for idx, source in enumerate(advanced_result['chat']['sources'][:5], 1):
-                        doc = source.get("document", "Unknown")
-                        distance = source.get("distance", "N/A")
-                        is_summary = "Yes" if source.get("is_summary", False) else "No"
-                        is_graph = "Yes" if source.get("type") == "graph" or source.get("is_graph", False) else "No"
-                        relation = source.get("relation_type", "N/A") if is_graph == "Yes" else "N/A"
-                        hierarchy = source.get("hierarchy", "unknown")
-                        
-                        f.write(f"{idx}. **Document:** {doc} **Distance:** {distance} **Graph:** {is_graph}")
-                        if is_graph == "Yes":
-                            f.write(f" **Relation:** {relation}")
-                        f.write(f" **Hierarchy:** {hierarchy}\n")
-            
-            elif TEST_MODE == "classic":
-                for i, result in enumerate(cat_results["classic"], 1):
-                    f.write(f"### Question {i}: {result['question']}\n\n")
-                    f.write(f"**Classic Chat** ({result['chat']['time']:.2f}s, {len(result['chat']['sources'])} sources):\n")
-                    f.write(f"```\n{result['chat']['answer']}\n```\n\n")
-                    
-                    # Classic chat errors (if any)
-                    if 'errors' in result['chat'] and result['chat']['errors']:
-                        f.write(f"**Classic Chat Errors:**\n")
-                        f.write(f"```\n{result['chat']['errors']}\n```\n\n")
-                    
-                    # Classic chat sources (top 5)
-                    f.write(f"**Classic Chat Sources (top 5 of {len(result['chat']['sources'])}):**\n\n")
-                    for idx, source in enumerate(result['chat']['sources'][:5], 1):
-                        doc = source.get("document", "Unknown")
-                        distance = source.get("distance", "N/A")
-                        is_summary = "Yes" if source.get("is_summary", False) else "No"
-                        f.write(f"{idx}. **Document:** {doc} **Distance:** {distance} **Summary:** {is_summary}\n")
-                    f.write("\n")
-            
-            elif TEST_MODE == "graph":
-                for i, result in enumerate(cat_results["graph"], 1):
-                    f.write(f"### Question {i}: {result['question']}\n\n")
-                    f.write(f"**GraphRAG Chat** ({result['chat']['time']:.2f}s, {len(result['chat']['sources'])} sources):\n")
-                    f.write(f"```\n{result['chat']['answer']}\n```\n\n")
-                    
-                    # Graph chat errors (if any)
-                    if 'errors' in result['chat'] and result['chat']['errors']:
-                        f.write(f"**GraphRAG Chat Errors:**\n")
-                        f.write(f"```\n{result['chat']['errors']}\n```\n\n")
-                    
-                    # Graph chat sources (top 5)
-                    graph_source_count = sum(1 for s in result['chat']['sources'] if s.get("type") == "graph" or s.get("is_graph", False))
-                    f.write(f"**GraphRAG Chat Sources (top 5 of {len(result['chat']['sources'])}, {graph_source_count} from graph):**\n\n")
-                    for idx, source in enumerate(result['chat']['sources'][:5], 1):
-                        doc = source.get("document", "Unknown")
-                        distance = source.get("distance", "N/A")
-                        is_summary = "Yes" if source.get("is_summary", False) else "No"
-                        is_graph = "Yes" if source.get("type") == "graph" or source.get("is_graph", False) else "No"
-                        relation = source.get("relation_type", "N/A") if is_graph == "Yes" else "N/A"
-                        hierarchy = source.get("hierarchy", "unknown")
-                        
-                        f.write(f"{idx}. **Document:** {doc} **Distance:** {distance} **Graph:** {is_graph}")
-                        if is_graph == "Yes":
-                            f.write(f" **Relation:** {relation}")
-                        f.write(f" **Hierarchy:** {hierarchy}\n")
-            
-            elif TEST_MODE == "advanced":
-                for i, result in enumerate(cat_results["advanced"], 1):
-                    f.write(f"### Question {i}: {result['question']}\n\n")
-                    f.write(f"**Advanced Chat** ({result['chat']['time']:.2f}s, {len(result['chat']['sources'])} sources):\n")
-                    f.write(f"```\n{result['chat']['answer']}\n```\n\n")
-                    
-                    # Advanced chat errors (if any)
-                    if 'errors' in result['chat'] and result['chat']['errors']:
-                        f.write(f"**Advanced Chat Errors:**\n")
-                        f.write(f"```\n{result['chat']['errors']}\n```\n\n")
-                    
-                    # Advanced chat sources (top 5)
-                    advanced_source_count = sum(1 for s in result['chat']['sources'] if s.get("type") == "graph" or s.get("is_graph", False))
-                    f.write(f"**Advanced Chat Sources (top 5 of {len(result['chat']['sources'])}, {advanced_source_count} from graph):**\n\n")
-                    for idx, source in enumerate(result['chat']['sources'][:5], 1):
-                        doc = source.get("document", "Unknown")
-                        distance = source.get("distance", "N/A")
-                        is_summary = "Yes" if source.get("is_summary", False) else "No"
-                        is_graph = "Yes" if source.get("type") == "graph" or source.get("is_graph", False) else "No"
-                        relation = source.get("relation_type", "N/A") if is_graph == "Yes" else "N/A"
-                        hierarchy = source.get("hierarchy", "unknown")
-                        
-                        f.write(f"{idx}. **Document:** {doc} **Distance:** {distance} **Graph:** {is_graph}")
-                        if is_graph == "Yes":
-                            f.write(f" **Relation:** {relation}")
-                        f.write(f" **Hierarchy:** {hierarchy}\n")
-            
-            elif TEST_MODE == "alternatives":
-                for i, result in enumerate(cat_results["alternatives"], 1):
-                    f.write(f"### Question {i}: {result['question']}\n\n")
-                    f.write(f"**Alternatives Chat** ({result['chat']['time']:.2f}s, {len(result['chat']['sources'])} sources):\n")
-                    f.write(f"```\n{result['chat']['answer']}\n```\n\n")
-                    
-                    # Alternatives chat errors (if any)
-                    if 'errors' in result['chat'] and result['chat']['errors']:
-                        f.write(f"**Alternatives Chat Errors:**\n")
-                        f.write(f"```\n{result['chat']['errors']}\n```\n\n")
-                    
-                    # Alternatives chat sources (top 5)
-                    # Safely count alternative queries
-                    alt_queries = [s.get("source_query") for s in result['chat']['sources'] if s.get("source_query") is not None and s.get("source_query") != "Original"]
-                    alt_queries_count = len(set(alt_queries))
-                    f.write(f"**Alternatives Chat Sources (top 5 of {len(result['chat']['sources'])}, from {alt_queries_count + 1} query variations):**\n\n")
-                    for idx, source in enumerate(result['chat']['sources'][:5], 1):
-                        doc = source.get("document", "Unknown")
-                        distance = source.get("distance", "N/A")
-                        is_summary = "Yes" if source.get("is_summary", False) else "No"
-                        source_query = source.get("source_query", "Original")
-                        hierarchy = source.get("hierarchy", "unknown")
-                        
-                        # Handle None safely
-                        query_display = source_query[:30] + "..." if source_query else "Original"
-                        f.write(f"{idx}. **Document:** {doc} **Distance:** {distance} **Source Query:** {query_display}")
-                        f.write(f" **Hierarchy:** {hierarchy}\n")
-        
+                
         # Provide instructions for manual evaluation
         f.write("## Manual Evaluation Instructions\n\n")
         f.write("To evaluate the quality of responses, please score each answer on the following criteria:\n\n")
@@ -1255,9 +1248,6 @@ def generate_summary(results, metrics, config):
         f.write("2. **Completeness (1-5)**: How comprehensive is the answer? Does it address all aspects of the question?\n")
         f.write("3. **Relevance (1-5)**: How relevant is the information provided to the question asked?\n")
         f.write("4. **Coherence (1-5)**: How well-structured and easy to understand is the answer?\n\n")
-        
-        if TEST_MODE == "all":
-            f.write("Compare the scores between Classic Chat and GraphRAG Chat to determine which approach performs better.\n")
         
         f.write("\n**Note:** Detailed source information is available in the `sources.json` file.\n")
         f.write("**Real-time results** are available in the `real_time_results_*.json` files.\n")
@@ -1270,8 +1260,12 @@ def generate_summary(results, metrics, config):
 
 if __name__ == "__main__":
     args = parse_arguments()
-    print(f"Starting GraphRAG vs Basic RAG performance tests...")
-    print(f"Configuration: Output={args.output_dir}")
+    print(f"Starting RAG performance tests...")
+    print(f"Configuration:")
+    print(f"- Mode: {args.mode}")
+    print(f"- Classification: {args.classic_classification}")
+    print(f"- Hybrid Search (BM25): {args.hybrid}")
+    print(f"- Output Directory: {args.output_dir}")
     if args.description:
-        print(f"Description: {args.description}")
+        print(f"- Description: {args.description}")
     run_test_suite(args)

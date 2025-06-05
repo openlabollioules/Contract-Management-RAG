@@ -21,15 +21,32 @@ class Reranker:
         """Initialize reranker with specified model"""
         if model_name not in self.MODELS:
             raise ValueError(f"Unsupported model: {model_name}. Supported models: {list(self.MODELS.keys())}")
-            
+        
         self.model_name = model_name
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # --- Correction gestion device pour MPS (Mac GPU) ---
+        if torch.backends.mps.is_available():
+            self.device = torch.device("mps")
+            logger.info("Using MPS device for reranker (Apple Silicon GPU)")
+        elif torch.cuda.is_available():
+            self.device = torch.device("cuda")
+            logger.info("Using CUDA device for reranker")
+        else:
+            self.device = torch.device("cpu")
+            logger.info("Using CPU for reranker")
         
         # Load model and tokenizer
         model_path = self.MODELS[model_name]
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
         self.model.to(self.device)
+        
+        # --- Vérification compatibilité MPS ---
+        if self.device.type == "mps":
+            try:
+                _ = torch.ones(1).to(self.device)
+            except Exception as e:
+                logger.warning(f"MPS device detected but not fully supported: {e}")
+                logger.warning("Certaines opérations peuvent échouer sur MPS. Essayez CPU si problème.")
         
         logger.info(f"Initialized reranker with model: {model_name}")
         
@@ -66,14 +83,16 @@ class Reranker:
         # Process one document at a time to avoid batch processing issues
         scores = []
         for pair in pairs:
-            # Tokenize each pair individually
+            # --- Correction: Tokenization pour modèles sequence classification (text, text_pair) ---
             features = self.tokenizer(
-                [pair],  # Wrap in list to keep tokenizer API consistent
+                text=pair[0],
+                text_pair=pair[1],
                 padding=True,
                 truncation=True,
                 return_tensors="pt",
                 max_length=512
-            ).to(self.device)
+            )
+            features = {k: v.to(self.device) for k, v in features.items()}
             
             # Get relevance score for this pair
             with torch.no_grad():

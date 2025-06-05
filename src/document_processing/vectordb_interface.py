@@ -1167,6 +1167,53 @@ class VectorDBInterface:
         # if at least one component (year or month) matched
         return year_match or month_match
 
+    def get_all_documents_with_content(self) -> list:
+        """
+        Récupère tous les documents avec leur contenu depuis ChromaDB
+        
+        Returns:
+            Liste de documents avec leur contenu et métadonnées
+        """
+        try:
+            # Récupérer tous les documents de la collection
+            logger.info("Récupération de tous les documents avec leur contenu...")
+            
+            # Vérifier d'abord le nombre de documents
+            count = self.collection.count()
+            if count == 0:
+                logger.warning("La collection est vide")
+                return []
+                
+            # Si la collection contient beaucoup de documents, récupérer par lots
+            if count > 10000:
+                logger.warning(f"Collection volumineuse avec {count} documents, cela peut prendre du temps")
+            
+            # Récupérer tous les documents en une seule requête
+            all_docs = self.collection.get(include=["documents", "metadatas", "embeddings"])
+            
+            # Vérifier que nous avons bien récupéré les données
+            if not all_docs or "ids" not in all_docs or not all_docs["ids"]:
+                logger.warning("Aucun document récupéré")
+                return []
+                
+            logger.info(f"Récupéré {len(all_docs['ids'])} documents")
+            
+            # Convertir en liste de dictionnaires pour faciliter l'utilisation
+            docs_list = []
+            for i in range(len(all_docs["ids"])):
+                doc = {
+                    "id": all_docs["ids"][i],
+                    "document": all_docs["documents"][i] if "documents" in all_docs else "",
+                    "metadata": all_docs["metadatas"][i] if "metadatas" in all_docs else {}
+                }
+                docs_list.append(doc)
+                
+            return docs_list
+            
+        except Exception as e:
+            logger.error(f"Erreur lors de la récupération des documents: {str(e)}")
+            return []
+
 def print_chunks_with_dates(chunks):
     print("\n📝 Affichage des chunks avec métadonnées:")
     print("=" * 80)
