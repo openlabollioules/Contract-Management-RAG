@@ -6,31 +6,74 @@ from document_processing.reranker import Reranker
 from core.subquery_divider import define_subqueries
 from core.alternative_query_creator import generate_queries
 from utils.logger import setup_logger
+from utils.hybrid_search import HybridSearch
 import os
 from dotenv import load_dotenv
 # Import the query classification
 from core.query_classification_v2 import route_and_execute
+from core.history_func import retrieve_similar_conversations, add_conversation_with_embedding, get_history
 
 # Configurer le logger pour ce module
 logger = setup_logger(__file__)
 load_dotenv("config.env")
 
-def search_contracts(query: str, n_results: int = 5) -> None:
+# Variable globale pour stocker l'instance de recherche hybride
+hybrid_search_instance = None
+
+def get_hybrid_search(embeddings_manager, chroma_manager, alpha=0.7):
+    """
+    Récupère ou initialise l'instance de recherche hybride
+    
+    Args:
+        embeddings_manager: Instance du gestionnaire d'embeddings
+        chroma_manager: Instance du gestionnaire ChromaDB
+        alpha: Poids pour les scores vectoriels (1-alpha pour BM25)
+    
+    Returns:
+        HybridSearch: Instance de recherche hybride
+    """
+    global hybrid_search_instance
+    
+    if hybrid_search_instance is None:
+        logger.info("Initialisation de la recherche hybride (vectorielle + BM25)...")
+        hybrid_search_instance = HybridSearch(chroma_manager, alpha=alpha)
+        
+        # Récupérer tous les documents de ChromaDB pour entraîner BM25
+        logger.info("Récupération des documents pour l'indexation BM25...")
+        all_docs = chroma_manager.get_all_documents_with_content()
+        
+        if all_docs:
+            logger.info(f"Indexation de {len(all_docs)} documents avec BM25...")
+            hybrid_search_instance.fit(all_docs)
+        else:
+            logger.warning("Aucun document disponible pour l'indexation BM25")
+    
+    return hybrid_search_instance
+
+def search_contracts(query: str, n_results: int = 5, use_hybrid: bool = True) -> None:
     """
     Search in the contract database
 
     Args:
         query: Search query
         n_results: Number of results to return
+        use_hybrid: Whether to use hybrid search (BM25 + semantic)
     """
     logger.info(f"\n🔍 Recherche: {query}")
 
     # Initialize managers
     embeddings_manager = TextVectorizer()
     chroma_manager = VectorDBInterface(embeddings_manager)
-
-    # Search
-    results = chroma_manager.search(query, n_results=n_results)
+    
+    # Choose search method
+    if use_hybrid:
+        logger.info("Utilisation de la recherche hybride (vectorielle + BM25)...")
+        hybrid_search = get_hybrid_search(embeddings_manager, chroma_manager)
+        results = hybrid_search.search(query, n_results=n_results)
+    else:
+        # Standard vector search
+        logger.info("Utilisation de la recherche vectorielle standard...")
+        results = chroma_manager.search(query, n_results=n_results)
 
     # Display results
     logger.info(f"\n📊 Résultats ({len(results)} trouvés):")
@@ -46,7 +89,12 @@ def search_contracts(query: str, n_results: int = 5) -> None:
             f"Document: {result['metadata'].get('document_title', 'Non spécifié')}"
         )
         logger.info(f"Contenu: {result['document'][:200]}...")
-        logger.info(f"Distance: {result['distance']:.4f}")
+        logger.info(f"Distance vectorielle: {result['distance']:.4f}")
+        
+        # Afficher les scores BM25 si disponibles
+        if 'bm25_score' in result:
+            logger.info(f"Score BM25: {result['bm25_score']:.4f}")
+            logger.info(f"Score combiné: {result['combined_score']:.4f}")
 
 def load_or_build_graph(chroma_manager, embeddings_manager):
     """
@@ -401,7 +449,8 @@ def get_sources_for_query_with_alternatives(query: str, n_context: int = int(os.
     return combined_results
 
 def get_sources_for_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False,
-                         similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6))) -> list:
+                         similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)),
+                         use_hybrid: bool = bool(os.getenv("USE_HYBRID", "True").lower() == "true")) -> list:
     """
     Récupère uniquement les sources pertinentes pour une requête sans générer de réponse LLM
 
@@ -410,6 +459,7 @@ def get_sources_for_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)
         n_context: Nombre de chunks pertinents à utiliser
         use_graph: Utiliser le graphe de connaissances
         similarity_threesold: Seuil de similarité pour le filtrage
+        use_hybrid: Utiliser la recherche hybride (BM25 + sémantique)
 
     Returns:
         list: Liste des sources pertinentes
@@ -442,12 +492,24 @@ def get_sources_for_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)
     is_date_query = any(term in query.lower() for term in date_related_terms)
 
     # Get search results
-    results = chroma_manager.search(query, n_results=n_context)
-    logger.info(f"Found {len(results)} initial search results")
+    if use_hybrid:
+        logger.info("Utilisation de la recherche hybride (vectorielle + BM25)...")
+        hybrid_search = get_hybrid_search(embeddings_manager, chroma_manager)
+        # Pour une recherche hybride, le filtrage par seuil est déjà intégré dans la fonction search
+        results = hybrid_search.search(query, n_results=n_context, min_semantic_score=similarity_threesold)
+        logger.info(f"Found {len(results)} initial hybrid search results")
+        
+        # Pour les requêtes hybrides, on considère les résultats directement sans filtrage supplémentaire
+        filtered_results = results
+    else:
+        # Standard vector search
+        logger.info("Utilisation de la recherche vectorielle standard...")
+        results = chroma_manager.search(query, n_results=n_context)
+        logger.info(f"Found {len(results)} initial search results")
     
-    # Standard filtering based on similarity threshold for non-date queries
-    filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
-    logger.info(f"After filtering by similarity threshold: {len(filtered_results)} results remain")
+        # Standard filtering based on similarity threshold for non-date queries
+        filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
+        logger.info(f"After filtering by similarity threshold: {len(filtered_results)} results remain")
 
     # For date-related queries, complement with date-specific results
     if is_date_query:
@@ -493,7 +555,8 @@ def get_sources_for_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)
 
 def chat_with_contract(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False, 
 temperature: float = float(os.getenv("TEMPERATURE", 0.5)), similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
-model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = int(os.getenv("CONTEXT_WINDOW", 0))) -> tuple:
+model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = int(os.getenv("CONTEXT_WINDOW", 0)), 
+history: str = "", use_hybrid: bool = bool(os.getenv("USE_HYBRID", "True").lower() == "true")) -> tuple:
     """
     Chat with the contract using embeddings for context and Ollama for generation
 
@@ -501,6 +564,7 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
         query: User's question
         n_context: Number of relevant chunks to use as context
         use_graph: Whether to use graph-based context expansion
+        use_hybrid: Whether to use hybrid search (BM25 + semantic)
         
     Returns:
         tuple: (response, sources) where response is the LLM's answer and sources is a list of sources used
@@ -533,12 +597,24 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     is_date_query = any(term in query.lower() for term in date_related_terms)
 
     # Get search results
-    results = chroma_manager.search(query, n_results=n_context)
-    logger.info(f"Found {len(results)} initial search results")
+    if use_hybrid:
+        logger.info("Utilisation de la recherche hybride (vectorielle + BM25)...")
+        hybrid_search = get_hybrid_search(embeddings_manager, chroma_manager)
+        # Pour une recherche hybride, le filtrage par seuil est déjà intégré dans la fonction search
+        results = hybrid_search.search(query, n_results=n_context, min_semantic_score=similarity_threesold)
+        logger.info(f"Found {len(results)} initial hybrid search results")
+        
+        # Pour les requêtes hybrides, on considère les résultats directement sans filtrage supplémentaire
+        filtered_results = results
+    else:
+        # Standard vector search
+        logger.info("Utilisation de la recherche vectorielle standard...")
+        results = chroma_manager.search(query, n_results=n_context)
+        logger.info(f"Found {len(results)} initial search results")
     
-    # Standard filtering based on similarity threshold for non-date queries
-    filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
-    logger.info(f"After filtering by similarity threshold: {len(filtered_results)} results remain")
+        # Standard filtering based on similarity threshold for non-date queries
+        filtered_results = [d for d in results if d['distance'] <= 1-similarity_threesold]
+        logger.info(f"After filtering by similarity threshold: {len(filtered_results)} results remain")
 
     # For date-related queries, complement with date-specific results
     if is_date_query:
@@ -615,17 +691,22 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     context = "\n\n---\n\n".join(context_parts)
 
     # Create the prompt with context
-    prompt = f"""You are an assistant specializing in contract analysis.
-    Here is the relevant context extracted from the documents. For each section, you either have a summary with the detailed content available or the original content itself.
-    First use the summaries to get an overview, then consult the detailed content if you need more precision.
+    prompt = f"""
+    You are an assistant specializing in contract analysis.
 
+    Here is the history of the conversation:
+    {history}
+
+    Here is the relevant context extracted from the documents. …
     {context}
 
     User's question: {query}
 
-    Provide a precise answer based on the context given.
-    If you use a summary, check the detailed content to ensure your answer's accuracy.
-    If you can't find the information in the context, state that clearly."""
+    Always double-check any summary by consulting the detailed content.
+    If the context lacks the information, state it explicitly.
+    If a history is present and non-null, extract useful elements from it to answer the initial question.
+    """
+
 
     # Get response from Ollama
     response = ask_ollama(prompt, temperature, model, context_window)
@@ -657,6 +738,13 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
             print(f"Dates: {result['metadata'].get('dates')}")
 
         logger.info(f"Distance: {result['distance']:.4f}")
+        
+        # Afficher les scores BM25 si disponibles
+        if 'bm25_score' in result:
+            logger.info(f"Score BM25: {result['bm25_score']:.4f}")
+            logger.info(f"Score combiné: {result['combined_score']:.4f}")
+            print(f"Score BM25: {result['bm25_score']:.4f}")
+            print(f"Score combiné: {result['combined_score']:.4f}")
 
         # Afficher le contenu
         if result.get("is_summary", False):
@@ -674,13 +762,17 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     summaries = sum(1 for r in combined_results if r.get("is_summary", False))
     graph_sources = sum(1 for r in combined_results if r.get("source_type") == "graph")
     date_sources = sum(1 for r in combined_results if r.get('metadata', {}).get('dates'))
+    hybrid_sources = sum(1 for r in combined_results if r.get('hybrid_search', False))
+    
     logger.info(f"\n📊 Statistiques des sources:")
     logger.info(f"- Total: {len(combined_results)}")
     logger.info(f"- Résumés: {summaries}")
     logger.info(f"- Contenus originaux: {len(combined_results) - summaries - graph_sources}")
     logger.info(f"- Sources du graphe: {graph_sources}")
     logger.info(f"- Sources avec dates: {date_sources}")
-    return response, combined_results
+    logger.info(f"- Sources via recherche hybride: {hybrid_sources}")
+    
+    return response
 
 def chat_with_contract_decomposed(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_graph: bool = False, 
 temperature: float = float(os.getenv("TEMPERATURE", 0.5)), similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
@@ -1134,6 +1226,7 @@ use_alternatives: bool = True) -> tuple:
     alternative_sources = sum(len(sources) for query_type, sources in sources_by_query.items() if query_type != 'Original')
     graph_sources = sum(1 for r in combined_results if r.get("source_type") == "graph")
     date_sources = sum(1 for r in combined_results if r.get('metadata', {}).get('dates'))
+    hybrid_sources = sum(1 for r in combined_results if r.get('hybrid_search', False))
     
     logger.info(f"\n📊 Statistiques des sources:")
     logger.info(f"- Total: {len(combined_results)}")
@@ -1141,6 +1234,7 @@ use_alternatives: bool = True) -> tuple:
     logger.info(f"- Sources requêtes alternatives: {alternative_sources}")
     logger.info(f"- Sources du graphe: {graph_sources}")
     logger.info(f"- Sources avec dates: {date_sources}")
+    logger.info(f"- Sources via recherche hybride: {hybrid_sources}")
     
     print(f"\n📊 Statistiques des sources:")
     print(f"- Total: {len(combined_results)}")
@@ -1148,6 +1242,7 @@ use_alternatives: bool = True) -> tuple:
     print(f"- Sources requêtes alternatives: {alternative_sources}")
     print(f"- Sources du graphe: {graph_sources}")
     print(f"- Sources avec dates: {date_sources}")
+    print(f"- Sources via recherche hybride: {hybrid_sources}")
     
     return response, combined_results
 
@@ -1156,7 +1251,8 @@ def process_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_g
                  similarity_threesold: float = float(os.getenv("SIMILARITY_THRESHOLD", 0.6)), 
                  model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), 
                  context_window: int = int(os.getenv("CONTEXT_WINDOW", 0)),
-                 use_classification: bool = True) -> tuple:
+                 use_classification: bool = False,
+                 use_hybrid: bool = bool(os.getenv("USE_HYBRID", "True").lower() == "true")) -> tuple:
     """
     Process a user query by first classifying it as RAG or LLM and then routing to the appropriate handler.
     
@@ -1169,10 +1265,84 @@ def process_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_g
         model: LLM model to use
         context_window: Context window size for the LLM
         use_classification: Whether to use query classification (if False, always use RAG)
+        use_hybrid: Whether to use hybrid search (BM25 + semantic)
         
     Returns:
         tuple: (response, sources) where response is the LLM's answer and sources is a list of sources used
     """
+
+    similar_conversations = retrieve_similar_conversations(query, os.getenv("HISTORY_DB_FILE"))
+
+    history_summary = ""
+
+    if similar_conversations:
+            history_summary = "\n".join(
+                [
+                    f"User: {conv['question']}\nAssistant: {conv['response']}"
+                    for conv in similar_conversations
+                ]
+            )
+
+            if "#force" not in query:
+
+                prompt = f"""
+                    You are an assistant specializing in contract analysis.
+
+                    Here is the history of the conversation:
+                    {history_summary}
+
+                    User's question: {query}
+
+                    Always double-check any summary by consulting the detailed content.
+                    If the context lacks the information, state it explicitly.
+                    If a history is present and non-null, extract useful elements from it to answer the initial question.
+                    """
+                
+
+                response = ask_ollama(prompt, temperature, model, context_window)
+                add_conversation_with_embedding(
+                    os.getenv("HISTORY_DB_FILE"), query, response
+                )
+                print("\n🤖 Réponse :")
+                print(response)
+                return response
+
+    if "#force" in query:
+        query = query.replace("#force", "")
+
+    if history_summary == "":
+        full_history = get_history(os.getenv("HISTORY_DB_FILE"))
+        # on prend les 8 dernières entrées (4 paires)
+        recent = full_history[-8:]
+        # regrouper en paires User/Assistant
+        pairs = []
+        for i in range(0, len(recent), 2):
+            if i + 1 < len(recent):
+                user_msg = recent[i]["content"]
+                assistant_msg = recent[i + 1]["content"]
+                pairs.append((user_msg, assistant_msg))
+        # on garde au plus les 4 dernières paires
+        pairs = pairs[-4:]
+        # transformer en résumé textuel
+        history_summary = "\n".join(
+            [f"User: {q}\nAssistant: {a}" for q, a in pairs]
+        )
+        logger.debug(
+            f"🔍 Résumé fallback de l'historique (4 derniers échanges) :\n{history_summary}"
+        )
+    else:
+        # on garde au plus 4 messages similaires trouvés
+        similar_messages = similar_messages[:4]
+        history_summary = "\n".join(
+            [
+                f"User: {conv['question']}\nAssistant: {conv['response']}"
+                for conv in similar_messages
+            ]
+        )
+        logger.debug(
+            f"🔍 Résumé historique (similar messages) :\n{history_summary}"
+        )
+
     if use_classification:
         # Classify the query as either "RAG" or "LLM"
         classification = route_and_execute(query, verbose=True)
@@ -1188,13 +1358,23 @@ def process_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_g
             
             Question: {query}
             """
-            response = ask_ollama(prompt, temperature, model, context_window)
+            response = ask_ollama(prompt=prompt, temperature=temperature, model=model, context_window=context_window)
             logger.info("\n🤖 Réponse :")
             logger.info(response)
             print("\n🤖 Réponse :")
             print(response)
-            return response, []  # No sources for LLM-only processing
+            add_conversation_with_embedding(
+                os.getenv("HISTORY_DB_FILE"), query, response
+            )
+            return response  # No sources for LLM-only processing
         
     # If classification is "RAG" or classification is disabled, use RAG processing
     logger.info(f"Using RAG processing for query: {query}")
-    return chat_with_contract(query, n_context, use_graph, temperature, similarity_threesold, model, context_window)
+    response = chat_with_contract(
+        query, n_context, use_graph, temperature, 
+        similarity_threesold, model, context_window, 
+        history_summary, use_hybrid
+    )
+    add_conversation_with_embedding(
+            os.getenv("HISTORY_DB_FILE"), query, response
+    )

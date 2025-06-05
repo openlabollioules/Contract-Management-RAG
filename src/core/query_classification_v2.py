@@ -41,7 +41,7 @@ logger.setLevel(logging.INFO)
 # Configuration des modèles
 EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL', 'all-MiniLM-L6-v2')  # Utiliser un modèle par défaut plus simple
 LLM_MODEL = os.getenv('LLM_MODEL', 'command-a:latest')
-OLLAMA_URL = os.getenv('OLLAMA_URL', 'http://localhost:11434')
+OLLAMA_URL = "http://localhost:11434"
 
 # 1. Initialisation Ollama
 try:
