@@ -12,7 +12,9 @@ class BM25:
         b: Paramètre de normalisation de la longueur des documents (0.75 typiquement)
     """
     
-    def __init__(self, k1: float = 1.5, b: float = 0.75):
+    def __init__(self, k1: float = 2.5, b: float = 0.5):
+        # Paramètres optimisés: k1 plus élevé favorise les termes répétés importants,
+        # b réduit pour donner moins d'importance à la longueur des documents
         self.k1 = k1
         self.b = b
         self.corpus_size = 0
@@ -22,19 +24,53 @@ class BM25:
         self.doc_len = []
         self.tokenized_docs = []
         self.doc_ids = []
+        # Liste de termes techniques importants à privilégier
+        self.technical_terms = [
+            'mw', 'kw', 'kwh', 'mwh', 'puissance', 'capacité', 'v2043', '1197',
+            'garantie', 'warrant', 'risque', 'change', 'rub', 'eur', 'taux', 
+            'clause', 'section', 'article', 'test', 'performance', 'heat', 'balance',
+            'technique', 'diagramme', 'annexe', 'contrat', 'partie', 'responsabilité'
+        ]
         
     def preprocess(self, text: str) -> List[str]:
         """
-        Prétraitement simple du texte: mise en minuscule, 
-        suppression des caractères spéciaux et tokenisation
+        Prétraitement amélioré pour les contrats avec focus sur termes techniques
         """
         text = text.lower()
-        # Suppression des caractères spéciaux tout en conservant les caractères accentués
-        text = re.sub(r'[^\w\s\-àáâãäåçèéêëìíîïñòóôõöùúûüýÿ]', ' ', text)
+        
+        # Conservation améliorée des chiffres, pourcentages et symboles importants
+        text = re.sub(r'[^\w\s\-àáâãäåçèéêëìíîïñòóôõöùúûüýÿ\d%€$\.,:/]', ' ', text)
+        
+        # Traitement spécial pour les dates (format JJ/MM/AAAA ou AAAA-MM-JJ)
+        text = re.sub(r'(\d{1,2})[/\-\.](\d{1,2})[/\-\.](\d{2,4})', r'date_\1_\2_\3', text)
+        text = re.sub(r'(\d{4})[/\-\.](\d{1,2})[/\-\.](\d{1,2})', r'date_\3_\2_\1', text)
+        
+        # Traitement des références de clauses et articles
+        text = re.sub(r'(article|section|clause|paragraphe|annexe|§)\s*(\d+(\.\d+)?)', r'\1_\2', text)
+        
+        # Traitement amélioré des valeurs numériques avec unités (crucial)
+        text = re.sub(r'(\d+(\.\d+)?)\s*(mw|kw|mwh|kwh|kg|m²|m2|mm|cm|m3|%|eur|rub|usd)', r'\1_\3', text)
+        
+        # Fusion des espaces dans les grands nombres (puissances, montants)
+        text = re.sub(r'(\d{1,3})\s+(\d{3})', r'\1\2', text)
+        
+        # Traitement des codes techniques spécifiques (ex: 75V2043-007d)
+        text = re.sub(r'(\d+[a-z][\d-]+[a-z\d]*)', r'code_\1', text)
+        
         # Remplacement des séquences d'espaces par un seul espace
         text = re.sub(r'\s+', ' ', text)
-        # Tokenisation simple par espace
-        return text.strip().split()
+        
+        tokens = text.strip().split()
+        
+        # Donner plus de poids aux termes techniques en les dupliquant
+        expanded_tokens = []
+        for token in tokens:
+            expanded_tokens.append(token)
+            # Si c'est un terme technique ou contient une unité/valeur, le dupliquer
+            if any(term in token for term in self.technical_terms) or re.match(r'\d+_\w+', token):
+                expanded_tokens.append(token)  # Duplication pour augmenter le poids
+            
+        return expanded_tokens
     
     def fit(self, documents: List[Dict[str, Any]]) -> None:
         """
@@ -67,9 +103,8 @@ class BM25:
     
     def _calc_idf(self) -> None:
         """
-        Calcule les valeurs IDF pour tous les termes du corpus
+        Calcule les valeurs IDF avec des ajustements pour les termes techniques
         """
-        idf_sum = 0
         unique_terms = set()
         for doc in self.tokenized_docs:
             unique_terms.update(doc)
@@ -78,12 +113,21 @@ class BM25:
         for term in unique_terms:
             n_docs_with_term = sum(1 for doc in self.tokenized_docs if term in doc)
             idf = np.log((self.corpus_size - n_docs_with_term + 0.5) / (n_docs_with_term + 0.5) + 1)
+            
+            # Boost pour les termes techniques et les valeurs numériques
+            if any(tech_term in term for tech_term in self.technical_terms):
+                idf *= 1.5  # Boost de 50% pour les termes techniques
+            elif re.match(r'\d+_\w+', term):  # Valeurs avec unités (1197_mw)
+                idf *= 2.0  # Boost de 100% pour les valeurs numériques avec unités
+            elif 'date_' in term:  # Dates formatées
+                idf *= 1.8  # Boost de 80% pour les dates
+            
             self.idf[term] = idf
-            idf_sum += idf
         
-        # Normaliser les valeurs IDF
+        # Normaliser les valeurs IDF par rapport au maximum (au lieu de la somme)
+        max_idf = max(self.idf.values()) if self.idf else 1.0
         for term, value in self.idf.items():
-            self.idf[term] = value / idf_sum if idf_sum > 0 else 0
+            self.idf[term] = value / max_idf if max_idf > 0 else 0
     
     def search(self, query: str, topk: int = 5) -> List[Dict[str, Any]]:
         """

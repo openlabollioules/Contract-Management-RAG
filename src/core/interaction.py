@@ -692,21 +692,36 @@ history: str = "", use_hybrid: bool = bool(os.getenv("USE_HYBRID", "True").lower
 
     # Create the prompt with context
     prompt = f"""
-    You are an assistant specializing in contract analysis.
+        ### SYSTEM
+        You are a senior legal-tech assistant specialized in contract analysis.
 
-    Here is the history of the conversation:
-    {history}
+        ### CONTEXT
+        Conversation history:
+        {history}
 
-    Here is the relevant context extracted from the documents. …
-    {context}
+        Extracts from source documents:
+        {context}
 
-    User's question: {query}
+        ### PERMANENT RULES
+        1. Work in French.
+        2. Quote exactly every article/clause/date/amount you reuse and enclose it in « » quotation marks.
+        3. If the required info is absent, explicitly say: “Information non trouvée dans le contexte fourni.”
+        4. Answer in well-structured markdown (##, ###).
+        5. Never invent numbers or dates.
 
-    Always double-check any summary by consulting the detailed content.
-    If the context lacks the information, state it explicitly.
-    If a history is present and non-null, extract useful elements from it to answer the initial question.
+        ### CONDITIONAL RULES
+        Recherchez attentivement toutes les valeurs numériques, dates et
+        spécifications techniques dans le contexte fourni.
+        Citez-les exactement et vérifiez chaque occurrence avant de répondre.
+        Relisez attentivement le contexte et double-vérifiez tout résumé.
+
+
+        ### USER QUESTION
+        {query}
+
+        ### OUTPUT FORMAT
+        **Réponse :** (en markdown)
     """
-
 
     # Get response from Ollama
     response = ask_ollama(prompt, temperature, model, context_window)
@@ -1286,17 +1301,33 @@ def process_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_g
             if "#force" not in query:
 
                 prompt = f"""
-                    You are an assistant specializing in contract analysis.
+                    ### SYSTEM
+                    You are a senior legal-tech assistant specialized in contract analysis.
 
-                    Here is the history of the conversation:
+                    ### CONTEXT
+                    Conversation history:
                     {history_summary}
 
-                    User's question: {query}
+                    ### PERMANENT RULES
+                    1. Work in French.
+                    2. Quote exactly every article/clause/date/amount you reuse and enclose it in « » quotation marks.
+                    3. If the required info is absent, explicitly say: “Information non trouvée dans le contexte fourni.”
+                    4. Answer in well-structured markdown (##, ###).
+                    5. Never invent numbers or dates.
 
-                    Always double-check any summary by consulting the detailed content.
-                    If the context lacks the information, state it explicitly.
-                    If a history is present and non-null, extract useful elements from it to answer the initial question.
-                    """
+                    ### CONDITIONAL RULES
+                    Recherchez attentivement toutes les valeurs numériques, dates et
+                    spécifications techniques dans le contexte fourni.
+                    Citez-les exactement et vérifiez chaque occurrence avant de répondre.
+                    Relisez attentivement le contexte et double-vérifiez tout résumé.
+
+
+                    ### USER QUESTION
+                    {query}
+
+                    ### OUTPUT FORMAT
+                    **Réponse :** (en markdown)
+                """
                 
 
                 response = ask_ollama(prompt, temperature, model, context_window)
@@ -1370,6 +1401,25 @@ def process_query(query: str, n_context: int = int(os.getenv("TOP_K", 5)), use_g
         
     # If classification is "RAG" or classification is disabled, use RAG processing
     logger.info(f"Using RAG processing for query: {query}")
+
+    # Ajout d'une détection pour les termes techniques et numériques
+    technical_terms = [
+        'mw', 'kw', 'kwh', 'mwh', 'puissance', 'capacit', 'v2043', '1197',
+        'garantie', 'warrant', 'risque', 'change', 'rub', 'eur', 'taux', 
+        'clause', 'section', 'article', 'test', 'performance', 'heat', 'balance',
+        'technique', 'diagramme', 'annexe', 'technique', 'heat-balance'
+    ]
+
+    # Vérifier si la requête concerne des informations techniques
+    is_technical_query = any(term in query.lower() for term in technical_terms)
+
+    # Si c'est une requête technique et que la recherche hybride est activée,
+    # augmenter le nombre de résultats pour mieux capturer les détails techniques
+    if is_technical_query and use_hybrid:
+        logger.info("Requête technique détectée, augmentation du nombre de résultats...")
+        # Ajuster n_context pour les requêtes techniques
+        n_context = n_context * 2  # Doubler pour les requêtes techniques
+
     response = chat_with_contract(
         query, n_context, use_graph, temperature, 
         similarity_threesold, model, context_window, 
