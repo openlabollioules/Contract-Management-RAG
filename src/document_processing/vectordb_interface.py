@@ -76,7 +76,7 @@ class VectorDBInterface:
             # Restore original umask
             os.umask(old_umask)
 
-    def document_exists(self, filename: str) -> bool:
+    def is_document_in_database(self, filename: str) -> bool:
         """
         Vérifie si un document avec le nom de fichier donné existe déjà dans la base de données
 

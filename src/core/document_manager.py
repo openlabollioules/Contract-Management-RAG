@@ -9,7 +9,7 @@ from utils.logger import setup_logger
 logger = setup_logger(__file__)
 
 
-def document_exists(filepath: str) -> bool:
+def is_document_in_database(filepath: str) -> bool:
     """
     Vérifie si un document existe déjà dans la base de données.
 
@@ -60,7 +60,7 @@ def document_exists(filepath: str) -> bool:
         # Vérifier si des documents avec ce nom existent déjà
         for name in possible_filenames:
             logger.debug(f"Vérification pour le nom de fichier: {name}")
-            exists = chroma_manager.document_exists(name)
+            exists = chroma_manager.is_document_in_database(name)
             if exists:
                 logger.info(
                     f"Résultat de la vérification: document existe avec le nom {name}"
@@ -129,7 +129,7 @@ def delete_document(filepath: str) -> bool:
         return False
 
 
-def cleanup_flag_documents() -> None:
+def clean_document_in_database() -> None:
     """
     Nettoie la base de données en supprimant tout document dont le nom commence par '--'.
     Ces documents ont été créés par erreur lorsque des flags de ligne de commande ont été
@@ -170,7 +170,7 @@ def cleanup_flag_documents() -> None:
         logger.error(f"❌ Erreur lors du nettoyage des flags: {e}")
 
 
-def get_existing_documents(
+def filter_existing_documents(
     filepaths: List[str], force_reprocess: bool = False
 ) -> List[str]:
     """
@@ -192,7 +192,7 @@ def get_existing_documents(
         if filepath.startswith("--"):
             continue
 
-        if document_exists(filepath):
+        if is_document_in_database(filepath):
             existing_docs.append(filepath)
 
     return existing_docs

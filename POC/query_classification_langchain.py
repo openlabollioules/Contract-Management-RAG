@@ -118,7 +118,7 @@ zero_shot_template = PromptTemplate(
     )
 )
 
-def classify_zero_shot(query: str) -> str:
+def classify_query_zero_shot(query: str) -> str:
     """Classify query using zero-shot prompting"""
     message = HumanMessage(content=zero_shot_template.format(query=query))
     resp = llm.invoke([message]).content.strip().upper()
@@ -166,7 +166,7 @@ def call_llm(query: str) -> str:
     #return llm.invoke([message]).content
     return "Réponse de LLM"
 
-def route_and_execute(query: str) -> str:
+def determine_inference_mode(query: str) -> str:
     """Main router function implementing the hybrid approach"""
     # 1) Pattern-based rules
     if any(re.search(p, query, re.IGNORECASE) for p in LLM_PATTERNS):
@@ -174,7 +174,7 @@ def route_and_execute(query: str) -> str:
         return call_llm(query)
     
     # 2) Zero-shot classification
-    choice = classify_zero_shot(query)
+    choice = classify_query_zero_shot(query)
     if choice == "RAG":
         logger.info(f"Query '{query}' routed to RAG via zero-shot")
         return call_rag(query)
@@ -215,7 +215,7 @@ if __name__ == "__main__":
     for q in test_queries:
         print(f"\nQ: {q}")
         try:
-            resp = route_and_execute(q)
+            resp = determine_inference_mode(q)
             print(f"→ {resp}")
         except Exception as e:
             logger.error(f"Error processing query '{q}': {e}")

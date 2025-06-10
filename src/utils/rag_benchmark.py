@@ -18,7 +18,7 @@ from tqdm import tqdm
 src_dir = Path(__file__).resolve().parent.parent
 sys.path.append(str(src_dir))
 
-from core.document_manager import cleanup_flag_documents
+from core.document_manager import clean_document_in_database
 from core.chunk_summarizer import ChunkSummarizer
 from document_processing.text_vectorizer import TextVectorizer
 from document_processing.vectordb_interface import VectorDBInterface
@@ -26,7 +26,7 @@ from document_processing.llm_chat import LLMChat
 from document_processing.text_chunker import TextChunker
 from document_processing.reranker import Reranker
 from core.graph_manager import GraphManager
-from core.interaction import load_or_build_graph, get_graph_augmented_results, merge_results, chat_with_contract
+from core.interaction import load_or_recreate_knowledge_graph, expand_results_with_graph, combine_vector_and_graph_results, chat_with_contract
 from document_processing.pdf_extractor import extract_pdf_text
 from utils.logger import setup_logger
 import document_processing.llm_chat
@@ -300,9 +300,9 @@ class RAGBenchmark:
             
             # Create or load graph
             try:
-                from core.interaction import load_or_build_graph
-                logger.info("Loading graph with load_or_build_graph")
-                graph = load_or_build_graph(db, self.text_vectorizer)
+                from core.interaction import load_or_recreate_knowledge_graph
+                logger.info("Loading graph with load_or_recreate_knowledge_graph")
+                graph = load_or_recreate_knowledge_graph(db, self.text_vectorizer)
                 if not graph:
                     logger.warning("Graph is empty, creating minimal graph")
                     from core.graph_manager import GraphManager
@@ -448,6 +448,6 @@ class RAGBenchmark:
         print("✅ Benchmark complete.")
 
 if __name__ == '__main__':
-    cleanup_flag_documents()
+    clean_document_in_database()
     benchmark = RAGBenchmark(TEST_CASES)
     benchmark.run()

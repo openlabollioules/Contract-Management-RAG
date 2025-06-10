@@ -82,6 +82,11 @@ def cosine_similarity(vec1, vec2):
 def setup_history_database(path=None):
     logger.info(f"Initializing database at: {path}")
     
+    # Si le chemin est None, utiliser un chemin par défaut
+    if path is None:
+        path = "data/history.db"
+        logger.info(f"Chemin de base de données non spécifié, utilisation du chemin par défaut: {path}")
+    
     # Ensure directory exists
     db_dir = os.path.dirname(path)
     if db_dir and not os.path.exists(db_dir):
@@ -105,7 +110,7 @@ def setup_history_database(path=None):
 
 
 # Function to add a conversation entry with embedding storage
-def add_conversation_with_embedding(path, question, response, model="nomic-ai/nomic-embed-text-v2-moe"):
+def add_conversation_in_history_db(path, question, response, model="nomic-ai/nomic-embed-text-v2-moe"):
     logger.info("Adding a new conversation to the database")
     try:
         conn = duckdb.connect(path)

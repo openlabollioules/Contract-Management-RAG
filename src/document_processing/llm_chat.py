@@ -18,7 +18,7 @@ load_dotenv("config.env")
 os.environ["OLLAMA_BASE_URL"] = os.getenv("OLLAMA_URL", "http://localhost:11434").split(
     "/api"
 )[0]
-logger.info(f"OLLAMA_BASE_URL configuré à {os.environ['OLLAMA_BASE_URL']}")
+# logger.info(f"OLLAMA_BASE_URL configuré à {os.environ['OLLAMA_BASE_URL']}")
 
 # Configuration pour les modèles offline
 USE_OFFLINE_MODELS = os.getenv("USE_OFFLINE_MODELS", "true").lower() == "true"
@@ -29,16 +29,16 @@ if USE_OFFLINE_MODELS:
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 # Détection du matériel (pour optimisations)
-is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
-if is_apple_silicon and torch.backends.mps.is_available():
-    device = "mps"
-    logger.info("🎮 Using MPS (Metal Performance Shaders) for LLM")
-elif torch.cuda.is_available():
-    device = "cuda"
-    logger.info("🚀 Using CUDA for LLM")
-else:
-    device = "cpu"
-    logger.info("💻 Using CPU for LLM")
+# is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
+# if is_apple_silicon and torch.backends.mps.is_available():
+#     device = "mps"
+#     logger.info("🎮 Using MPS (Metal Performance Shaders) for LLM")
+# elif torch.cuda.is_available():
+#     device = "cuda"
+#     logger.info("🚀 Using CUDA for LLM")
+# else:
+#     device = "cpu"
+#     logger.info("💻 Using CPU for LLM")
 
 
 class LLMChat:
@@ -62,7 +62,7 @@ class LLMChat:
 
         self.system_prompt = system_prompt
         self.messages = []
-        logger.info(f"LLMChat initialisé avec le modèle {self.model}")
+        # logger.info(f"LLMChat initialisé avec le modèle {self.model}")
 
         if system_prompt:
             logger.debug(f"System prompt défini: {system_prompt[:50]}...")
@@ -152,10 +152,10 @@ class LLMChat:
 
 # Global instance for backward compatibility
 _ollama_chat = LLMChat()
-logger.debug("Instance globale _ollama_chat créée")
+# logger.debug("Instance globale _ollama_chat créée")
 
 
-def ask_ollama(prompt: str, temperature: float = float(os.getenv("TEMPERATURE", 0.5)), 
+def llm_chat_call_with_ollama(prompt: str, temperature: float = float(os.getenv("TEMPERATURE", 0.5)), 
 model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: int = 0) -> str:
     """
     Generate a response using Ollama LLM (backward compatibility)
@@ -169,7 +169,7 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     Returns:
         The generated response
     """
-    logger.info(f"ask_ollama appelé avec modèle: {model}, temperature: {temperature}")
+    logger.info(f"llm_chat_call_with_ollama appelé avec modèle: {model}, temperature: {temperature}")
     if context_window > 0:
         logger.info(f"Context window spécifié: {context_window} tokens")
     logger.debug(f"Changement de modèle de l'instance globale à: {model}")
@@ -184,6 +184,6 @@ model: str = os.getenv("LLM_MODEL", "mistral-small3.1:latest"), context_window: 
     response = _ollama_chat.generate(prompt, options=options)
     
     logger.info(
-        f"Réponse générée via ask_ollama (longueur: {len(response)} caractères)"
+        f"Réponse générée via llm_chat_call_with_ollama (longueur: {len(response)} caractères)"
     )
     return response

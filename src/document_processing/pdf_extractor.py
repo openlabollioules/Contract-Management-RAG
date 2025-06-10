@@ -32,21 +32,21 @@ logger = setup_logger(__file__)
 load_dotenv("config.env")
 
 # Détection de l'architecture
-is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
-use_mps = os.getenv("USE_MPS", "true").lower() == "true"
+# is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
+# use_mps = os.getenv("USE_MPS", "true").lower() == "true"
 
-if is_apple_silicon and torch.backends.mps.is_available() and use_mps:
-    logger.info("🍎 Détection d'un processeur Apple Silicon avec MPS disponible")
-    device = torch.device("mps")
-    logger.info("🎮 GPU MPS activé pour les modèles Marker")
-elif torch.cuda.is_available():
-    logger.info("🚀 GPU CUDA disponible")
-    device = torch.device("cuda")
-else:
-    logger.info("💻 Utilisation du CPU (pas de GPU disponible)")
-    device = torch.device("cpu")
+# if is_apple_silicon and torch.backends.mps.is_available() and use_mps:
+#     logger.info("🍎 Détection d'un processeur Apple Silicon avec MPS disponible")
+#     device = torch.device("mps")
+#     logger.info("🎮 GPU MPS activé pour les modèles Marker")
+# elif torch.cuda.is_available():
+#     logger.info("🚀 GPU CUDA disponible")
+#     device = torch.device("cuda")
+# else:
+#     logger.info("💻 Utilisation du CPU (pas de GPU disponible)")
+#     device = torch.device("cpu")
 
-logger.info(f"⚙️ Utilisation du device: {device}")
+# logger.info(f"⚙️ Utilisation du device: {device}")
 
 # Désactiver les logs de PostHog et autres télémetries
 logging.getLogger("posthog").setLevel(logging.CRITICAL)
@@ -69,7 +69,7 @@ MARKER_DIR = os.getenv("MARKER_DIR", "offline_models/marker")
 
 
 # Patch pour désactiver PostHog
-def patch_posthog():
+def configure_posthog():
     try:
         import posthog
 
@@ -85,7 +85,7 @@ def patch_posthog():
 
 
 # Patch pour désactiver les téléchargements S3
-def patch_s3_download():
+def configure_s3():
     try:
         import boto3
 
@@ -101,16 +101,16 @@ def patch_s3_download():
 
 
 # Patch pour la fonction create_model_dict
-def patch_create_model_dict():
+def install_local_model_loader():
     # Importer le module marker.models
     marker_models = importlib.import_module("marker.models")
 
     # Sauvegarder la fonction originale
     original_create_model_dict = marker_models.create_model_dict
 
-    def patched_create_model_dict():
+    def load_marker_models_local():
         logger.info(
-            "🔧 Utilisation de patched_create_model_dict pour charger les modèles locaux"
+            "🔧 Utilisation de load_marker_models_local pour charger les modèles locaux"
         )
         model_dict = {}
 
@@ -225,14 +225,14 @@ def patch_create_model_dict():
                 )
 
         # Remplacer la fonction originale
-        marker_models.create_model_dict = patched_create_model_dict
+        marker_models.create_model_dict = load_marker_models_local
         logger.info("✅ Patch create_model_dict appliqué avec succès")
 
         return model_dict
 
 
 # Patch pour désactiver les téléchargements S3 dans marker.models
-def patch_marker_models():
+def configure_marker_models_offline():
     try:
         marker_models = importlib.import_module("marker.models")
 
@@ -260,10 +260,10 @@ def patch_marker_models():
 
 
 # Appliquer les patches
-patch_posthog()
-patch_s3_download()
-patch_marker_models()
-patch_create_model_dict()
+configure_posthog()
+configure_s3()
+configure_marker_models_offline()
+install_local_model_loader()
 
 
 def correct_pdf_orientation(pdf_path):
@@ -313,7 +313,7 @@ def correct_pdf_orientation(pdf_path):
         return pdf_path  # Retourner le chemin original en cas d'erreur
 
 
-def get_text_regions(image):
+def extract_text_regions(image):
     """
     Détecte les régions contenant du texte avec Tesseract OCR.
     """
@@ -343,7 +343,7 @@ def get_text_regions(image):
     return mask
 
 
-def detect_and_mask_signatures(image, sess, input_name, text_mask, padding=200):
+def detect_and_remove_signatures(image, sess, input_name, text_mask, padding=200):
     """
     Détecte et masque les signatures dans une image en évitant les zones de texte.
     Utilise une approche plus agressive avec post-traitement.
@@ -426,11 +426,11 @@ def clean_pdf(pdf_path):
 
             # Détecter les zones de texte
             print("Détection des zones de texte...")
-            text_mask = get_text_regions(img_np)
+            text_mask = extract_text_regions(img_np)
 
             # Masquer les signatures en évitant le texte
             print("Masquage des signatures...")
-            img_np = detect_and_mask_signatures(
+            img_np = detect_and_remove_signatures(
                 img_np, sess, input_name, text_mask, padding=200
             )
 
@@ -570,6 +570,7 @@ def extract_pdf_text(pdf_path):
         # pdf_path = clean_pdf(pdf_path)
 
         # Corriger l'orientation du PDF si nécessaire
+        # TO REMOVE
         logger.info("🔄 Vérification de l'orientation des pages...")
         oriented_pdf_path = correct_pdf_orientation(pdf_path)
         
@@ -648,10 +649,10 @@ def extract_pdf_text(pdf_path):
 
         logger.info("🔄 Création des modèles...")
         # Appliquer tous les patches avant de créer les modèles
-        patch_posthog()
-        patch_s3_download()
-        patch_marker_models()
-        patch_create_model_dict()
+        configure_posthog()
+        configure_s3()
+        configure_marker_models_offline()
+        install_local_model_loader()
 
         # Créer le dictionnaire des modèles
         model_dict = create_model_dict()
@@ -787,10 +788,10 @@ Content:
         logger.warning(
             "⚠️ Échec de l'extraction avancée, utilisation de la méthode simple..."
         )
-        return fallback_extract_text(original_pdf_path)
+        return extract_text_pymupdf(original_pdf_path)
 
 
-def patch_marker_extract_text():
+def setup_marker():
     # Import marker avec gestion d'erreur
     try:
         import marker
@@ -801,9 +802,9 @@ def patch_marker_extract_text():
         original_load_and_extract_text = load_and_extract_text
 
         # Fonction modifiée extract_text
-        def patched_extract_text(file_path, **kwargs):
+        def extract_text_offline(file_path, **kwargs):
             logger.info(
-                "🔧 Utilisation de patched_extract_text pour charger les modèles locaux"
+                "🔧 Utilisation de extract_text_offline pour charger les modèles locaux"
             )
 
             # S'assurer que tous les modèles sont chargés localement
@@ -844,9 +845,9 @@ def patch_marker_extract_text():
                     )
 
         # Fonction modifiée load_and_extract_text
-        def patched_load_and_extract_text(file_path, **kwargs):
+        def load_and_extract_text_offline(file_path, **kwargs):
             logger.info(
-                "🔧 Utilisation de patched_load_and_extract_text pour charger les modèles locaux"
+                "🔧 Utilisation de load_and_extract_text_offline pour charger les modèles locaux"
             )
 
             # Force le mode offline
@@ -875,8 +876,8 @@ def patch_marker_extract_text():
                     )
 
         # Remplacer les fonctions originales
-        marker.extract_text.extract_text = patched_extract_text
-        marker.extract_text.load_and_extract_text = patched_load_and_extract_text
+        marker.extract_text.extract_text = extract_text_offline
+        marker.extract_text.load_and_extract_text = load_and_extract_text_offline
         logger.info("✅ Patch marker.extract_text appliqué avec succès")
         return True
     except ImportError as e:
@@ -884,7 +885,7 @@ def patch_marker_extract_text():
         return False
 
 
-def fallback_extract_text(pdf_path):
+def extract_text_pymupdf(pdf_path):
     """
     Méthode de secours pour extraire le texte d'un PDF en cas d'échec de Marker.
     Utilise PyMuPDF (fitz) directement.
@@ -973,7 +974,7 @@ Content:
         return f"Échec de l'extraction du texte: {str(e)}", filename
 
 
-def init():
+def init_pdf_extractor_module():
     """Initialize the PDF extractor module. Must be called before using the module."""
     logger.info("🔄 Initializing PDF extractor module")
 
@@ -982,8 +983,8 @@ def init():
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
     # Appliquer les patches pour utiliser les modèles en local
-    patch_create_model_dict()
-    patch_marker_extract_text()
+    install_local_model_loader()
+    setup_marker()
 
     # Log info about parameters
     logger.info(
@@ -1011,4 +1012,4 @@ def init():
     logger.info("✅ PDF extractor module initialized successfully")
 
 
-# Ne pas initialiser à l'import - laisser l'application appeler init()
+# Ne pas initialiser à l'import - laisser l'application appeler init_pdf_extractor_module()

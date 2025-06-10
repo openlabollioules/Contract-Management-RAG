@@ -104,10 +104,10 @@ def extract_text_from_pdf(pdf_path):
     """
     try:
         # Try to import and use the main extract_pdf_text function
-        from src.document_processing.pdf_extractor import extract_pdf_text, init
+        from src.document_processing.pdf_extractor import extract_pdf_text, init_pdf_extractor_module
         
         # Initialize the extractor if needed
-        init()
+        init_pdf_extractor_module()
         
         print(f"📄 Extracting text from PDF using project's extractor: {pdf_path}")
         text, title = extract_pdf_text(pdf_path)
@@ -141,12 +141,12 @@ def ask_llm(prompt: str, temperature: float = DEFAULT_TEMPERATURE, model: str = 
         The model's response
     """
     try:
-        from src.document_processing.llm_chat import ask_ollama
+        from src.document_processing.llm_chat import llm_chat_call_with_ollama
         
         # Pass context_window as a positional parameter
-        return ask_ollama(prompt, temperature, model, context_window)
+        return llm_chat_call_with_ollama(prompt, temperature, model, context_window)
     except ImportError as e:
-        print(f"Error: Could not import ask_ollama: {e}. Falling back to default implementation.")
+        print(f"Error: Could not import llm_chat_call_with_ollama: {e}. Falling back to default implementation.")
         import subprocess
         
         # Use OLLAMA_URL from config.env if available

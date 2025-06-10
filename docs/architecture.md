@@ -44,7 +44,7 @@ Le répertoire `utils/` contient :
 3. Selon le mode, les différentes fonctions sont appelées:
    - Mode traitement: `process_contract()` dans `contract_processor.py`
    - Mode chat: `chat_with_contract()` dans `interaction.py`
-   - Mode recherche: `search_contracts()` dans `interaction.py`
+   - Mode recherche: `display_contract_search_results()` dans `interaction.py`
    - Mode suppression: `delete_document()` dans `document_manager.py`
 
 ## Architecture de la base de données

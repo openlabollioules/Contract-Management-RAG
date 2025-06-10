@@ -4,9 +4,9 @@ from typing import Any, Dict, List
 from pathlib import Path
 
 from core.contract_processor import process_contract
-from core.document_manager import (delete_document, document_exists,
-                                   get_existing_documents)
-from core.interaction import chat_with_contract, chat_with_contract_decomposed, chat_with_contract_alternatives, search_contracts, process_query
+from core.document_manager import (delete_document, is_document_in_database,
+                                   filter_existing_documents)
+from core.interaction import chat_with_contract, chat_with_contract_using_query_decomposition, chat_with_contract_using_query_alternatives, display_contract_search_results, query_classifier
 from utils.logger import setup_logger
 from core.history_func import setup_history_database
 from dotenv import load_dotenv
@@ -23,50 +23,45 @@ def print_usage() -> None:
     Affiche les instructions d'utilisation du programme
     """
     print(
-        "Usage: python main.py <contract_file1> [contract_file2 ...] [--chat|--search <search_query>] [--force] [--delete]"
+        "Usage: python main.py <contract_file1> [contract_file2 ...] [--chat|--search <search_query>] [options]"
     )
-    print("Options:")
+    print("\nModes d'opération:")
     print("  --chat                 Mode chat interactif avec les contrats")
     print("  --advanced-chat        Mode chat avec décomposition des requêtes complexes")
     print("  --alternatives-chat    Mode chat utilisant des requêtes alternatives")
     print("  --graph-chat           Mode chat utilisant le graphe de connaissances")
     print("  --search <query>       Recherche dans les contrats")
-    print(
-        "  --force                Force le retraitement des documents même s'ils existent déjà"
-    )
-    print(
-        "  --delete               Supprime les documents spécifiés de la base de données"
-    )
-    print("  --debug                Active le mode debug avec logs détaillés")
+    
+    print("\nOptions de traitement:")
+    print("  --force                Force le retraitement des documents même s'ils existent déjà")
+    print("  --delete               Supprime les documents spécifiés de la base de données")
     print("  --summarize-chunks     Résume chaque chunk avant de l'ajouter à la base de données")
+    print("  --classification       Active la classification des requêtes")
+    
+    print("\nOptions de recherche:")
     print("  --hybrid               Active la recherche hybride (BM25 + sémantique)")
     print("  --no-hybrid            Désactive la recherche hybride (utilise uniquement la recherche sémantique)")
-    print("Examples:")
-    print("  Process one contract:           python main.py contract.pdf")
-    print(
-        "  Process multiple contracts:     python main.py contract1.pdf contract2.pdf"
-    )
-    print("  Force reprocessing:             python main.py contract1.pdf --force")
-    print(
-        "  Delete documents:               python main.py contract1.pdf contract2.pdf --delete"
-    )
-    print(
-        "  Chat with processed contracts:  python main.py contract1.pdf contract2.pdf --chat"
-    )
-    print("  Chat with all contracts:        python main.py --chat")
-    print(
-        "  Advanced chat:                  python main.py --advanced-chat"
-    )
-    print(
-        "  Alternatives chat:              python main.py --alternatives-chat"
-    )
-    print(
-        "  Search in contracts:            python main.py contract1.pdf contract2.pdf --search payment terms"
-    )
-    print(
-        "  Chat with hybrid search:        python main.py --chat --hybrid"
-    )
-
+    print("  --top-k <number>       Nombre de résultats à récupérer (défaut: 35)")
+    
+    print("\nOptions de génération:")
+    print("  --max-tokens <number>  Limite de tokens pour le contexte (défaut: 60000)")
+    print("  --temperature <float>  Température pour la génération LLM (défaut: 0.3)")
+    
+    print("\nOptions diverses:")
+    print("  --debug                Active le mode debug avec logs détaillés")
+    
+    print("\nExemples:")
+    print("  Traiter un contrat:              python main.py contract.pdf")
+    print("  Traiter plusieurs contrats:      python main.py contract1.pdf contract2.pdf")
+    print("  Forcer le retraitement:          python main.py contract1.pdf --force")
+    print("  Supprimer des documents:         python main.py contract1.pdf contract2.pdf --delete")
+    print("  Chat avec contrats spécifiques:  python main.py contract1.pdf contract2.pdf --chat")
+    print("  Chat avec tous les contrats:     python main.py --chat")
+    print("  Chat avancé:                     python main.py --advanced-chat")
+    print("  Chat avec requêtes alternatives: python main.py --alternatives-chat")
+    print("  Recherche dans les contrats:     python main.py contract1.pdf --search payment terms")
+    print("  Chat avec recherche hybride:     python main.py --chat --hybrid")
+    print("  Chat avec paramètres:            python main.py --chat --temperature 0.7 --top-k 50")
 
 def parse_arguments() -> Dict[str, Any]:
     """
@@ -76,82 +71,135 @@ def parse_arguments() -> Dict[str, Any]:
         Un dictionnaire contenant les options et valeurs extraites des arguments
     """
     args = {
+        # Modes opératoires
         "debug": False,
         "force": False,
         "delete": False,
+        
+        # Modes d'interaction
         "chat": False,
         "advanced_chat": False,
         "alternatives_chat": False,
-        "graph-chat": False,
+        "graph_chat": False,  # Correction du nom avec underscore au lieu de tiret
         "search": False,
         "search_query": "",
+        
+        # Options de traitement
         "filepaths": [],
         "summarize_chunks": False,
         "classification": False,
-        "hybrid": bool(os.getenv("USE_HYBRID", "True").lower() == "true"),  # Par défaut, utiliser la valeur de USE_HYBRID dans l'environnement
+        "hybrid": bool(os.getenv("USE_HYBRID", "True").lower() == "true"),  # Par défaut depuis config.env
+        
+        # Options avancées
+        "max_tokens": int(os.getenv("CONTEXT_WINDOW", "60000")),
+        "top_k": int(os.getenv("TOP_K", "35")),
+        "temperature": float(os.getenv("TEMPERATURE", "0.3")),
     }
 
     # Copier les arguments sans le nom du script
     argv = sys.argv[1:]
-
-    # Vérifier les arguments spéciaux
-    if "--debug" in argv:
-        args["debug"] = True
-        argv.remove("--debug")
-
-    if "--force" in argv:
-        args["force"] = True
-        argv.remove("--force")
-
-    if "--delete" in argv:
-        args["delete"] = True
-        argv.remove("--delete")
-
-    if "--chat" in argv:
-        args["chat"] = True
-        argv.remove("--chat")
-
-    if "--advanced-chat" in argv:
-        args["advanced_chat"] = True
-        argv.remove("--advanced-chat")
-
-    if "--alternatives-chat" in argv:
-        args["alternatives_chat"] = True
-        argv.remove("--alternatives-chat")
-
-    if "--graph-chat" in argv:
-        args["graph-chat"] = True
-        argv.remove("--graph-chat")
-
-    if "--summarize-chunks" in argv:
-        args["summarize_chunks"] = True
-        argv.remove("--summarize-chunks")
-        
-    if "--hybrid" in argv:
-        args["hybrid"] = True
-        argv.remove("--hybrid")
     
+    # Liste des flags booléens simples
+    boolean_flags = {
+        "--debug": "debug",
+        "--force": "force",
+        "--delete": "delete",
+        "--chat": "chat",
+        "--advanced-chat": "advanced_chat",
+        "--alternatives-chat": "alternatives_chat",
+        "--graph-chat": "graph_chat",  # Correction du nom avec underscore
+        "--summarize-chunks": "summarize_chunks",
+        "--classification": "classification",
+        "--hybrid": "hybrid",
+    }
+    
+    # Traiter les flags booléens simples
+    for flag, arg_name in boolean_flags.items():
+        if flag in argv:
+            args[arg_name] = True
+            argv.remove(flag)
+    
+    # Traiter les flags qui désactivent des options
     if "--no-hybrid" in argv:
         args["hybrid"] = False
         argv.remove("--no-hybrid")
-
-    if "--search" in argv and argv.index("--search") + 1 < len(argv):
-        args["search"] = True
-        search_index = argv.index("--search")
-        # Extraire tout ce qui suit --search comme query
-        args["search_query"] = " ".join(argv[search_index + 1 :])
-        # Ne garder que ce qui précède --search pour les fichiers
-        argv = argv[:search_index]
-
-    if "--classification" in argv:
-        args["classification"] = True
-        argv.remove("--classification")
+    
+    # Traiter les flags avec valeurs
+    i = 0
+    while i < len(argv):
+        # Options avec paramètre
+        if argv[i] == "--search" and i + 1 < len(argv):
+            args["search"] = True
+            # Extraire tout ce qui suit --search comme query
+            search_terms = []
+            j = i + 1
+            while j < len(argv) and not argv[j].startswith("--"):
+                search_terms.append(argv[j])
+                j += 1
+            args["search_query"] = " ".join(search_terms)
+            # Supprimer les arguments traités
+            argv = argv[:i] + argv[j:]
+            continue
+        
+        # Options numériques
+        elif argv[i] == "--max-tokens" and i + 1 < len(argv):
+            try:
+                args["max_tokens"] = int(argv[i + 1])
+                argv = argv[:i] + argv[i+2:]
+                continue
+            except ValueError:
+                logger.warning(f"Valeur invalide pour --max-tokens: {argv[i+1]}")
+                i += 2
+                continue
+        
+        elif argv[i] == "--top-k" and i + 1 < len(argv):
+            try:
+                args["top_k"] = int(argv[i + 1])
+                argv = argv[:i] + argv[i+2:]
+                continue
+            except ValueError:
+                logger.warning(f"Valeur invalide pour --top-k: {argv[i+1]}")
+                i += 2
+                continue
+        
+        elif argv[i] == "--temperature" and i + 1 < len(argv):
+            try:
+                args["temperature"] = float(argv[i + 1])
+                argv = argv[:i] + argv[i+2:]
+                continue
+            except ValueError:
+                logger.warning(f"Valeur invalide pour --temperature: {argv[i+1]}")
+                i += 2
+                continue
+        
+        # Si c'est un flag inconnu, ignorer
+        elif argv[i].startswith("--"):
+            logger.warning(f"Option inconnue ignorée: {argv[i]}")
+            argv.pop(i)
+            continue
+            
+        i += 1
 
     # Le reste des arguments sont des chemins de fichiers
     args["filepaths"] = [path for path in argv if not path.startswith("--")]
+    
+    # Validation: s'assurer qu'un seul mode est actif
+    active_modes = sum([
+        args["chat"], 
+        args["advanced_chat"], 
+        args["alternatives_chat"], 
+        args["graph_chat"],
+        args["search"],
+        args["delete"]
+    ])
+    
+    if active_modes > 1:
+        logger.warning("⚠️ Plusieurs modes sont activés simultanément. Seul le premier mode sera utilisé.")
+    
+    # Log des arguments
+    logger.debug(f"Arguments parsés: {args}")
 
     return args
-
 
 def handle_delete_mode(filepaths: List[str]) -> None:
     """
@@ -169,7 +217,7 @@ def handle_delete_mode(filepaths: List[str]) -> None:
         if filepath.startswith("--"):
             continue
 
-        if document_exists(filepath):
+        if is_document_in_database(filepath):
             logger.info(f"\n🗑️ Suppression du document: {filepath}")
             if delete_document(filepath):
                 logger.info(f"✅ Document {filepath} supprimé avec succès.")
@@ -181,7 +229,7 @@ def handle_delete_mode(filepaths: List[str]) -> None:
             )
 
 
-def handle_chat_mode(filepaths: List[str], force_reprocess: bool, classification: bool, use_hybrid: bool) -> None:
+def handle_chat_mode(filepaths: List[str], force_reprocess: bool, classification: bool, use_hybrid: bool, top_k: int, temperature: float, max_tokens: int) -> None:
     """
     Gère le mode chat interactif
 
@@ -190,11 +238,14 @@ def handle_chat_mode(filepaths: List[str], force_reprocess: bool, classification
         force_reprocess: Si True, force le retraitement des documents
         classification: Si True, utilise la classification des requêtes
         use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
+        top_k: Nombre de résultats à récupérer
+        temperature: Température pour la génération LLM
+        max_tokens: Limite de tokens pour le contexte
     """
     # Traiter les documents restants avant d'entrer en mode chat
     if filepaths:
         # Vérifier les documents existants
-        existing_docs = get_existing_documents(filepaths, force_reprocess)
+        existing_docs = filter_existing_documents(filepaths, force_reprocess)
 
         # Si des documents existent déjà, afficher une erreur et quitter
         if existing_docs:
@@ -219,15 +270,25 @@ def handle_chat_mode(filepaths: List[str], force_reprocess: bool, classification
         logger.info("🔍 Recherche hybride (BM25 + sémantique) activée")
     else:
         logger.info("🔍 Recherche sémantique standard activée")
+    
+    logger.info(f"📊 Paramètres: top_k={top_k}, temperature={temperature}, max_tokens={max_tokens}")
         
     while True:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        response = process_query(query, use_graph=False, use_classification=classification, use_hybrid=use_hybrid)
+        response = query_classifier(
+            query, 
+            n_context=top_k,
+            use_graph=False, 
+            use_classification=classification, 
+            use_hybrid=use_hybrid,
+            temperature=temperature,
+            context_window=max_tokens
+        )
 
 
-def handle_advanced_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybrid: bool) -> None:
+def handle_advanced_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybrid: bool, top_k: int, temperature: float, max_tokens: int) -> None:
     """
     Gère le mode chat interactif avancé avec décomposition des requêtes
 
@@ -235,11 +296,14 @@ def handle_advanced_chat_mode(filepaths: List[str], force_reprocess: bool, use_h
         filepaths: Liste des chemins de fichiers à traiter avant le chat
         force_reprocess: Si True, force le retraitement des documents
         use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
+        top_k: Nombre de résultats à récupérer
+        temperature: Température pour la génération LLM
+        max_tokens: Limite de tokens pour le contexte
     """
     # Traiter les documents restants avant d'entrer en mode chat
     if filepaths:
         # Vérifier les documents existants
-        existing_docs = get_existing_documents(filepaths, force_reprocess)
+        existing_docs = filter_existing_documents(filepaths, force_reprocess)
 
         # Si des documents existent déjà, afficher une erreur et quitter
         if existing_docs:
@@ -267,14 +331,22 @@ def handle_advanced_chat_mode(filepaths: List[str], force_reprocess: bool, use_h
     else:
         logger.info("🔍 Recherche sémantique standard activée")
     
+    logger.info(f"📊 Paramètres: top_k={top_k}, temperature={temperature}, max_tokens={max_tokens}")
+    
     while True:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        response, sources = chat_with_contract_decomposed(query, use_graph=False)
+        response, sources = chat_with_contract_using_query_decomposition(
+            query, 
+            n_context=top_k,
+            use_graph=False,
+            temperature=temperature,
+            context_window=max_tokens
+        )
 
 
-def handle_alternatives_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybrid: bool) -> None:
+def handle_alternatives_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybrid: bool, top_k: int, temperature: float, max_tokens: int) -> None:
     """
     Gère le mode chat interactif avec requêtes alternatives
 
@@ -282,11 +354,14 @@ def handle_alternatives_chat_mode(filepaths: List[str], force_reprocess: bool, u
         filepaths: Liste des chemins de fichiers à traiter avant le chat
         force_reprocess: Si True, force le retraitement des documents
         use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
+        top_k: Nombre de résultats à récupérer
+        temperature: Température pour la génération LLM
+        max_tokens: Limite de tokens pour le contexte
     """
     # Traiter les documents restants avant d'entrer en mode chat
     if filepaths:
         # Vérifier les documents existants
-        existing_docs = get_existing_documents(filepaths, force_reprocess)
+        existing_docs = filter_existing_documents(filepaths, force_reprocess)
 
         # Si des documents existent déjà, afficher une erreur et quitter
         if existing_docs:
@@ -314,14 +389,22 @@ def handle_alternatives_chat_mode(filepaths: List[str], force_reprocess: bool, u
     else:
         logger.info("🔍 Recherche sémantique standard activée")
     
+    logger.info(f"📊 Paramètres: top_k={top_k}, temperature={temperature}, max_tokens={max_tokens}")
+    
     while True:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        response, sources = chat_with_contract_alternatives(query, use_graph=False)
+        response, sources = chat_with_contract_using_query_alternatives(
+            query,
+            n_context=top_k,
+            use_graph=False,
+            temperature=temperature,
+            context_window=max_tokens
+        )
 
 
-def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybrid: bool) -> None:
+def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybrid: bool, top_k: int, temperature: float, max_tokens: int) -> None:
     """
     Gère le mode chat interactif avec le graphe de connaissances
 
@@ -329,11 +412,14 @@ def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybr
         filepaths: Liste des chemins de fichiers à traiter avant le chat
         force_reprocess: Si True, force le retraitement des documents
         use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
+        top_k: Nombre de résultats à récupérer
+        temperature: Température pour la génération LLM
+        max_tokens: Limite de tokens pour le contexte
     """
     # Traiter les documents restants avant d'entrer en mode chat
     if filepaths:
         # Vérifier les documents existants
-        existing_docs = get_existing_documents(filepaths, force_reprocess)
+        existing_docs = filter_existing_documents(filepaths, force_reprocess)
 
         # Si des documents existent déjà, afficher une erreur et quitter
         if existing_docs:
@@ -359,16 +445,25 @@ def handle_graph_chat_mode(filepaths: List[str], force_reprocess: bool, use_hybr
         logger.info("🔍 Recherche hybride (BM25 + sémantique) activée")
     else:
         logger.info("🔍 Recherche sémantique standard activée")
+    
+    logger.info(f"📊 Paramètres: top_k={top_k}, temperature={temperature}, max_tokens={max_tokens}")
         
     while True:
         query = input("\nVotre question : ")
         if query.lower() == "exit":
             break
-        response = chat_with_contract(query, use_graph=True, use_hybrid=use_hybrid)
-        
+        response = chat_with_contract(
+            query, 
+            use_graph=True, 
+            use_hybrid=use_hybrid,
+            n_context=top_k,
+            temperature=temperature,
+            context_window=max_tokens
+        )
+
 
 def handle_search_mode(
-    filepaths: List[str], search_query: str, force_reprocess: bool, use_hybrid: bool
+    filepaths: List[str], search_query: str, force_reprocess: bool, use_hybrid: bool, top_k: int
 ) -> None:
     """
     Gère le mode de recherche dans les documents
@@ -378,9 +473,10 @@ def handle_search_mode(
         search_query: Requête de recherche
         force_reprocess: Si True, force le retraitement des documents
         use_hybrid: Si True, utilise la recherche hybride (BM25 + sémantique)
+        top_k: Nombre de résultats à récupérer
     """
     # Vérifier les documents existants
-    existing_docs = get_existing_documents(filepaths, force_reprocess)
+    existing_docs = filter_existing_documents(filepaths, force_reprocess)
 
     # Si des documents existent déjà, afficher une erreur et quitter
     if existing_docs:
@@ -401,7 +497,8 @@ def handle_search_mode(
 
     # Effectuer la recherche
     if search_query:
-        search_contracts(search_query, use_hybrid=use_hybrid)
+        logger.info(f"📊 Paramètres: top_k={top_k}, hybrid={use_hybrid}")
+        display_contract_search_results(search_query, n_results=top_k, use_hybrid=use_hybrid)
     else:
         logger.info("Erreur: Aucune requête de recherche fournie après --search")
         sys.exit(1)
@@ -417,7 +514,7 @@ def handle_process_mode(filepaths: List[str], force_reprocess: bool, summarize_c
         summarize_chunks: Si True, résume chaque chunk avec Ollama
     """
     # Vérifier les documents existants
-    existing_docs = get_existing_documents(filepaths, force_reprocess)
+    existing_docs = filter_existing_documents(filepaths, force_reprocess)
 
     # Si des documents existent déjà, afficher une erreur et quitter
     if existing_docs:
@@ -444,7 +541,8 @@ def process_arguments(args: Dict[str, Any]) -> None:
     Args:
         args: Dictionnaire contenant les options et valeurs extraites des arguments
     """
-
+    logger.debug(f"Arguments: {args}")
+    
     # Configurer le niveau de log si mode debug
     if args["debug"]:
         logging.getLogger().setLevel(logging.DEBUG)
@@ -455,38 +553,69 @@ def process_arguments(args: Dict[str, Any]) -> None:
         handle_delete_mode(args["filepaths"])
         return
     
+    # Initialisation de la base de données d'historique
     setup_history_database(os.getenv("HISTORY_DB_FILE"))
 
     # Mode chat
     if args["chat"]:
-
-        if args["classification"]:
-            classification = True
-        else:
-            classification = False
-
+        classification = args["classification"]
         logger.info(f"Classification: {classification}")
-        handle_chat_mode(args["filepaths"], args["force"], classification, args["hybrid"])
+        handle_chat_mode(
+            args["filepaths"], 
+            args["force"], 
+            classification, 
+            args["hybrid"],
+            args["top_k"],
+            args["temperature"],
+            args["max_tokens"]
+        )
         return
 
     # Mode chat avancé
     if args["advanced_chat"]:
-        handle_advanced_chat_mode(args["filepaths"], args["force"], args["hybrid"])
+        handle_advanced_chat_mode(
+            args["filepaths"], 
+            args["force"], 
+            args["hybrid"],
+            args["top_k"],
+            args["temperature"],
+            args["max_tokens"]
+        )
         return
 
     # Mode alternatives chat
     if args["alternatives_chat"]:
-        handle_alternatives_chat_mode(args["filepaths"], args["force"], args["hybrid"])
+        handle_alternatives_chat_mode(
+            args["filepaths"], 
+            args["force"], 
+            args["hybrid"],
+            args["top_k"],
+            args["temperature"],
+            args["max_tokens"]
+        )
         return
 
-    # Mode graph-chat
-    if args["graph-chat"]:
-        handle_graph_chat_mode(args["filepaths"], args["force"], args["hybrid"])
+    # Mode graph_chat
+    if args["graph_chat"]:
+        handle_graph_chat_mode(
+            args["filepaths"], 
+            args["force"], 
+            args["hybrid"],
+            args["top_k"],
+            args["temperature"],
+            args["max_tokens"]
+        )
         return
 
     # Mode recherche
     if args["search"]:
-        handle_search_mode(args["filepaths"], args["search_query"], args["force"], args["hybrid"])
+        handle_search_mode(
+            args["filepaths"], 
+            args["search_query"], 
+            args["force"], 
+            args["hybrid"],
+            args["top_k"]
+        )
         return
 
     # Mode traitement par défaut

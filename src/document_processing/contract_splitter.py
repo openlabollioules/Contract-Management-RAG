@@ -12,20 +12,20 @@ from utils.logger import setup_logger
 logger = setup_logger(__file__)
 
 # Détection de l'architecture
-is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
-if is_apple_silicon:
-    logger.info("🍎 Détection d'un processeur Apple Silicon")
-    if torch.backends.mps.is_available():
-        logger.info("🎮 GPU MPS disponible")
-        device = torch.device("mps")
-    else:
-        logger.warning("⚠️ GPU MPS non disponible, utilisation du CPU")
-        device = torch.device("cpu")
-else:
-    logger.info("💻 Architecture non Apple Silicon")
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# is_apple_silicon = platform.processor() == "arm" and platform.system() == "Darwin"
+# if is_apple_silicon:
+#     logger.info("🍎 Détection d'un processeur Apple Silicon")
+#     if torch.backends.mps.is_available():
+#         logger.info("🎮 GPU MPS disponible")
+#         device = torch.device("mps")
+#     else:
+#         logger.warning("⚠️ GPU MPS non disponible, utilisation du CPU")
+#         device = torch.device("cpu")
+# else:
+#     logger.info("💻 Architecture non Apple Silicon")
+#     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-logger.info(f"⚙️ Utilisation du device: {device}")
+# logger.info(f"⚙️ Utilisation du device: {device}")
 
 
 @dataclass

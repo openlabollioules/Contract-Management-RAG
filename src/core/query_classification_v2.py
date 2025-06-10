@@ -48,7 +48,7 @@ try:
     client = Client(host=OLLAMA_URL)
     # Test the connection
     client.list()
-    print(f"Connexion Ollama établie à {OLLAMA_URL}")
+    # print(f"Connexion Ollama établie à {OLLAMA_URL}")
 except Exception as e:
     print(f"⚠️ Erreur lors de la connexion à Ollama ({OLLAMA_URL}): {e}")
     print("Les appels LLM utiliseront un mode de simulation")
@@ -206,7 +206,7 @@ def _init_storage():
 _init_storage()
 
 # Initialiser le modèle d'embeddings
-init_embedding_model()
+# init_embedding_model()
 
 def get_embeddings(text, model=CONFIG["embedding_model"]):
     """Fonction pour obtenir les embeddings via SentenceTransformer ou Ollama"""
@@ -418,7 +418,7 @@ def classify_with_embeddings(query: str) -> Tuple[str, float]:
             confidence = 0.8  # Confiance par défaut
         
         # Appliquer des règles spécifiques basées sur l'analyse d'erreurs
-        applied_rules = apply_correction_rules(query, mode, confidence)
+        applied_rules = rule_based_mode_adjustment(query, mode, confidence)
         if applied_rules:
             return applied_rules
         
@@ -509,11 +509,11 @@ def _load_classifier():
         return dummy
 
 # Initialiser le classifieur après sa définition
-try:
-    clf = _load_classifier()
-except Exception as e:
-    print(f"Erreur lors de l'initialisation du classifieur: {e}")
-    clf = None
+# try:
+#     clf = _load_classifier()
+# except Exception as e:
+#     print(f"Erreur lors de l'initialisation du classifieur: {e}")
+#     clf = None
 
 # Motifs qui indiquent une requête multi-étapes (extract PUIS analyse)
 MULTI_STEP_PATTERNS = [
@@ -525,7 +525,7 @@ MULTI_STEP_PATTERNS = [
 # Cache pour les embeddings (pour éviter de recalculer)
 EMBEDDING_CACHE = {}
 
-def apply_correction_rules(query: str, mode: str, confidence: float) -> Optional[Tuple[str, float]]:
+def rule_based_mode_adjustment(query: str, mode: str, confidence: float) -> Optional[Tuple[str, float]]:
     """
     Applique des règles spécifiques pour corriger les classifications problématiques.
     Amélioration suite à l'analyse des erreurs.
@@ -647,7 +647,7 @@ def call_llm(query: str) -> str:
         print(f"Erreur lors de l'appel LLM: {e}")
         return f"[Erreur] LLM: {query}"  # Simulation en cas d'erreur
 
-def classify_zero_shot(query: str) -> Tuple[str, float]:
+def classify_query_zero_shot(query: str) -> Tuple[str, float]:
     """Zero-shot via prompt ; renvoie 'RAG' ou 'LLM' + confiance."""
     prompt = (
         "Classe la requête en l'une des catégories suivantes:\n"
@@ -794,9 +794,9 @@ def detect_edge_cases(query: str) -> bool:
 def classify_complex_query(query: str) -> Tuple[str, float]:
     """Analyse approfondie des requêtes complexes pour déterminer le mode optimal."""
     # Sans hybride, on utilise directement le classificateur zero-shot
-    return classify_zero_shot(query)
+    return classify_query_zero_shot(query)
 
-def route_and_execute(query: str, verbose: bool = False, true_label: str = None) -> str:
+def determine_inference_mode(query: str, verbose: bool = False, true_label: str = None) -> str:
     """
     Router amélioré avec analyse d'erreurs et règles de correction.
     """
@@ -820,7 +820,7 @@ def route_and_execute(query: str, verbose: bool = False, true_label: str = None)
     # Cas où il y a des patterns mixtes ou peu de patterns
     else:
         # 2. Zero-shot
-        mode_zs, conf_zs = classify_zero_shot(query)
+        mode_zs, conf_zs = classify_query_zero_shot(query)
         # 3. Embeddings et caractéristiques
         try:
             mode_em, conf_em = classify_with_embeddings(query)
@@ -853,7 +853,7 @@ def route_and_execute(query: str, verbose: bool = False, true_label: str = None)
     
     # 5. Application des règles de correction
     if mode is not None:
-        rule_mode, rule_conf = apply_correction_rules(query, mode, conf) or (mode, conf)
+        rule_mode, rule_conf = rule_based_mode_adjustment(query, mode, conf) or (mode, conf)
     else:
         # Cas où aucun mode n'a été déterminé (rare)
         rule_mode, rule_conf = CONFIG["fallback_mode"], 0.6
@@ -917,7 +917,7 @@ def evaluate_classifier(test_data=None):
     true_labels = []
     
     for query, true_label in test_data:
-        result = route_and_execute(query, verbose=False, true_label=true_label)
+        result = determine_inference_mode(query, verbose=False, true_label=true_label)
         predicted = "RAG" if "[RAG]" in result else "LLM"
         
         predictions.append(predicted)
@@ -1068,7 +1068,7 @@ if __name__ == "__main__":
     
     stats = {"RAG": 0, "LLM": 0}  # Suppression de HYBRID dans les stats
     for q in TEST_QUESTIONS:
-        result = route_and_execute(q, verbose=True)
+        result = determine_inference_mode(q, verbose=True)
         if "[RAG]" in result:
             stats["RAG"] += 1
         else:

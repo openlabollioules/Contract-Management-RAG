@@ -23,10 +23,10 @@ La recherche sémantique permet de trouver des passages pertinents même si les 
 
 ### Implémentation
 
-La recherche est implémentée dans la fonction `search_contracts` du module `core/interaction.py` :
+La recherche est implémentée dans la fonction `display_contract_search_results` du module `core/interaction.py` :
 
 ```python
-def search_contracts(query: str, n_results: int = 5) -> None:
+def display_contract_search_results(query: str, n_results: int = 5) -> None:
     """
     Search in the contract database
 
@@ -134,7 +134,7 @@ Réponds de manière précise en te basant uniquement sur le contexte fourni.
 Si tu ne trouves pas l'information dans le contexte, dis-le clairement."""
 
     # Get response from Ollama
-    response = ask_ollama(prompt)
+    response = llm_chat_call_with_ollama(prompt)
     logger.info("\n🤖 Réponse :")
     logger.info(response)
 
@@ -162,7 +162,7 @@ Le système utilise Ollama pour exécuter un modèle de langage localement. Le m
 Le module `document_processing/llm_chat.py` gère l'interaction avec Ollama :
 
 ```python
-def ask_ollama(prompt: str) -> str:
+def llm_chat_call_with_ollama(prompt: str) -> str:
     """
     Ask a question to Ollama LLM
 

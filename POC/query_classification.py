@@ -18,7 +18,7 @@ LLM_PATTERNS = [
 # Pour ce POC, on simule un classifieur déjà entraîné
 clf = LogisticRegression()  # placeholder
 
-def classify_zero_shot(query: str) -> str:
+def classify_query_zero_shot(query: str) -> str:
     """Zero-shot via prompt ; renvoie 'RAG' ou 'LLM'."""
     prompt = (
         "Vous êtes un assistant expert en contrats. Répondez EXACTEMENT par "
@@ -54,13 +54,13 @@ def call_llm(query: str) -> str:
     )
     return resp.message.content
 
-def route_and_execute(query: str) -> str:
+def determine_inference_mode(query: str) -> str:
     """Router hybride intégrant règles, zero-shot et embeddings."""
     # 1. Règles métiers
     if any(re.search(p, query, re.I) for p in LLM_PATTERNS):
         return call_llm(query)
     # 2. Classification zero-shot
-    mode = classify_zero_shot(query)
+    mode = classify_query_zero_shot(query)
     if mode in ("RAG", "LLM"):
         return call_rag(query) if mode == "RAG" else call_llm(query)
     # 3. Fallback embeddings
@@ -91,4 +91,4 @@ if __name__ == "__main__":
         "Comment traduire la clause de responsabilité du contrat A vis-à-vis des fournisseurs et sous-traitants de Alstom ?",
     ]
     for q in TEST_QUESTIONS:
-        print(f"Q: {q}\n→ {route_and_execute(q)}\n{'-'*40}")
+        print(f"Q: {q}\n→ {determine_inference_mode(q)}\n{'-'*40}")
