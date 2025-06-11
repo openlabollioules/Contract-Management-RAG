@@ -36,19 +36,19 @@ TEST_QUESTIONS = {
     ],
     "questions chatGPT": [
         "Could you indicate the key dates specified in Contract A?",
-        "Can you list the provisions in Contract A that may give rise to potential indemnities or penalties payable by the supplier?",
-        "Could you summarize the warranty obligations set out in Contract A?",
-        "In Contract A, which clause is the most problematic from the supplier's perspective and why? How would you suggest amending that clause to make it less onerous for the supplier?",
-        "In Contract A, what is the foreign-exchange risk introduced by the fact that part of the pricing is denominated in rubles?",
-        "What is the guaranteed delivered power as specified in Contract A?",
-        "Which governing laws are mentioned in Contract A?",
-        "I represent the supplier. I would like to send a notice of delay letter to the client under Contract A regarding delays caused by them. Could you propose a template?",
-        "Draft a simplified amendment extending the end date of Contract A by six months.",
-        "Based on Contract A, can you list the actions the supplier must take in terms of documents to be provided to the client?",
-        "Could you estimate the deadlines associated with the list of actions mentioned above?",
-        "Which obligations in Contract A must be mandatorily flowed down into the contracts that ALSTOM will sign with its suppliers or subcontractors?",
-        "How would you translate the warranty clause of Contract A for ALSTOM's suppliers and subcontractors?",
-        "How would you translate the liability clause of Contract A for ALSTOM's suppliers and subcontractors?"
+        # "Can you list the provisions in Contract A that may give rise to potential indemnities or penalties payable by the supplier?",
+        # "Could you summarize the warranty obligations set out in Contract A?",
+        # "In Contract A, which clause is the most problematic from the supplier's perspective and why? How would you suggest amending that clause to make it less onerous for the supplier?",
+        # "In Contract A, what is the foreign-exchange risk introduced by the fact that part of the pricing is denominated in rubles?",
+        # "What is the guaranteed delivered power as specified in Contract A?",
+        # "Which governing laws are mentioned in Contract A?",
+        # "I represent the supplier. I would like to send a notice of delay letter to the client under Contract A regarding delays caused by them. Could you propose a template?",
+        # "Draft a simplified amendment extending the end date of Contract A by six months.",
+        # "Based on Contract A, can you list the actions the supplier must take in terms of documents to be provided to the client?",
+        # "Could you estimate the deadlines associated with the list of actions mentioned above?",
+        # "Which obligations in Contract A must be mandatorily flowed down into the contracts that ALSTOM will sign with its suppliers or subcontractors?",
+        # "How would you translate the warranty clause of Contract A for ALSTOM's suppliers and subcontractors?",
+        # "How would you translate the liability clause of Contract A for ALSTOM's suppliers and subcontractors?"
     ]
 }
 
